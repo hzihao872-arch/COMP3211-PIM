@@ -19,7 +19,7 @@
 
 ## Blockers or questions
 
-- 
+-
 
 ## Next meeting
 

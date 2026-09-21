@@ -1,10 +1,10 @@
 ## What changed
 
-- 
+-
 
 ## Requirement or user story
 
-- ID: 
+- ID:
 
 ## Verification
 
@@ -20,4 +20,4 @@ Commands/results:
 
 ## Review notes
 
-- 
+-

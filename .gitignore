@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyd
+.venv/
+venv/
+
+# Tests and coverage
+.coverage
+coverage.xml
+htmlcov/
+.pytest_cache/
+
+# IDE and operating system
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Build and temporary output
+build/
+dist/
+output/
+tmp/
+*.log
+
+# Local PIM data; committed fixtures may live under tests/fixtures
+data/
+*.pim
+!tests/fixtures/*.pim
+
+# Recordings are normally too large for ordinary Git history
+media/**/*.mp4
+
+# Final assembled archives
+*.zip

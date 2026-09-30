@@ -64,6 +64,8 @@ Open a pull request on GitHub and ask at least one teammate to review it before 
 
 ## Current planning files
 
+- [End-to-end delivery plan](docs/plans/2026-09-30-project-master-plan.md)
+- [New-conversation work packages](docs/plans/work-packages/README.md)
 - [Requirements checklist](requirements-checklist.md)
 - [Team decisions](decisions.md)
 - [Task board](tasks.md)

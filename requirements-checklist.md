@@ -12,17 +12,17 @@ The PDF's registration deadline and late-change rule remain recorded in the offi
 
 ## Product stories (PDF p. 4)
 
-- [ ] **US1** — Create different types of PIR in one PIM.
-- [ ] **US2** — Create a plain-text note.
-- [ ] **US3** — Create a task with description and deadline.
-- [ ] **US4** — Create an event with description, starting time, and alarm.
-- [ ] **US5** — Create a contact with name, address, and mobile number.
-- [ ] **US6** — Modify an existing PIR.
-- [ ] **US7** — Search by type; text containment in note text, description, name, address, or mobile number; time `<`, `>`, `=` on deadline, starting time, or alarm; combinations with `&&`, `||`, `!`.
-- [ ] **US8** — Print detailed data for one PIR or all PIRs.
-- [ ] **US9** — Delete a specified PIR.
-- [ ] **US10** — Store PIRs in a `.pim` file.
-- [ ] **US11** — Load PIRs from a `.pim` file.
+- [x] **US1** — Create different types of PIR in one PIM.
+- [x] **US2** — Create a plain-text note.
+- [x] **US3** — Create a task with description and deadline.
+- [x] **US4** — Create an event with description, starting time, and alarm.
+- [x] **US5** — Create a contact with name, address, and mobile number.
+- [x] **US6** — Modify an existing PIR.
+- [x] **US7** — Search by type; text containment in note text, description, name, address, or mobile number; time `<`, `>`, `=` on deadline, starting time, or alarm; combinations with `&&`, `||`, `!`.
+- [x] **US8** — Print detailed data for one PIR or all PIRs.
+- [x] **US9** — Delete a specified PIR.
+- [x] **US10** — Store PIRs in a `.pim` file.
+- [x] **US11** — Load PIRs from a `.pim` file.
 
 ## Product and document constraints (PDF pp. 1–2)
 

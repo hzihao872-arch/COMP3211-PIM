@@ -7,6 +7,7 @@ The execution source is [the end-to-end delivery plan](docs/plans/2026-09-30-pro
 | Task | Owner | Target | Status |
 |---|---|---|---|
 | Confirm actual 3–4-member Canvas group status and count | User | WP00 | User confirmed on 2026-09-30: Canvas group formed, current count 4. |
+| Record Canvas group number | User | WP04 | User supplied group number 89 on 2026-09-30; member names and student IDs will be supplied later. |
 | Restore and verify official Project Description PDF | WP00 primary Agent | Immediate | Verified locally: 4 pages, 233333 bytes, SHA-256 in `references/README.md`. |
 | Review official requirements and all US1–US11 | WP00 primary Agent plus three read-only AI auditors | WP00 | Draft matrices completed; see workshop note. |
 | Close technical product-rule gaps | WP00 primary Agent | WP00 | Working choices recorded in `decisions.md`; human group may amend before WP01. |
@@ -21,8 +22,8 @@ The execution source is [the end-to-end delivery plan](docs/plans/2026-09-30-pro
 |---|---|---|---|---|
 | WP01 requirements baseline | Reviewed SRS, stable FR/NFR IDs | WP01 primary Agent plus three read-only AI reviewers | 2026-10-05 | G1 passed; PR #3 merged into `main` on 2026-09-30. Human group review remains pending. |
 | WP02 design baseline | Architecture, contract, three required diagrams | WP02 primary Agent plus two read-only AI reviewers | 2026-10-08 | G2 passed; PR #4 merged into `main` on 2026-09-30. Human group review remains pending. |
-| WP03 complete implementation | US1–US11, CLI, model tests | Codex single modifying Agent | 2026-10-20 | Local G3 implementation checks passed on 2026-09-30: 27 tests on Python 3.13.5 and Python 3.12, compilation, import review, and real-process smoke session. Branch PR review/merge and human group review remain pending. Python 3.11 runtime verification is pending. |
-| WP04 code freeze | Integration evidence and real model coverage |  | 2026-10-25 | Not started. |
+| WP03 complete implementation | US1–US11, CLI, model tests | Codex single modifying Agent | 2026-10-20 | G3 implementation checks passed and PR #5 merged on 2026-09-30. WP04 found and fixed additional edge cases. Python 3.11 runtime verification and human group review remain pending. |
+| WP04 code freeze | Integration evidence and real model coverage | Codex primary Agent plus three read-only auditors | 2026-10-25 | Local G4 checks on 2026-09-30: 33 tests passed on Python 3.13.5 and 3.12.3; clean-copy CLI and tests passed; standard-library trace model coverage recorded. PR review/merge remains pending. Python 3.11 runtime verification remains pending. |
 | WP05 document freeze | Six reviewed final PDFs |  | 2026-11-04 | Not started. |
 | WP06 presentation assets | Presentation PDF and two recording scripts |  | 2026-11-10 | Not started. |
 | WP07 audit | No unresolved blocking/high finding |  | 2026-11-13 | Not started. |

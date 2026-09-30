@@ -85,7 +85,7 @@ class AndCriterion(Criterion):
             raise ValidationError("&& requires two criteria")
 
     def matches(self, record: Record) -> bool:
-        return self.left.matches(record) and self.right.matches(record)
+        return _evaluate(self, record)
 
 
 @dataclass(frozen=True)
@@ -98,7 +98,7 @@ class OrCriterion(Criterion):
             raise ValidationError("|| requires two criteria")
 
     def matches(self, record: Record) -> bool:
-        return self.left.matches(record) or self.right.matches(record)
+        return _evaluate(self, record)
 
 
 @dataclass(frozen=True)
@@ -110,7 +110,40 @@ class NotCriterion(Criterion):
             raise ValidationError("! requires a criterion")
 
     def matches(self, record: Record) -> bool:
-        return not self.operand.matches(record)
+        return _evaluate(self, record)
+
+
+def _evaluate(root: Criterion, record: Record) -> bool:
+    """Evaluate Boolean nodes with an explicit stack and short circuiting."""
+    pending: list[tuple[Criterion, int]] = [(root, 0)]
+    values: list[bool] = []
+    while pending:
+        node, stage = pending.pop()
+        if isinstance(node, AndCriterion):
+            if stage == 0:
+                pending.append((node, 1))
+                pending.append((node.left, 0))
+            elif values.pop():
+                pending.append((node.right, 0))
+            else:
+                values.append(False)
+        elif isinstance(node, OrCriterion):
+            if stage == 0:
+                pending.append((node, 1))
+                pending.append((node.left, 0))
+            elif values.pop():
+                values.append(True)
+            else:
+                pending.append((node.right, 0))
+        elif isinstance(node, NotCriterion):
+            if stage == 0:
+                pending.append((node, 1))
+                pending.append((node.operand, 0))
+            else:
+                values[-1] = not values[-1]
+        else:
+            values.append(node.matches(record))
+    return values.pop()
 
 
 def _tokenize(expression: str) -> list[tuple[str, str]]:
@@ -176,31 +209,59 @@ class _Parser:
         return False
 
     def parse(self) -> Criterion:
-        result = self._or()
-        if self._peek() is not None:
-            raise SearchSyntaxError(f"unexpected search token: {self._peek()!r}")
-        return result
+        operators: list[str] = []
+        values: list[Criterion] = []
+        precedence = {"||": 1, "&&": 2, "!": 3}
+        expect_operand = True
 
-    def _or(self) -> Criterion:
-        result = self._and()
-        while self._accept("||"):
-            result = OrCriterion(result, self._and())
-        return result
+        def apply_operator() -> None:
+            operator = operators.pop()
+            if operator == "!":
+                values.append(NotCriterion(values.pop()))
+            else:
+                right = values.pop()
+                left = values.pop()
+                values.append(AndCriterion(left, right) if operator == "&&" else OrCriterion(left, right))
 
-    def _and(self) -> Criterion:
-        result = self._not()
-        while self._accept("&&"):
-            result = AndCriterion(result, self._not())
-        return result
+        while (token := self._peek()) is not None:
+            if expect_operand:
+                if token == ("symbol", "!"):
+                    operators.append("!")
+                    self.position += 1
+                elif token == ("symbol", "("):
+                    operators.append("(")
+                    self.position += 1
+                else:
+                    values.append(self._atom())
+                    expect_operand = False
+                    while operators and operators[-1] == "!":
+                        apply_operator()
+            elif token in (("symbol", "&&"), ("symbol", "||")):
+                operator = token[1]
+                while operators and operators[-1] != "(" and precedence[operators[-1]] >= precedence[operator]:
+                    apply_operator()
+                operators.append(operator)
+                self.position += 1
+                expect_operand = True
+            elif token == ("symbol", ")"):
+                while operators and operators[-1] != "(":
+                    apply_operator()
+                if not operators:
+                    raise SearchSyntaxError("unmatched closing parenthesis")
+                operators.pop()
+                self.position += 1
+                while operators and operators[-1] == "!":
+                    apply_operator()
+            else:
+                raise SearchSyntaxError(f"unexpected search token: {token!r}")
 
-    def _not(self) -> Criterion:
-        if self._accept("!"):
-            return NotCriterion(self._not())
-        if self._accept("("):
-            result = self._or()
-            self._take("symbol", ")")
-            return result
-        return self._atom()
+        if expect_operand:
+            raise SearchSyntaxError("incomplete search expression")
+        while operators:
+            if operators[-1] == "(":
+                raise SearchSyntaxError("unmatched opening parenthesis")
+            apply_operator()
+        return values[0]
 
     def _atom(self) -> Criterion:
         field = self._take("word").casefold()

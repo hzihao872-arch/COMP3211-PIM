@@ -76,9 +76,15 @@ def _arguments(line: str) -> list[str]:
 
 
 def _id(token: str) -> int:
-    if not re.fullmatch(r"[0-9]+", token) or int(token) == 0:
+    if not re.fullmatch(r"[0-9]+", token):
         raise CommandSyntaxError(f"invalid positive decimal ID: {token!r}")
-    return int(token)
+    try:
+        value = int(token)
+    except ValueError as error:
+        raise CommandSyntaxError("decimal ID is too long") from error
+    if value == 0:
+        raise CommandSyntaxError(f"invalid positive decimal ID: {token!r}")
+    return value
 
 
 def _count(args: list[str], minimum: int, maximum: int, command: str) -> None:

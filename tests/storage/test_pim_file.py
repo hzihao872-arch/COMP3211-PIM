@@ -68,6 +68,16 @@ class PersistenceTests(unittest.TestCase):
         self.assertEqual(self.path.read_bytes(), b"original")
         self.assertEqual(list(self.path.parent.glob("*.tmp")), [])
 
+    def test_load_rejects_text_that_cannot_be_saved_as_utf8(self):
+        snapshot = {
+            "format": "COMP3211-PIM", "version": 1, "next_id": 2,
+            "records": [{"id": 1, "type": "note", "text": "before\ud800after"}],
+        }
+        self.path.write_text(json.dumps(snapshot), encoding="utf-8")
+        with self.assertRaises(PersistenceError) as error:
+            load_pim(self.path, 1)
+        self.assertEqual(error.exception.category, "FORMAT")
+
 
 if __name__ == "__main__":
     unittest.main()

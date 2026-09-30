@@ -84,6 +84,17 @@ class SearchTests(unittest.TestCase):
             with self.assertRaises(ValidationError):
                 factory()
 
+    def test_deep_valid_expressions_evaluate_without_recursion(self):
+        expressions = (
+            '!' * 1200 + 'type = "note"',
+            '(' * 1200 + 'type = "note"' + ')' * 1200,
+            ' && '.join(['type = "note"'] * 1200),
+            ' || '.join(['type = "note"'] * 1200),
+        )
+        for expression in expressions:
+            with self.subTest(length=len(expression)):
+                self.assertEqual(self.matches(expression), (1,))
+
 
 if __name__ == "__main__":
     unittest.main()

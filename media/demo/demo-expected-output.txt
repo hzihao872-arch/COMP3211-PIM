@@ -1,0 +1,46 @@
+SESSION 1 exit=0
+pim> Created note 1
+pim> Created task 2
+pim> Created event 3
+pim> Created contact 4
+pim> id: 2
+type: task
+description: draft
+deadline: 2026-10-01 09:00
+pim> 1 | note | memo
+2 | task | draft
+3 | event | meeting
+4 | contact | Li
+pim> 1 | note | memo
+2 | task | draft
+pim> Updated 2
+pim> id: 2
+type: task
+description: revised
+deadline: 2026-10-01 09:00
+pim> Deleted 1
+pim> Saved 3 PIR(s) to D:\comp3211\tmp\wp06-demo\snapshot.pim
+pim>
+SESSION 2 exit=0
+pim> Loaded 3 PIR(s) from D:\comp3211\tmp\wp06-demo\snapshot.pim
+pim> id: 2
+type: task
+description: revised
+deadline: 2026-10-01 09:00
+
+id: 3
+type: event
+description: meeting
+start_time: 2026-10-02 10:00
+alarm_time: 2026-10-01 08:00
+
+id: 4
+type: contact
+name: Li
+address: Room 1
+mobile_number: +00123
+pim> Created note 5
+pim> id: 5
+type: note
+text: after load
+pim>

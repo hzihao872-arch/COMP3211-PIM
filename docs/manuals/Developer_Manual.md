@@ -5,9 +5,19 @@
 **Product baseline:** frozen source, tests, and coverage tool at commit `4d3508db0447a3ac6346a2a2789da89208f88fd5` (2026-09-30). This manual documents that build.
 **Platform:** Windows 11 with PowerShell. **Verified Python versions:** 3.13.5 and 3.12.3. Python 3.11 is a requirements target but was not installed in the WP04 environment and remains unverified. No third-party runtime or test package is needed.
 
-## 1. Open a clean checkout
+## 1. Open the extracted submission or a clean checkout
 
-Use Git with access to the group's private repository. These commands place the shell in the repository root and select the exact frozen product build:
+For the submitted ZIP, extract it and open PowerShell in the directory containing `COMP3211_Group_Project`. Enter its source-code root:
+
+```powershell
+Set-Location .\COMP3211_Group_Project\03_Implementation
+Get-ChildItem src, tests, tools
+python --version
+```
+
+This folder contains `src/main.py`, the tests, `tools/model_coverage.py`, and this manual. It needs no Git metadata or access to the group's private repository. Run the commands in §3 from this folder. The release manifest records the hashes of the copied files; it does not itself establish a new product freeze.
+
+To reproduce the original WP04 commit from a Git checkout **if repository access is available**, use:
 
 ```powershell
 git clone https://github.com/hzihao872-arch/COMP3211-PIM.git
@@ -17,13 +27,11 @@ git rev-parse HEAD
 python --version
 ```
 
-The `git rev-parse HEAD` output must be the full freeze SHA above. The `python --version` output must identify the interpreter selected for the following commands. WP04 executed the application and suite with Python 3.13.5 and 3.12.3 on Windows 11. The release documents may be on a later commit; checking out the freeze SHA is for reproducing the product evidence. The same commands also run from a later documentation checkout while `src/`, `tests/`, and `tools/model_coverage.py` still match that SHA.
-
-For a clean checkout already open at the repository root, start with `git rev-parse HEAD` and verify the freeze SHA before reproducing WP04 exactly. A Python virtual environment is optional; all product imports are from the standard library or this repository.
+In the Git path, `git rev-parse HEAD` must print the full freeze SHA above. In either path, `python --version` identifies the interpreter used for the following commands. WP04 ran the application and suite with Python 3.13.5 and 3.12.3 on Windows 11. Python 3.11 remains unverified. A Python virtual environment is optional; all product imports are from the standard library or the delivered source.
 
 ## 2. IDE guidance and project layout
 
-Visual Studio Code with a Python extension is a suitable editor on Windows 11; no specific IDE version was part of WP04 verification. Open the **repository root folder**, select the installed Python 3.13.5 or 3.12.3 interpreter, and use its integrated PowerShell terminal for the commands below. The terminal commands are authoritative for reproduction; an IDE-specific test or coverage display was not used to obtain the report.
+Visual Studio Code with a Python extension is a suitable editor on Windows 11; no specific IDE version was part of WP04 verification. Open the **`03_Implementation` folder or repository root**, select the installed Python 3.13.5 or 3.12.3 interpreter, and use its integrated PowerShell terminal for the commands below. The terminal commands are authoritative for reproduction; an IDE-specific test or coverage display was not used to obtain the report.
 
 | Path | Responsibility |
 |---|---|
@@ -41,7 +49,7 @@ The model package has no dependency on `controller` or `storage`. The controller
 
 ## 3. Run, test, and inspect coverage
 
-Execute each block from the repository root. The program launches with an empty in-memory collection:
+Execute each block from the source-code root: `03_Implementation` in the extracted submission or the repository root in a Git checkout. The program launches with an empty in-memory collection:
 
 ```powershell
 python src/main.py
@@ -64,7 +72,7 @@ Generate the submitted model-only line-coverage numbers:
 python tools/model_coverage.py
 ```
 
-This tool discovers and runs the same 33 tests under Python's standard-library `trace` module. The WP04 Python 3.13.5 report was **411/430 executable model lines (95.58%)**. It covers `src/model/*.py`; subprocess executions of `src/main.py` in acceptance tests are outside the trace scope. The exact per-module figures and method appear in the separate Test Coverage Report and `docs/reports/model-coverage-raw.txt`.
+This tool discovers and runs the same 33 tests under Python's standard-library `trace` module. The WP04 Python 3.13.5 report was **411/430 executable model lines (95.58%)**. It covers `src/model/*.py`; subprocess executions of `src/main.py` in acceptance tests are outside the trace scope. The exact per-module figures and method appear in `Test_Coverage.pdf` beside this manual; the raw WP04 output is also retained at `docs/reports/model-coverage-raw.txt` in the repository.
 
 Check that source, tests, and the coverage tool compile:
 
@@ -76,7 +84,7 @@ Successful `compileall` produces no output and exits with code 0. It creates ign
 
 ## 4. Debug a command
 
-Set the IDE's working directory to the repository root, program to `src/main.py`, interpreter to the verified Python selected above, and use an integrated terminal so you can type CLI commands. No command-line arguments are required. If the IDE needs an import path for direct test debugging, set `PYTHONPATH` to the repository's `src` folder; launching `src/main.py` directly already puts `src` on Python's import path.
+Set the IDE's working directory to the source-code root identified in §3, program to `src/main.py`, interpreter to the verified Python selected above, and use an integrated terminal so you can type CLI commands. No command-line arguments are required. If the IDE needs an import path for direct test debugging, set `PYTHONPATH` to that root's `src` folder; launching `src/main.py` directly already puts `src` on Python's import path.
 
 Useful breakpoints in the frozen code are `src/main.py::main`, `src/controller/cli.py::CommandController._dispatch` and `.run`, `src/model/manager.py::PIMManager.update` or `.search`, `src/model/search.py::parse_criterion`, and `src/storage/pim_file.py::save_pim` or `load_pim`. For a failed search, follow `parse_criterion` into `_Parser.parse`, then inspect `SearchSyntaxError` handling in `CommandController.run`. For a failed load, inspect `load_pim` before the controller replaces its active manager. The controller prints expected failures with `Error: SEARCH`, `NOT_FOUND`, `VALIDATION`, `PATH`, `FORMAT`, `IO`, or `COMMAND` and returns to the next prompt.
 

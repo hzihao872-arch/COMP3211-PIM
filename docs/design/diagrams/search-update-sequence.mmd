@@ -1,26 +1,28 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "18px"}}}%%
 sequenceDiagram
     autonumber
     actor User
     participant CLI as CommandController
-    participant Parser as parse_criterion
+    participant Parse as parse_criterion
     participant Manager as PIMManager
-    participant Criterion
-
+    participant Match as Criterion.matches
     User->>CLI: search (type = "task" && deadline < "2026-10-01 09:00")
-    CLI->>Parser: parse_criterion(expression)
-    Parser-->>CLI: immutable Criterion
+    CLI->>Parse: parse_criterion(expression)
+    Note over Parse: Tokenizer and operator/value stacks build tree
+    Parse-->>CLI: validated Criterion tree
     CLI->>Manager: search(criterion)
     loop each PIR in ascending ID order
-        Manager->>Criterion: matches(record)
-        Criterion-->>Manager: true or false
+        Manager->>Match: matches(record)
+        Match-->>Manager: bool
     end
-    Manager-->>CLI: matching records
-    CLI-->>User: ID, type, complete first text field
-    User->>CLI: show selected ID
+    Manager-->>CLI: matching tuple[Record, ...]
+    CLI-->>User: ID | type | first text field
+    User->>CLI: show ID
     CLI->>Manager: get(record_id)
-    Manager-->>CLI: selected PIR
-    CLI-->>User: all fields
+    Manager-->>CLI: selected Task
+    CLI-->>User: id, type, description, deadline
     User->>CLI: update ID description "Revised task"
-    CLI->>Manager: update(record_id, "description", "Revised task")
-    Manager-->>CLI: validated replacement PIR
+    CLI->>Manager: update(record_id, field_name, value)
+    Note over Manager: dataclasses.replace validates before commit
+    Manager-->>CLI: updated Task
     CLI-->>User: Updated ID

@@ -1,8 +1,9 @@
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "19px"}}}%%
 flowchart TB
-    U[User at terminal] <-->|commands / results| C[controller / CLI]
-    M[src/main.py<br/>composition root] -.->|constructs| C
-    M -.->|creates initial manager| K[model / PIM core]
-    C -->|CRUD and parsed criterion| K
-    C -->|save or load request| S[storage / .pim boundary]
-    S -->|validated replacement state| K
-    S <-->|UTF-8 JSON| F[(Local .pim file)]
+    USER["User / terminal"] <-->|commands and results| CLI["controller.cli<br/>CommandController"]
+    MAIN["src/main.py<br/>composition root"] -->|constructs| CLI
+    MAIN -->|constructs| MODEL["model<br/>PIMManager, records, search, validation"]
+    CLI -->|CRUD and search| MODEL
+    CLI -->|save / load| STORE["storage.pim_file<br/>versioned JSON adapter"]
+    STORE -->|validated replacement manager| MODEL
+    STORE <-->|UTF-8 JSON| FILE[("Local .pim file")]

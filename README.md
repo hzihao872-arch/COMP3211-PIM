@@ -36,13 +36,24 @@ The implementation must use only the Python standard library.
 
 ## Run commands
 
-These commands will become active as implementation is added:
+Run the local CLI from the repository root:
 
 ```powershell
 python src/main.py
-$env:PYTHONPATH = "src"
-python -m unittest discover -s tests -v
+$env:PYTHONPATH = "$PWD\src"
+python -m unittest discover -s tests -t . -v
 ```
+
+Type `help` for every command form, field order, quoting rule, and search syntax. For example:
+
+```text
+add task "Prepare demo" "2026-10-01 09:00"
+search type = "task" && deadline < "2026-11-01 00:00"
+save "records.pim"
+exit
+```
+
+The program starts with an empty collection. Use `load "records.pim"` in a later session to restore a saved snapshot. The `.pim` suffix must be lowercase. Dates use local `YYYY-MM-DD HH:mm` format. A failed command reports an error and returns to the prompt.
 
 ## Start a task
 

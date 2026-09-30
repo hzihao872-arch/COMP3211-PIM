@@ -9,8 +9,10 @@ COMP3211_Group_Project.zip
 ├─ 01_SRS/SRS.pdf
 ├─ 02_Design/Design_Document.pdf
 ├─ 03_Implementation/
-│  ├─ source/
+│  ├─ src/
 │  ├─ tests/
+│  ├─ tools/
+│  ├─ README.md
 │  ├─ Developer_Manual.pdf
 │  ├─ User_Manual.pdf
 │  ├─ Requirements_Coverage.pdf

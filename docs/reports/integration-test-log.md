@@ -1,8 +1,10 @@
 # WP04 Integration Test Log
 
-**Date:** 2026-09-30  
-**Group:** 89 (number supplied by the user; member identities pending)  
-**Baseline:** WP03 PR #5 merge commit `9913b783531fa4cf67eede2329fea1a66a86c5e1`  
+**Date:** 2026-09-30
+
+**Group:** 89 (number supplied by the user; member identities pending)
+
+**Baseline:** WP03 PR #5 merge commit `9913b783531fa4cf67eede2329fea1a66a86c5e1`
 **Frozen source and test commit:** `4d3508db0447a3ac6346a2a2789da89208f88fd5`
 
 ## Independent read-only audit and resolutions

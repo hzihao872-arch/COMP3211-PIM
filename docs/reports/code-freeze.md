@@ -1,8 +1,10 @@
 # WP04 Code Freeze
 
-**Group:** 89 (user-provided number; member names and student IDs pending)  
-**Freeze date:** 2026-09-30  
-**Frozen source, tests, and coverage tool commit:** `4d3508db0447a3ac6346a2a2789da89208f88fd5`  
+**Group:** 89 (user-provided number; member names and student IDs pending)
+
+**Freeze date:** 2026-09-30
+
+**Frozen source, tests, and coverage tool commit:** `4d3508db0447a3ac6346a2a2789da89208f88fd5`
 **Branch:** `work/wp04-qa-freeze`
 
 This SHA identifies the exact product source, automated tests, and `tools/model_coverage.py` used for WP04 verification. Later WP04 evidence-document commits do not alter those files. Any later product behavior change requires repeating WP04 checks and recording a new freeze SHA.

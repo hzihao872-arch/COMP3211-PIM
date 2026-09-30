@@ -23,4 +23,4 @@ COMP3211_Group_Project.zip
 └─ Honour_Declaration_for_Group_Project.pdf
 ```
 
-Before submission, test the copied implementation from the assembled folder on a clean machine or clean user directory. Check every video duration, document format, and required root location.
+Before human closeout, the candidate contains only available files; it has no fake MP4 or signed-declaration placeholder. See [human-closeout-checklist.md](human-closeout-checklist.md) for the real recording, declaration, final ZIP, and upload checks. Test the copied implementation from a clean user directory and check every document format and required root location.

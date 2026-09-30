@@ -1,0 +1,8 @@
+flowchart TB
+    U[User at terminal] <-->|commands / results| C[controller / CLI]
+    M[src/main.py<br/>composition root] -.->|constructs| C
+    M -.->|creates initial manager| K[model / PIM core]
+    C -->|CRUD and parsed criterion| K
+    C -->|save or load request| S[storage / .pim boundary]
+    S -->|validated replacement state| K
+    S <-->|UTF-8 JSON| F[(Local .pim file)]

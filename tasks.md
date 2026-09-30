@@ -19,8 +19,8 @@ The execution source is [the end-to-end delivery plan](docs/plans/2026-09-30-pro
 
 | Milestone | Required result | Owner | Target | Status |
 |---|---|---|---|---|
-| WP01 requirements baseline | Reviewed SRS, stable FR/NFR IDs | WP01 primary Agent plus three read-only AI reviewers | 2026-10-05 | G1 document checks passed on 2026-09-30; branch PR review/merge and human group review remain pending. |
-| WP02 design baseline | Architecture, contract, three required diagrams |  | 2026-10-08 | Not started. |
+| WP01 requirements baseline | Reviewed SRS, stable FR/NFR IDs | WP01 primary Agent plus three read-only AI reviewers | 2026-10-05 | G1 passed; PR #3 merged into `main` on 2026-09-30. Human group review remains pending. |
+| WP02 design baseline | Architecture, contract, three required diagrams | WP02 primary Agent plus two read-only AI reviewers | 2026-10-08 | G2 document checks passed on 2026-09-30; branch PR review/merge and human group review remain pending. |
 | WP03 complete implementation | US1–US11, CLI, model tests |  | 2026-10-20 | Not started. |
 | WP04 code freeze | Integration evidence and real model coverage |  | 2026-10-25 | Not started. |
 | WP05 document freeze | Six reviewed final PDFs |  | 2026-11-04 | Not started. |

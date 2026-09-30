@@ -1,79 +1,14 @@
-classDiagram
-    direction TB
-
-    class CommandController {
-        -PIMManager manager
-        -Path working_directory
-        +run(input_stream, output_stream) None
-    }
-    class PIMManager {
-        -dict records
-        -int next_id
-        +create_note(text) Note
-        +create_task(description, deadline) Task
-        +create_event(description, start_time, alarm_time) Event
-        +create_contact(name, address, mobile_number) Contact
-        +get(record_id) Record
-        +list_all(record_type) tuple
-        +update(record_id, field_name, value) Record
-        +delete(record_id) None
-        +search(criterion) tuple
-        +from_rows(rows, file_next_id, previous_next_id) PIMManager
-    }
-    class Criterion {
-        <<interface>>
-        +matches(record) bool
-    }
-    class TypeCriterion
-    class TextCriterion
-    class TimeCriterion
-    class AndCriterion
-    class OrCriterion
-    class NotCriterion
-    class Note {
-        +int id
-        +str text
-    }
-    class Task {
-        +int id
-        +str description
-        +datetime deadline
-    }
-    class Event {
-        +int id
-        +str description
-        +datetime start_time
-        +datetime alarm_time
-    }
-    class Contact {
-        +int id
-        +str name
-        +str address
-        +str mobile_number
-    }
-    class SearchParser {
-        <<module>>
-        +parse_criterion(expression) Criterion
-    }
-    class PimFile {
-        <<module>>
-        +save_pim(manager, path) None
-        +load_pim(path, current_next_id) PIMManager
-    }
-
-    CommandController --> PIMManager : owns active reference
-    CommandController --> SearchParser : defines criterion
-    CommandController --> PimFile : saves or loads
-    PIMManager o-- Note : stores
-    PIMManager o-- Task : stores
-    PIMManager o-- Event : stores
-    PIMManager o-- Contact : stores
-    PIMManager --> Criterion : evaluates
-    SearchParser --> Criterion : constructs
-    PimFile --> PIMManager : restores new instance
-    Criterion <|.. TypeCriterion
-    Criterion <|.. TextCriterion
-    Criterion <|.. TimeCriterion
-    Criterion <|.. AndCriterion
-    Criterion <|.. OrCriterion
-    Criterion <|.. NotCriterion
+%%{init: {"theme": "base", "themeVariables": {"fontSize": "19px"}}}%%
+flowchart TB
+    MAIN["src/main.py<br/>composition root"] --> CLI["CommandController<br/>command parsing and presentation"]
+    MAIN --> MANAGER["PIMManager<br/>collection, ID allocation, CRUD, search"]
+    CLI -->|record operations| MANAGER
+    CLI -->|search expression| PARSER["parse_criterion<br/>model.search"]
+    CLI -->|save / load| FILE["save_pim / load_pim<br/>storage.pim_file"]
+    MANAGER -->|holds immutable PIRs| RECORDS["Note · Task · Event · Contact<br/>model.records"]
+    MANAGER -->|evaluates| CRITERION["Criterion.matches<br/>model.search"]
+    PARSER -->|builds| CRITERION
+    CRITERION -->|concrete nodes| NODES["Type · Text · Time<br/>And · Or · Not"]
+    MANAGER -->|checks IDs and times| VALID["validate_id / parse_local_time<br/>model.validation"]
+    FILE -->|restores new instance| MANAGER
+    FILE <-->|UTF-8 JSON| SNAP[("Local .pim file")]

@@ -1,16 +1,17 @@
-# PIM Design Document — WP02 Draft
+# PIM Design Document
 
 **Course:** COMP3211 Software Engineering, Fall 2026<br>
 **Project:** Command-line Personal Information Management system<br>
-**Group number:** [To be supplied by the group]<br>
-**Members and student IDs:** [To be supplied by the group]<br>
-**Version/date:** WP02 draft 1.0, 2026-09-30
+**Group number:** 89<br>
+**Members and student IDs:** [Human input pending: member names and student IDs]<br>
+**Version/date:** WP05 final source 1.1, 2026-09-30<br>
+**Implementation baseline:** `4d3508db0447a3ac6346a2a2789da89208f88fd5`
 
-This is a proposed design baseline, not a report of implemented classes or tests. It implements the behavior in [SRS.md](../srs/SRS.md) and the product choices in [decisions.md](../../decisions.md). The companion [technical contract](TECHNICAL_CONTRACT.md) fixes additional parser, file, and CLI details for WP03. Class/module names here are design choices; the official Project Description requires the design explanations and diagrams, but does not prescribe these names.
+This document describes the architecture and public interfaces present at the frozen implementation commit. It maps the behavior in [SRS.md](../srs/SRS.md) and the product choices in [decisions.md](../../decisions.md) to code. The companion [technical contract](TECHNICAL_CONTRACT.md) records the interface baseline reconciled with the frozen source, which is the authority for implementation details. Class/module names are group design choices; the official Project Description requires design explanations and diagrams but does not prescribe these names.
 
 ## 1. Introduction
 
-The PIM manages note, task, event, and contact records in one local command-line program. The design isolates user interaction, in-memory behavior, and `.pim` persistence so model unit tests can exercise records, CRUD, and search without terminal or file I/O. This directly supports the official requirement to place all model code in a separate `model` package. Only Python standard-library modules are used. The current `src/` tree is a scaffold; WP03 will implement the interfaces specified here.
+The PIM manages note, task, event, and contact records in one local command-line program. The implementation isolates user interaction, in-memory behavior, and `.pim` persistence so model unit tests exercise records, CRUD, and search without terminal or file I/O. This supports the official requirement to place all model code in a separate `model` package. The frozen `src/` tree contains the working implementation and uses Python standard-library modules only.
 
 ## 2. Architecture and rationale
 
@@ -26,9 +27,9 @@ Arrows in Figure 1 show allowed calls and data movement: the user talks only to 
 
 ![Main component structure and relationships](diagrams/components.svg)
 
-*Figure 2. Main classes, modules, and relationships. Editable source: [components.mmd](diagrams/components.mmd). The method labels are abbreviated here; exact types and exceptions are listed below.*
+*Figure 2. Main classes, modules, and their call and ownership relationships. Editable source: [components.mmd](diagrams/components.mmd). Public fields and complete signatures, returns, and exceptions are detailed below.*
 
-The class diagram uses **aggregation** from `PIMManager` to the four PIR classes because one manager holds many records. Dependency arrows show calls, not inheritance: the controller calls the manager, search parser, and storage; the manager evaluates `Criterion`; storage constructs a replacement manager. A `Criterion` interface is implemented by immutable type, text, time, AND, OR, and NOT nodes. The parser builds those nodes without evaluating input as Python code. No reverse dependency from `model` to `controller` or `storage` is allowed.
+The component diagram shows `PIMManager` holding four PIR classes and calling criteria through their abstract `Criterion.matches` interface. Dependency arrows show calls and returned state, not inheritance: the controller calls the manager, search parser, and storage; storage constructs a replacement manager. The abstract `Criterion` base class has immutable type, text, time, AND, OR, and NOT implementations, listed in the lower node. The parser builds those nodes without evaluating input as Python code. No reverse dependency from `model` to `controller` or `storage` exists in the frozen imports. The class fields, inheritance, signatures, and exceptions appear in the tables that follow so the relationships remain readable on a document page.
 
 ### 3.1 Record types and shared fields
 
@@ -41,7 +42,7 @@ All four records are frozen dataclasses. Each has a positive `id: int` and a rea
 | `Event(id: int, description: str, start_time: datetime, alarm_time: datetime) -> Event` | `description: str`, `start_time: datetime`, `alarm_time: datetime` | `Event`; `ValidationError` |
 | `Contact(id: int, name: str, address: str, mobile_number: str) -> Contact` | `name: str`, `address: str`, `mobile_number: str` | `Contact`; `ValidationError` |
 
-There are no other public or protected methods on these record classes beyond the generated field access and read-only `type` property. Accepted text is trimmed at the model boundary; dates are naive local values at minute precision. `mobile_number` remains text so `+` and leading zeros survive. Neither past times nor the ordering of event start and alarm are restricted. Duplicate field values across records are allowed.
+Each dataclass also supplies generated `__init__`, equality, and representation methods. Its explicit `__post_init__(self) -> None` validates fields and may raise `ValidationError`. The read-only `type` properties have the signatures `Note.type -> Literal["note"]`, `Task.type -> Literal["task"]`, `Event.type -> Literal["event"]`, and `Contact.type -> Literal["contact"]`; they return the canonical type without raising. No protected methods are defined. Accepted text is trimmed at the model boundary; dates are naive local values at minute precision. `mobile_number` remains text so `+` and leading zeros survive. Neither past times nor the ordering of event start and alarm are restricted. Duplicate field values across records are allowed.
 
 ### 3.2 Model manager and exceptions
 
@@ -68,21 +69,34 @@ There are no other public or protected methods on these record classes beyond th
 
 | Public function or method | Return | Possible exception |
 |---|---|---|
+| `validate_id(value: object) -> int` | Valid positive integer ID | `ValidationError` |
+| `validate_text(field: str, value: object) -> str` | Trimmed, single-line text | `ValidationError` |
+| `validate_datetime(field: str, value: object) -> datetime` | Naive minute-precision datetime | `ValidationError` |
 | `parse_local_time(value: str) -> datetime` | Naive local minute | `ValidationError` |
 | `format_local_time(value: datetime) -> str` | Exact `YYYY-MM-DD HH:mm` | `ValidationError` |
 | `parse_criterion(expression: str) -> Criterion` | Immutable criterion tree | `SearchSyntaxError` |
 | `Criterion.matches(record: Record) -> bool` | Match result | None for valid criterion/record |
 
-`Criterion` is an abstract base class, enabling `PIMManager.search` to reject non-criterion arguments with `ValidationError`. The six concrete criterion classes—`TypeCriterion(value: RecordType)`, `TextCriterion(field: TextField, needle: str)`, `TimeCriterion(field: TimeField, operator: Literal["<", ">", "="], value: datetime)`, `AndCriterion(left: Criterion, right: Criterion)`, `OrCriterion(left: Criterion, right: Criterion)`, and `NotCriterion(operand: Criterion)`—each expose `matches(record: Record) -> bool` with no expected exception for a parser-produced node and valid record. Their fields are listed in the constructor signatures. A valid absent field evaluates false, and `NotCriterion` inverts that result. Type and text comparisons ignore case; time comparisons use actual date/minute order.
+`Criterion` is an abstract base class, enabling `PIMManager.search` to reject non-criterion arguments with `ValidationError`. Its abstract `matches(self, record: Record) -> bool` defines the evaluation interface. The six concrete, frozen dataclass nodes are listed below. Their constructor arguments are also their public fields. Each generated constructor returns its named class and may raise `ValidationError` through `__post_init__(self) -> None`. Each class implements `matches(self, record: Record) -> bool`, with no expected exception for a parser-produced node and a valid record. A valid absent field evaluates false, and `NotCriterion` inverts that result. Type and text comparisons ignore case; time comparisons use actual date/minute order.
+
+| Concrete constructor / public fields | Evaluation behavior |
+|---|---|
+| `TypeCriterion(value: RecordType) -> TypeCriterion` | Compare the canonical PIR type. |
+| `TextCriterion(field: TextField, needle: str) -> TextCriterion` | Case-insensitive substring on an applicable text field. |
+| `TimeCriterion(field: TimeField, operator: Literal["<", ">", "="], value: datetime) -> TimeCriterion` | Chronological comparison on an applicable time field. |
+| `AndCriterion(left: Criterion, right: Criterion) -> AndCriterion` | Match when both children match. |
+| `OrCriterion(left: Criterion, right: Criterion) -> OrCriterion` | Match when either child matches. |
+| `NotCriterion(operand: Criterion) -> NotCriterion` | Negate its child's result. |
 
 These node constructors are also usable directly in model tests. Their `__post_init__` methods canonicalize valid type/field names and raise `ValidationError` for an invalid type/field, empty text needle, invalid time operator/value, or non-`Criterion` child. A text needle is not trimmed. Parser-specific quote validation occurs before construction; the parser translates node validation faults to `SearchSyntaxError`. This keeps parser-produced and directly constructed criteria subject to the same semantic rules.
 
-The tokenizer recognizes quoted literals and only `\"` and `\\` escapes, field/type identifiers, comparison and Boolean operators, and parentheses. The parser checks the entire expression and creates the criterion tree before `PIMManager.search` evaluates any PIR. It uses recursive descent with parentheses, `!`, `&&`, then `||` precedence, not `eval()`. `parse_local_time` uses parsing plus round-trip formatting to enforce the exact zero-padded external syntax. The model performs this conversion even if the controller passes a valid-looking string, so model tests do not depend on the CLI.
+The tokenizer recognizes quoted literals and only `\"` and `\\` escapes, field/type identifiers, comparison and Boolean operators, and parentheses. The parser checks the entire expression and creates the criterion tree before `PIMManager.search` evaluates any PIR. The frozen `_Parser.parse` uses explicit operator and criterion-value stacks to apply parentheses, `!`, `&&`, then `||` precedence; repeated binary operators group left to right. `_evaluate` uses an explicit work stack and short-circuit rules for Boolean nodes. Neither routine calls `eval()` or relies on the Python call stack to traverse nested expressions. `parse_local_time` uses parsing plus round-trip formatting to enforce the exact zero-padded external syntax. The model performs this conversion even if the controller passes a valid-looking string, so model tests do not depend on the CLI.
 
 ### 3.4 Storage, controller, and entry point
 
 | Public function or method | Return | Possible exception |
 |---|---|---|
+| `PersistenceError(category: str, detail: str) -> PersistenceError` | Exception carrying `category` and message text | None for string arguments |
 | `save_pim(manager: PIMManager, path: Path) -> None` | None | `PersistenceError` |
 | `load_pim(path: Path, current_next_id: int) -> PIMManager` | New fully validated manager | `PersistenceError` |
 | `CommandController.__init__(self, manager: PIMManager, working_directory: Path) -> None` | Initialized controller holding the active manager and working directory | `ValidationError` for invalid constructor inputs |
@@ -93,13 +107,32 @@ Storage owns UTF-8 JSON decoding/encoding, exact `format`/`version`/key checks, 
 
 The controller owns `_manager: PIMManager` and `_working_directory: Path`. It accepts the SRS command vocabulary, shows `pim> `, resolves relative paths, and turns expected model, storage, and `CommandSyntaxError` failures into `Error: CATEGORY: DETAIL` followed by another prompt. The fixed categories are `COMMAND`, `VALIDATION`, `NOT_FOUND`, `SEARCH`, `PATH`, `FORMAT`, and `IO`, mapped by exception type or storage failure category as specified in the technical contract. It formats complete record details and ID-ordered list/search summaries. It parses an ID token as positive decimal digits, handles `exit` and EOF, and never performs model validation in place of the model. `main()` only composes these objects and passes standard input/output. The explicit stream parameters permit CLI tests without patching global streams.
 
+### 3.5 Internal method relationships
+
+Python's leading underscore marks the following implementation methods as non-public. They are included because they explain how the main classes collaborate; callers should use the public entry points above. The stated exceptions are those produced for valid internal call shapes with potentially invalid user data.
+
+| Method and argument types | Return | Possible exception / role |
+|---|---|---|
+| `PIMManager._create(record_type: str, *values: object) -> Record` | New PIR | `ValidationError` from time or record validation; commits only after a valid record exists. |
+| `CommandController._path(value: str) -> Path` | Absolute or working-directory-relative path | None for a string argument; storage validates the `.pim` suffix. |
+| `CommandController._print_records(records, output_stream: TextIO, empty: str, detailed: bool = False) -> None` | None | Supplied stream I/O errors may propagate; renders summaries or details. |
+| `CommandController._dispatch(line: str, output_stream: TextIO) -> bool` | `True` only for `exit` | `CommandSyntaxError`, model errors, `PersistenceError`, or supplied stream I/O errors; `run` catches the expected command errors. |
+| `_Parser.__init__(tokens: list[tuple[str, str]]) -> None` | Parser state with `tokens` and `position` fields | None for token lists from `_tokenize`. |
+| `_Parser._peek() -> tuple[str, str] \| None` | Current token, if present | None. |
+| `_Parser._take(kind: str \| None = None, value: str \| None = None) -> str` | Consumed token text | `SearchSyntaxError` when the expected token is absent. |
+| `_Parser._accept(value: str) -> bool` | Whether matching token was consumed | None. |
+| `_Parser.parse() -> Criterion` | Validated criterion tree | `SearchSyntaxError`; `parse_criterion` also translates node `ValidationError` to this category. |
+| `_Parser._atom() -> Criterion` | Type, text, or time criterion | `SearchSyntaxError` or a node `ValidationError`, translated by `parse_criterion`. |
+
+The module helpers `_tokenize(expression: str) -> list[tuple[str, str]]` and `_evaluate(root: Criterion, record: Record) -> bool` respectively produce `SearchSyntaxError` for bad lexical input and a Boolean for a valid node and record. Storage's underscored helpers validate paths and JSON object keys; they are called only by `save_pim` or `load_pim`. No external caller depends on those helpers.
+
 ## 4. Search, select, and update example
 
 ![Search and update sequence](diagrams/search-update-sequence.svg)
 
 *Figure 3. Example collaboration. Editable source: [search-update-sequence.mmd](diagrams/search-update-sequence.mmd).*
 
-The user enters `search (type = "task" && deadline < "2026-10-01 09:00")`. The controller extracts the expression; `parse_criterion` defines a validated criterion tree; `PIMManager.search` executes it over all PIRs. The controller shows ascending-ID summaries. The user chooses an ID and requests full details with `show ID`, then changes one field with `update ID description "Revised task"`. The manager validates the new description and replaces only that task record. This diagram includes the course-requested criterion definition, search, selection, and update path. It shows only a successful path; invalid expressions stop before search, and failed updates leave the selected PIR unchanged.
+The user enters `search (type = "task" && deadline < "2026-10-01 09:00")`. `CommandController._dispatch` extracts the expression; `parse_criterion` tokenizes it and builds a validated criterion tree with explicit stacks; `PIMManager.search` evaluates it over the ID-ordered collection through `Criterion.matches`. The controller shows ascending-ID summaries. The user chooses an ID and requests full details with `show ID`, then changes one field with `update ID description "Revised task"`. `PIMManager.update` gets the selected record, validates a dataclass replacement, and commits it only after validation succeeds. The diagram includes the course-requested criterion definition, search, selection, and update path. It shows the successful path; invalid expressions stop before search, and failed updates leave the selected PIR unchanged.
 
 ## 5. Requirement allocation and design checks
 
@@ -114,4 +147,4 @@ The user enters `search (type = "task" && deadline < "2026-10-01 09:00")`. The c
 | FR-49–FR-50 | Controller error display and validation-before-commit in every mutating boundary |
 | NFR-01–NFR-05 | Local CLI, Python version, standard-library imports, separate model and identifiable other packages |
 
-The ranges are inclusive and allocate every FR-01–FR-50 and NFR-01–NFR-05. Before WP03 implementation, model tests should exercise each model rule through public methods; storage tests should cover a four-type round trip and malformed-file preservation; CLI checks should compare actual commands and output with the SRS. No test or coverage result is claimed at this design stage.
+The ranges are inclusive and allocate every FR-01–FR-50 and NFR-01–NFR-05. At the frozen commit, tests in `tests/model/`, `tests/storage/`, `tests/controller/`, and `tests/test_acceptance.py` exercise the implemented paths. The separate WP05 coverage reports trace each requirement and quote the WP04 test results. Python 3.11, included in NFR-02, was unavailable for verification and remains an evidence gap.

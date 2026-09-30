@@ -2,20 +2,22 @@
 
 **Course:** COMP3211 Software Engineering, Fall 2026<br>
 **Project:** Command-line Personal Information Management (PIM) system<br>
-**Group number:** [To be supplied by the group]<br>
-**Members and student IDs:** [To be supplied by the group]<br>
-**Version:** WP01 draft 1.0<br>
+**Group number:** 89<br>
+**Members and student IDs:** [Human input pending: member names and student IDs]<br>
+**Version:** WP05 final source 1.1<br>
 **Date:** 2026-09-30
+**Implementation baseline:** `4d3508db0447a3ac6346a2a2789da89208f88fd5`
 
 ## 1. Preface
 
-This specification is for the project group, course assessors, designers, implementers, and testers. It defines the agreed, externally observable PIM behavior before design and implementation. The official 2026 Course Project Description, especially Appendix B (p. 4), supplies the required stories. Lecture 04, PDF pp. 26–27 and 31–32, supplies the writing guidance and document structure. The concrete interaction and data rules in `decisions.md` are WP00 group choices, subject to later group review; they are not additional course mandates.
+This specification is for the project group, course assessors, designers, implementers, and testers. It states the externally observable PIM behavior used to assess the frozen implementation. The official 2026 Course Project Description, especially Appendix B (p. 4), supplies the required stories. Lecture 04, PDF pp. 26–27 and 31–32, supplies the writing guidance and document structure. The concrete interaction and data rules in `decisions.md` are WP00 group choices, subject to human group review; they are not additional course mandates.
 
 | Version | Date | Reason and change |
 |---|---|---|
 | WP01 draft 1.0 | 2026-09-30 | First SRS baseline derived from the official stories, Lecture 04, and WP00 decisions. |
+| WP05 final source 1.1 | 2026-09-30 | Recorded group 89 and frozen implementation SHA; retained all US, FR, and NFR IDs and their behavior. Python 3.11 verification remains pending. |
 
-Every numbered requirement below is mandatory and uses **shall**. A verification idea describes a future check, not a claim that the system or a test already exists. The companion `requirements-catalog.csv` contains the same IDs, statements, source links, and verification ideas for downstream coverage tracking.
+Every numbered requirement below is mandatory and uses **shall**. A verification idea describes how to check a requirement; it is not itself evidence of a passing test. The companion `requirements-catalog.csv` contains the same IDs, statements, source links, and verification ideas for coverage tracking. WP04 verified Python 3.12.3 and 3.13.5; Python 3.11 remains unverified against NFR-02.
 
 ## 2. Introduction
 
@@ -275,7 +277,7 @@ Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, 
 
 ### 6.4 Non-functional requirements
 
-These are checkable product or implementation constraints, not claims of measured performance. Each has a future verification idea.
+These are checkable product or implementation constraints, not claims of measured performance. Each has a verification idea. NFR-02 is not yet fully verified because Python 3.11 was unavailable for WP04.
 
 **NFR-01** [Official p. 1; group scope] The delivered PIM shall operate through a local command-line interface without requiring a GUI or network connection.<br>
 *Verify:* Run the documented commands with network unavailable and no graphical session.

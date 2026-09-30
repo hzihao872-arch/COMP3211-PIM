@@ -1,21 +1,21 @@
 # WP02 Technical Contract — COMP3211 PIM
 
-**Status:** WP02 design baseline, 2026-09-30. This document specifies proposed code interfaces for WP03; the functions and classes do not yet exist. [SRS.md](../srs/SRS.md) and [decisions.md](../../decisions.md) govern observable behavior. The class and module names below are WP02 design choices, not course requirements.
+**Status:** WP02 interface baseline, reconciled at WP05 against frozen source commit `4d3508db0447a3ac6346a2a2789da89208f88fd5` (2026-09-30). **Group:** 89; member names and student IDs pending group-provided data. [SRS.md](../srs/SRS.md) and [decisions.md](../../decisions.md) govern observable behavior. The class and module names below are group design choices, not course requirements.
 
 ## 1. Module boundaries and dependencies
 
-| Proposed file | Responsibility | May import |
+| Frozen source file | Responsibility | May import |
 |---|---|---|
 | `src/model/records.py` | Four immutable PIR types and `Record` union | `model.errors`, `model.validation`, standard library |
 | `src/model/validation.py` | Text and local-minute validation/conversion | `model.errors`, standard library |
-| `src/model/search.py` | Criterion nodes, tokenizer, recursive-descent parser, evaluation | `model.records`, `model.validation`, `model.errors`, standard library |
+| `src/model/search.py` | Criterion nodes, tokenizer, iterative operator-stack parser and evaluator | `model.records`, `model.validation`, `model.errors`, standard library |
 | `src/model/manager.py` | In-memory collection, IDs, CRUD, search, restoration | Other `model` modules, standard library |
 | `src/model/errors.py` | Model exception types | Standard library |
 | `src/storage/pim_file.py` | UTF-8 JSON file boundary and atomic replacement | `model`, standard library |
 | `src/controller/cli.py` | Command parsing, prompt, display, error translation, active-manager swap | `model`, `storage`, standard library |
 | `src/main.py` | Construct initial manager and controller, then start CLI | `controller`, `model`, standard library |
 
-`model` must never import `controller` or `storage` and must perform no terminal, path, or file I/O. `storage` never prints or reads terminal input. No module invokes third-party libraries or Python `eval`/`exec` for search. The existing files under `src/` are scaffolding, not an implemented API.
+`model` does not import `controller` or `storage` and performs no terminal, path, or file I/O. `storage` does not print or read terminal input. The product invokes only standard-library or local modules and does not use Python `eval`/`exec` for search. The files under `src/` implement the API below at the frozen commit.
 
 ## 2. Types, records, and validation
 
@@ -42,7 +42,7 @@ The four dataclass constructors are public Python constructors but are not comma
 | `parse_local_time(value: str) -> datetime` | Naive minute-precision `datetime` | `ValidationError` | Require a string; parse and round-trip format to enforce exact zero-padded syntax and reject impossible dates/offsets. |
 | `format_local_time(value: datetime) -> str` | Exact `YYYY-MM-DD HH:mm` | `ValidationError` | Reject timezone-aware values and nonzero seconds or microseconds. |
 
-Private text validation requires a `str`, rejects `\r` and `\n`, trims leading/trailing whitespace, and rejects the empty result. Search `contains` literals are different: they must be quoted and nonempty, but are **not** trimmed. Type, command, and field names are canonicalized with `casefold()`. Accepted record field values are validated in the model even when supplied by storage rather than the CLI.
+Shared text validation requires a `str` that can be encoded as UTF-8, rejects Unicode line boundaries (including CR, LF, vertical tab, form feed, NEL, U+2028, and U+2029), trims leading/trailing whitespace, and rejects the empty result. Search `contains` literals are different: they must be quoted and nonempty, but are **not** trimmed. Type, command, and field names are canonicalized with `casefold()`. Accepted record field values are validated in the model even when supplied by storage rather than the CLI.
 
 ## 3. Model errors and manager API
 
@@ -102,7 +102,7 @@ The public parser API is `parse_criterion(expression: str) -> Criterion`; it rai
 
 Direct construction of a concrete node is supported. Each frozen node validates in `__post_init__` and raises `ValidationError` on invalid arguments: type values must be one of the four canonical names (case-folded on input); text/time field names must be in their respective vocabularies (case-folded on input); a text needle must be a nonempty string and is preserved without trimming; a time operator must be `<`, `>`, or `=` and its `datetime` must be naive at minute precision; Boolean child operands must be `Criterion` instances. The parser catches such validation failures and exposes them as `SearchSyntaxError` for an invalid expression. Quoting is checked only by the parser because direct constructors receive decoded values.
 
-The tokenizer recognizes identifiers, quoted literals with only `\"` and `\\` escapes, `(`, `)`, `!`, `&&`, `||`, `<`, `>`, and `=`. It accepts adjacent symbolic tokens (`!name`, `(type`, `)`) and optional whitespace where token boundaries remain clear. It rejects unknown escapes and unterminated quotes. The recursive-descent parser uses this grammar; binary chains are constructed left to right:
+The tokenizer recognizes identifiers, quoted literals with only `\"` and `\\` escapes, `(`, `)`, `!`, `&&`, `||`, `<`, `>`, and `=`. It accepts adjacent symbolic tokens (`!name`, `(type`, `)`) and optional whitespace where token boundaries remain clear. It rejects unknown escapes and unterminated quotes. The frozen parser uses explicit operator and criterion-value stacks to implement this grammar; binary chains are constructed left to right. Boolean evaluation also uses an explicit work stack, so deep valid expressions do not rely on the Python call stack:
 
 ```text
 expression := or_expr
@@ -152,7 +152,7 @@ Commands, type names, and field names are case-insensitive. Command tokens requi
 
 ## 7. FR/NFR allocation and WP03 test seams
 
-| Requirement IDs | Owning component/API and planned verification seam |
+| Requirement IDs | Owning component/API and verified test seam |
 |---|---|
 | FR-01–FR-11 | Record types, validation, `PIMManager.create_*`, `next_id`; model tests cover all four schemas, dates, trimming, ID monotonicity, duplicates. |
 | FR-12–FR-15 | `CommandController.run` and command tokenizer; injected text streams allow command, case, count, and quoting checks. |
@@ -163,4 +163,4 @@ Commands, type names, and field names are case-insensitive. Command tokens requi
 | FR-49–FR-50 | Controller error translation plus validation-before-commit in model and storage; failure-state and next-command checks. |
 | NFR-01–NFR-05 | Local CLI, declared Python versions, import audit, separate `model` package and identifiable `controller`/`storage` packages. |
 
-WP03 will create model tests before each implementation step and later add CLI/storage acceptance tests. This table is a design-to-requirement allocation, not a claim that tests or behavior already exist.
+The frozen commit includes the model, CLI, storage, and acceptance tests summarized above. The WP04 results and remaining Python 3.11 evidence gap are recorded in [code-freeze.md](../reports/code-freeze.md); the WP05 coverage reports provide requirement-level evidence.

@@ -1,0 +1,20 @@
+# SESSION 1 — start: python src/main.py
+add note "memo"
+add task "draft" "2026-10-01 09:00"
+add event "meeting" "2026-10-02 10:00" "2026-10-01 08:00"
+add contact "Li" "Room 1" "+00123"
+show 2
+list
+search (type = "task" && deadline < "2026-10-02 00:00") || text contains "memo"
+update 2 description "revised"
+show 2
+delete 1
+save "snapshot.pim"
+exit
+
+# SESSION 2 — start a NEW process: python src/main.py from the same working directory
+load "snapshot.pim"
+show all
+add note "after load"
+show 5
+exit

@@ -5,6 +5,9 @@ from datetime import datetime
 from model.errors import ValidationError
 
 
+_LINE_BREAKS = frozenset("\r\n\v\f\x1c\x1d\x1e\x85\u2028\u2029")
+
+
 def validate_id(value: object) -> int:
     if type(value) is not int or value <= 0:
         raise ValidationError(f"id must be a positive integer: {value!r}")
@@ -12,8 +15,12 @@ def validate_id(value: object) -> int:
 
 
 def validate_text(field: str, value: object) -> str:
-    if not isinstance(value, str) or "\r" in value or "\n" in value:
+    if not isinstance(value, str) or any(char in _LINE_BREAKS for char in value):
         raise ValidationError(f"{field} must be single-line text")
+    try:
+        value.encode("utf-8")
+    except UnicodeEncodeError as error:
+        raise ValidationError(f"{field} must be valid UTF-8 text") from error
     result = value.strip()
     if not result:
         raise ValidationError(f"{field} must not be empty")

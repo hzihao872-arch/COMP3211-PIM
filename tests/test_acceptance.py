@@ -48,6 +48,23 @@ class AcceptanceTests(unittest.TestCase):
             self.assertIn('Error: IO:', result.stdout)
             self.assertIn('text: keep', result.stdout)
 
+    def test_very_long_id_is_reported_and_session_continues(self):
+        with tempfile.TemporaryDirectory() as directory:
+            commands = 'show ' + '9' * 5000 + '\nadd note kept\nexit\n'
+            result = run_cli(commands, Path(directory))
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('Error: COMMAND:', result.stdout)
+            self.assertIn('Created note 1', result.stdout)
+
+    def test_deep_compound_search_and_following_command(self):
+        with tempfile.TemporaryDirectory() as directory:
+            expression = ' && '.join(['type = "note"'] * 1200)
+            commands = 'add note kept\nsearch ' + expression + '\nshow 1\nexit\n'
+            result = run_cli(commands, Path(directory))
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('1 | note | kept', result.stdout)
+            self.assertIn('text: kept', result.stdout)
+
 
 if __name__ == '__main__':
     unittest.main()

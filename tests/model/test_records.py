@@ -40,6 +40,15 @@ class RecordTests(unittest.TestCase):
             with self.subTest(value=bad), self.assertRaises(ValidationError):
                 parse_local_time(bad)
 
+    def test_unicode_line_separators_are_not_single_line_text(self):
+        for separator in ("\u0085", "\u2028", "\u2029", "\v", "\f"):
+            with self.subTest(separator=repr(separator)), self.assertRaises(ValidationError):
+                Note(1, "before" + separator + "after")
+
+    def test_lone_surrogate_is_not_valid_text(self):
+        with self.assertRaises(ValidationError):
+            Note(1, "before\ud800after")
+
 
 if __name__ == "__main__":
     unittest.main()

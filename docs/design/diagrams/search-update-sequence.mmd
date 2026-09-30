@@ -1,0 +1,26 @@
+sequenceDiagram
+    autonumber
+    actor User
+    participant CLI as CommandController
+    participant Parser as parse_criterion
+    participant Manager as PIMManager
+    participant Criterion
+
+    User->>CLI: search (type = "task" && deadline < "2026-10-01 09:00")
+    CLI->>Parser: parse_criterion(expression)
+    Parser-->>CLI: immutable Criterion
+    CLI->>Manager: search(criterion)
+    loop each PIR in ascending ID order
+        Manager->>Criterion: matches(record)
+        Criterion-->>Manager: true or false
+    end
+    Manager-->>CLI: matching records
+    CLI-->>User: ID, type, complete first text field
+    User->>CLI: show selected ID
+    CLI->>Manager: get(record_id)
+    Manager-->>CLI: selected PIR
+    CLI-->>User: all fields
+    User->>CLI: update ID description "Revised task"
+    CLI->>Manager: update(record_id, "description", "Revised task")
+    Manager-->>CLI: validated replacement PIR
+    CLI-->>User: Updated ID

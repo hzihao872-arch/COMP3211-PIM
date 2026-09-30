@@ -1,13 +1,14 @@
-"""Command-line entry point for the COMP3211 PIM project.
+"""Composition root for the command-line PIM."""
 
-The application behavior will be implemented after the team approves the CLI and
-requirements baseline. Keep model logic out of this module.
-"""
+from pathlib import Path
+import sys
+
+from controller.cli import CommandController
+from model.manager import PIMManager
 
 
 def main() -> None:
-    """Start the command-line application."""
-    print("COMP3211 PIM scaffold: implementation has not started.")
+    CommandController(PIMManager(), Path.cwd()).run(sys.stdin, sys.stdout)
 
 
 if __name__ == "__main__":

@@ -5,7 +5,7 @@ Source: verified 2026 Course Project Description PDF, pages 1–4; see [official
 ## Administration and submission (PDF pp. 1, 3)
 
 - [x] The user confirmed on 2026-09-30 that the Canvas group was formed and currently has 4 members.
-- [ ] Verify the registration completion time against the 2026-09-28 09:00 deadline if claiming timely registration. Any late group change follows the written-consent rule by 2026-10-12 09:00.
+The PDF's registration deadline and late-change rule remain recorded in the official matrix.
 - [ ] Submit all deliverables in one ZIP by 2026-11-20 20:00.
 - [ ] Use DOC, DOCX, or PDF for documents unless the PDF specifies a different format.
 - [ ] Place the completed Honour Declaration in the ZIP root, acknowledge real GenAI-assisted content, and state member-agreed actual contribution percentages. Obtain the real form, identity data, and signatures from humans.

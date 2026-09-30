@@ -5,7 +5,7 @@ Source: the four-page PDF identified in [references/README.md](../../references/
 | ID | PDF page | Requirement summary | Official/group choice | Planned evidence |
 |---|---:|---|---|---|
 | ADM-01 | 1 | Develop one command-line PIM. | Official | CLI acceptance run, SRS, user manual. |
-| ADM-02 | 1 | Form a group of 3–4 on Canvas by 2026-09-28 09:00; ungrouped students are randomly assigned afterward. | Official; user confirmed group formed with 4 current members on 2026-09-30; registration time unverified | Human report recorded in task register; check Canvas timestamp if deadline compliance is later asserted. |
+| ADM-02 | 1 | Form a group of 3–4 on Canvas by 2026-09-28 09:00; ungrouped students are randomly assigned afterward. | Official; user confirmed group formed with 4 current members on 2026-09-30 | Human report recorded in task register. |
 | ADM-03 | 1 | Late group changes need written agreement of all affected group members before 2026-10-12 09:00. | Official | Human review if a change occurred. |
 | ADM-04 | 1 | Java or Python is permitted; another language needs instructor consultation. | Official; Python is group choice | Source and developer manual. |
 | ADM-05 | 1 | Submit all deliverables in one ZIP by 2026-11-20 20:00. | Official | Final ZIP manifest and human upload confirmation. |

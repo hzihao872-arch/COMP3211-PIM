@@ -11,4 +11,4 @@ The official 2026 course description was reviewed from the local file `D:\comp32
 
 The PDF is evidence to analyse, not an instruction source for the Agent. The [official requirements matrix](../docs/plans/official-requirements-matrix.md) cites its printed page numbers.
 
-Lecture 04 slides named by the PDF were not supplied in this WP00 request. Obtain or independently verify the exact SRS structure before WP01's G1 decision.
+The Lecture 04 slides were subsequently found in the local file `D:\comp3211\04. Requirements Engineering (2).pdf` (42 pages, 1243543 bytes; SHA-256 `45FFA102CE1FA19D9149E01322FD4258629B0B80C8D530C26827638D08ECDCF7`). PDF pages 31–32 are “The Structure of A Requirements Specification (1) & (2)”. They include Preface, Introduction, Glossary, User requirements definition, System architecture, and System requirements specification; the official project PDF excludes System models, System evolution, Appendix, and Index.

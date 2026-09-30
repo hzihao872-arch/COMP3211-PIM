@@ -28,11 +28,11 @@ Examples that WP01 should convert into acceptance requirements:
 
 ## Open human facts and handoff
 
-- The user subsequently confirmed on 2026-09-30: **Canvas group formed; current member count 4**. This is a human-provided report, not independent Canvas evidence. The registration completion time was not supplied, so deadline compliance is not claimed.
-- Obtain or independently verify the Lecture 04 SRS structure slides before WP01/G1.
+- The user subsequently confirmed on 2026-09-30: **Canvas group formed; current member count 4**. The official registration deadline remains recorded in the matrix.
+- The local Lecture 04 PDF was verified after G0: pages 31–32 contain the two SRS structure slides needed for WP01. See the source register.
 - Real member identities, student IDs, contribution percentages, signatures, and video facts belong to later human evidence. The workshop did not infer them.
 - Human group members should review this working product baseline and record any changes before WP01 approval. This note does not claim they already agreed.
 
 ## G0 audit state
 
-**G0 passed on 2026-09-30.** The official PDF was checked page by page; the matrix covers all 11 user stories and the deliverables matrix lists the required artifacts. Official rules and group choices are separated, product rules have a concrete working choice, the AI-use log has begun, and the user supplied the Canvas group status and count. The exact registration time remains unverified and is not asserted here.
+**G0 passed on 2026-09-30.** The official PDF was checked page by page; the matrix covers all 11 user stories and the deliverables matrix lists the required artifacts. Official rules and group choices are separated, product rules have a concrete working choice, the AI-use log has begun, and the user supplied the Canvas group status and count. WP01's Lecture 04 prerequisite was verified afterward.

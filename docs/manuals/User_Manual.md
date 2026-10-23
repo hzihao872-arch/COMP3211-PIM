@@ -1,5 +1,8 @@
 # User Manual: Personal Information Management System
 
+**Current source update (2026-10-23):** ID/exhaustion limits, bounded diagnostics, file/record error context, shared schema/help metadata, BOM input, fsync and dirty Ctrl+C warnings are implemented. See [source hardening verification](../reports/source-hardening-2026-10-23.md). Existing PDF exports and ZIPs describe the earlier usability candidate, not this working tree.
+
+
 **Course:** COMP3211 Software Engineering, Fall 2026<br>
 **Group:** 89<br>
 **Member names and student IDs:** Pending group-provided data<br>
@@ -10,7 +13,7 @@
 
 The Personal Information Management (PIM) program keeps four kinds of personal information record (PIR): notes, tasks, events, and contacts. You can create, list, inspect, change, search, and delete them at a command prompt. You can save the whole collection to a `.pim` file and load it in a later run. The program is local and uses text commands; an event's alarm time is stored information, not an active notification.
 
-Each new PIR receives a positive integer ID. IDs start at 1 in a new empty process, increase after successful creation, and are not reused after deletion. A record's ID and type cannot be changed. Duplicate field values are allowed. A failed creation does not consume an ID.
+Each new PIR receives an integer ID in 1..9999999999999999999. After the final ID is assigned, the next counter is 10000000000000000000, a saveable/loadable exhaustion marker; further creation reports a validation error without changing records. IDs start at 1 in a new empty process, increase after successful creation, and are not reused after deletion. A record's ID and type cannot be changed. Duplicate field values are allowed. A failed creation does not consume an ID.
 
 ## 2. Start, prompt, and exit
 
@@ -22,9 +25,11 @@ python src/main.py
 
 The program writes `pim> ` and waits for one command per line. Type `help` for the command summary, or `help search` (and any other command name) for usage, details and an example. Type `exit` to finish. End-of-file also exits normally. If the collection has unsaved changes, exit or EOF prints one warning and still terminates; it does not wait for another command. Exiting does **not** save automatically: run `save` first if you want to keep the current collection for a later process. Every new process starts empty until you load a saved file.
 
-Ctrl+C terminates without a traceback (process exit code 130). If a program receiving piped output closes its input, the PIM exits quietly. Neither case saves the collection automatically.
+Ctrl+C attempts one unsaved-changes warning when dirty, then terminates without a traceback (process exit code 130), including when the warning meets a closed output pipe. If a program receiving piped output closes its input, the PIM exits quietly. Neither case saves the collection automatically.
 
-The Windows 11 development and verification versions are Python 3.11.9, 3.12.3 and 3.13.5. The Developer Manual provides setup and test commands; `Test_Coverage.pdf` identifies the exact verification results for this delivery.
+If reading commands fails because of an input-device or text-decoding error, the process stops with exit code 1. It attempts one unsaved warning when dirty and a bounded `Error: IO: cannot read input: ...` on stderr. It does not retry the broken stream or save automatically. If an output stream is unavailable, the message may not be visible, but the failure status remains 1. Check the input source and configured encoding before restarting.
+
+The current source has been verified on Windows 11 with Python 3.11.9, 3.12.14 and 3.13.0. The Developer Manual provides setup and test commands; the current Markdown Test Coverage and input-I/O correction reports identify the latest results. Existing PDF exports describe the earlier candidate as noted above.
 
 ## 3. Input rules and record fields
 
@@ -101,29 +106,30 @@ The first line is demonstrated in §8. The other forms use the same search gramm
 
 ## 6. Saving, loading, and paths
 
-Use a filename ending in the exact lowercase suffix `.pim`; `.PIM` and other suffixes are rejected. Quote a path containing spaces. A relative path is interpreted against the working directory from which this program was started; the success message shows the path used. An absolute path is used as entered. The parent directory must already exist.
+Use a filename ending in the exact lowercase suffix `.pim`; `.PIM` and other suffixes are rejected. Quote a path containing spaces. A relative path is interpreted against the working directory from which this program was started; the success message shows the path used. An absolute path is used as entered. The parent directory must already exist. A literal `~` is not expanded.
 
 On Windows, forward slashes avoid escape ambiguity: for example, `save "my records/snapshot.pim"` after creating the `my records` folder. If using backslashes inside quotes, double each one: `save "my records\\snapshot.pim"`. Both forms select the same file. Apply the same path rules to `load`.
 
-`save` writes all current PIRs, including an empty collection, and the next-ID counter as a UTF-8 version-one `.pim` snapshot. Saving to an existing destination replaces that file after a complete temporary write. A failed save does not change the in-memory records; if the destination already exists, the failed write leaves its prior bytes unchanged under ordinary handled I/O failure. Save does not happen automatically when exiting.
+`save` writes all current PIRs, including an empty collection, and the next-ID counter as a UTF-8 version-one `.pim` snapshot. Saving to an existing destination replaces that file after a complete temporary write, flush, fsync and close. These steps improve durability but do not promise complete power-loss recovery on every platform. A failed save does not change the in-memory records; if the destination already exists, the failed write leaves its prior bytes unchanged under ordinary handled I/O failure. Save does not happen automatically when exiting.
 
 `load` reads and validates the **whole** `.pim` file before replacing the current collection. It replaces rather than merges records. If it fails, the active collection and next-ID counter remain intact. After a successful load, a new PIR uses the higher of the session's former next ID and the file's saved next ID. This prevents reuse of an ID already issued in the current session, even when loading an older snapshot. A fresh process only knows the counter present in the loaded file.
 
-The `.pim` file is a program snapshot, not a free-form text import. The loader rejects unreadable files, invalid UTF-8 or JSON (including excessively nested malformed data), unsupported format/version, duplicate or unexpected keys, invalid fields or values, duplicate or unordered IDs, and an invalid next-ID counter. A rejected file produces a handled error so you can enter another command. Editing the file manually can make it unloadable.
+The `.pim` file is a program snapshot, not a free-form text import. The loader accepts UTF-8 with or without a BOM; saving writes no BOM. ID/counter values outside the documented ranges are rejected, including oversized values in older snapshots. The loader rejects unreadable files, invalid UTF-8 or JSON (including excessively nested malformed data), unsupported format/version, duplicate or unexpected keys, invalid fields or values, duplicate or unordered IDs, and an invalid next-ID counter. A rejected file produces a handled error so you can enter another command. Editing the file manually can make it unloadable.
 
 ## 7. Invalid input and recovery
 
-Handled errors use `Error: CATEGORY: DETAIL` and then show another `pim> ` prompt. The detail identifies the rejected input or failure and may include an operating-system file error. Correct the command and retry; a handled failure does not partially change the in-memory PIR collection.
+Recoverable command/file errors use `Error: CATEGORY: DETAIL` and then show another `pim> ` prompt. Input-stream read failures are fatal: they use stderr and exit 1 as described in §2. The detail identifies the rejected input or failure and may include an operating-system file error. Invalid input fragments are abbreviated to at most 80 visible ASCII characters; error detail is limited to 1024. Diagnostic Unicode/control characters use visible escapes even on UTF-8 terminals. File-validation errors include the filename/path and, for a bad record, its one-based `record #N`; very long paths may be abbreviated. Search character positions are preserved. Correct the command and retry; a handled failure does not partially change the in-memory PIR collection.
 
 | Category | Typical cause | What to check |
 |---|---|---|
+| `APPLICATION` | A future expected application failure without a more specific category | Read the error detail. |
 | `COMMAND` | Unknown command, wrong argument count, malformed quote/escape, or a nonpositive/nondigit/overlong ID token | Command form, spaces, quotes, and positive decimal ID. |
 | `VALIDATION` | Unknown PIR type, empty or multiline field, invalid field for `update`, or impossible/wrongly formatted time | Field order and spelling, required text, and `YYYY-MM-DD HH:mm`. |
 | `NOT_FOUND` | A valid positive ID is absent | Use `list` to see current IDs. |
 | `SEARCH` | Missing or malformed criterion, invalid search field/type/operator/literal | Quote each literal and check the grammar in §5. |
 | `PATH` | Path lacks exact lowercase `.pim` suffix | Use a `.pim` filename. |
 | `FORMAT` | Existing `.pim` content is invalid or unsupported | Load a snapshot written by this program. |
-| `IO` | File is missing, directory is unavailable, or the operating system refuses a read/write | Check the resolved path and filesystem access. |
+| `IO` | File I/O failure, or fatal command-input read/decoding failure | Check paths/access for file errors; for `cannot read input`, check the input source/encoding and restart. |
 
 The CLI tests check that an invalid update leaves the old value visible, a failed load leaves the active collection visible, and the next command still runs. The independent review reproduced `Error: VALIDATION: text must not be empty` for `add note ""`, `Error: COMMAND: invalid positive decimal ID: '0'` for `show 0`, and `Error: NOT_FOUND: record ID 99 was not found` for `show 99`. Exact operating-system wording after an `IO` error depends on the path and machine.
 

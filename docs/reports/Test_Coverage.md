@@ -1,33 +1,27 @@
 # Test Coverage Report - COMP3211 PIM
 
-**Group:** 89; genuine member details pending. **Revision:** Usability release, 2026-10-23.
-**Environment:** Windows 11; Python 3.11.9, 3.12.3 and 3.13.5. Current payload hashes are in the candidate manifest. Earlier reports and archives are historical.
+**Revision:** Input-read correction, 2026-10-23. **Platform:** Windows 11.
 
-## 1. Test execution and scope
+## 1. Execution results
 
-All **86 test methods** passed with zero failures/errors on each interpreter. Subtests are not separate methods. The suite covers model rules, controller behavior, storage validation/atomicity, actual CLI processes and evidence-tool failure detection. All 86 also pass with site packages disabled using `-S`. This demonstrates the tested environments, not every future Python version or every possible input. `compileall`, the two-process demo checker and the 1,000-record/five-run search/save/load benchmark also pass on all three versions.
+All **112 test methods** passed with zero failures/errors on Python **3.11.9**, **3.12.14** and **3.13.0**. The earlier 19 hardening methods cover ID/counter bounds and exhaustion, bounded errors, file/row context, complete megabyte field output, BOM input, flush/fsync sequencing and failure preservation, common expected-error handling, and dirty Ctrl+C with closed stdout. Seven further methods verify fatal input errors, preserved state/no retry, best-effort dirty warnings, invalid stdin bytes, bounded stderr and unavailable output pipes. Subtests are not counted separately.
 
-Run from the repository root or the ZIP's `03_Implementation` folder:
+Python 3.11.9 was freshly verified using the official Windows embeddable package in `tmp/python311`, without a system installation. Its `_pth` override was disabled for ordinary script/PYTHONPATH and stream-encoding behavior; the runtime has no installed third-party packages. Earlier usability and hardening logs remain historical snapshots.
 
-```powershell
-$env:PYTHONPATH = "$PWD\src"
-python -m unittest discover -s tests -t . -v
-python tools/model_coverage.py
-python tools/verify_demo.py
-python tools/benchmark.py
-python -S -m unittest discover -s tests -t .
-python -m compileall -q src tests tools
-```
+Current evidence is `input-io-coverage-2026-10-23-python311.txt`, `python312.txt` and `python313.txt` (same prefix), plus matching `input-io-demo` logs. The narrower fresh 3.11 run is `input-io-model-only-2026-10-23-python311.txt`. The current source audit is `input-io-import-audit-2026-10-23.txt`. The audit and model-unit code are unchanged from the previous 3.12/3.13 measurements.
 
-The evidence directory contains `usability-verification`, `usability-coverage`, `usability-model-only`, `usability-stdlib`, `usability-demo`, `usability-benchmark` and `usability-compile` logs, each suffixed `-2026-10-23-python311.txt`, `python312.txt` or `python313.txt`. Each log records the executable, arguments and exit code. Evidence is in repository `docs/reports/` and packaged `evidence/`.
+Prior hardening evidence logs: `hardening-coverage-2026-10-23-python312.txt`, `python313.txt` (same prefix); `hardening-model-only`, `hardening-demo` and `hardening-benchmark` use the same date/version suffixes. Each current execution log records Python version, executable, arguments and exit code. The import/syntax audit is `hardening-import-audit-2026-10-23.txt`.
 
 | Test file | Methods |
 |---|---:|
 | `tests/controller/test_cli.py` | 7 |
+| `tests/controller/test_hardening.py` | 7 |
 | `tests/controller/test_independent_review.py` | 1 |
+| `tests/controller/test_input_failures.py` | 4 |
 | `tests/controller/test_requirement_edges.py` | 5 |
 | `tests/controller/test_terminal.py` | 4 |
 | `tests/controller/test_usability.py` | 13 |
+| `tests/model/test_hardening.py` | 5 |
 | `tests/model/test_independent_review.py` | 1 |
 | `tests/model/test_manager.py` | 5 |
 | `tests/model/test_records.py` | 5 |
@@ -35,49 +29,55 @@ The evidence directory contains `usability-verification`, `usability-coverage`, 
 | `tests/model/test_search.py` | 7 |
 | `tests/model/test_search_integration.py` | 1 |
 | `tests/model/test_search_positions.py` | 7 |
+| `tests/storage/test_hardening.py` | 6 |
 | `tests/storage/test_independent_review.py` | 2 |
 | `tests/storage/test_pim_file.py` | 4 |
 | `tests/storage/test_requirement_edges.py` | 1 |
 | `tests/test_acceptance.py` | 6 |
-| `tests/test_process_boundaries.py` | 5 |
+| `tests/test_input_failures.py` | 3 |
+| `tests/test_process_boundaries.py` | 6 |
 | `tests/tools/test_evidence.py` | 4 |
 | `tests/tools/test_model_coverage.py` | 2 |
-| **Total** | **86** |
+| **Total** | **112** |
 
 ## 2. Model source-line coverage
 
-The full suite covers **431/436 model source lines (98.85%)**, identically on all three interpreters. Measured source is only `src/model/*.py`; controller, storage, tests and tools are excluded from the denominator. CLI subprocess execution is outside the parent tracer.
-
-| Model module | Full-suite covered / executable | Model units alone |
+| Model module | Full suite | Model units alone |
 |---|---:|---:|
-| `__init__.py` | 0/0 (n/a) | 0/0 (n/a) |
-| `errors.py` | 7/7 | 7/7 |
-| `manager.py` | 95/95 | 94/95 |
+| `__init__.py` | 0/0 | 0/0 |
+| `diagnostics.py` | 32/32 | 32/32 |
+| `errors.py` | 15/15 | 15/15 |
+| `manager.py` | 97/97 | 96/97 |
 | `records.py` | 57/57 | 57/57 |
-| `search.py` | 238/243 | 238/243 |
-| `validation.py` | 34/34 | 34/34 |
-| **Total** | **431/436 (98.85%)** | **430/436 (98.62%)** |
+| `schema.py` | 11/11 | 11/11 |
+| `search.py` | 236/236 | 236/236 |
+| `validation.py` | 40/40 | 40/40 |
+| **Total** | **488/488 (100.00%)** | **487/488 (99.80%)** |
 
-The standard-library `trace` collector records executed lines. Its private `_find_executable_linenos` helper supplies executable source candidates; noninteger/nonpositive bookkeeping entries such as `0` and `None` are excluded. Missing real lines remain in the denominator. This is source-line coverage, not branch coverage. The private helper is interpreter dependent, so versions are named explicitly. Measurement-tool fixture tests check both a docstring-only module and an unexecuted function body.
+All three measured interpreters produce the full-suite result. The model-only result was freshly reproduced on 3.11.9; the unchanged model code and tests retain the earlier 3.12.14/3.13.0 measurements. Coverage denominators include only `src/model/*.py`; controller, storage, tools and tests are not in the denominator. The full suite includes 112 methods; the narrower run selects 37 model unit methods. CLI subprocess execution is outside the parent trace. The model-unit-only run misses `manager.py:18`, the invalid record-type branch exercised by the full suite.
 
-The five full-suite missing lines are `model/search.py` 209–213, the unused `_Parser._accept` helper. They were not artificially executed or deleted to raise the result. Model-unit-only measurement also misses `model/manager.py` 22, an invalid record-type branch covered by boundary tests in the full suite. The source changed to support positions, so older 416/421 figures are not the denominator for this revision.
+The existing standard-library trace algorithm is unchanged: executable source candidates come from `trace._find_executable_linenos`, excluding noninteger/nonpositive bookkeeping entries. This measures lines, not branches, and relies on a private interpreter API. The fixture regressions still verify that docstring-only modules have no executable lines and that genuinely unexecuted lines remain in the denominator. Percentages are not directly comparable with AST statement-start measurements in other projects.
 
-## 3. Model unit tests alone
+The former unused `_Parser._accept` body was removed as dead code, not exercised merely to improve the number. The baseline was 431/436 full-suite lines and 430/436 model-unit-only lines. New schema/diagnostic code and changed validation produce a new denominator.
 
-The narrower run selects **32 model unit methods** and covers **430/436 lines (98.62%)** on each listed interpreter, using the same algorithm. Reproduce it with:
+## 3. Reproduction
+
+Run in the repository root with a writable system temporary directory:
 
 ```powershell
-$check = "from tools import model_coverage as c; c.TESTS /= 'model'; "
-$check += "raise SystemExit(c.main())"
-python -c $check
+$env:PYTHONPATH = "$PWD\src"
+python -m unittest discover -s tests -t . -v
+python -m unittest discover -s tests/model -t . -v
+python tools/model_coverage.py
+python -c "from tools import model_coverage as c; c.TESTS /= 'model'; raise SystemExit(c.main())"
+python tools/verify_demo.py
+python tools/benchmark.py --records 1000 --runs 5
 ```
 
-The tool prints its default command header; the saved model-only log records the actual narrower invocation. Do not describe the full-suite percentage as coverage produced only by model unit tests.
+This sandbox used `tmp/hardening-tests` as TEMP/TMP because its default temporary-directory permissions are restricted. Evidence logs preserve the real execution commands. Benchmark results include flush, fsync and atomic replacement; they are local observations, not response-time or power-loss guarantees.
 
-## 4. Assertions and limitations
+## 4. Limits and release status
 
-The 22 added methods cover dirty-state transitions, protected/forced load and failure preservation, all ten help topics, wrong topic/count recovery, quoted-command offsets, lexical/syntactic/semantic search offsets, Unicode and EOF positions, plus two real-process acceptance scenarios. Existing malformed-file tests explicitly use `force=true` when necessary to reach their original storage checks. Their record/counter preservation assertions remain. The initial 19-method red run failed before implementation; the final suite is green.
+100% line coverage does not establish complete branch/input coverage. No new independent human/subagent review is claimed. The exact network-disabled/no-graphical-session scenario for NFR-01 remains unrecorded. Product import audit found only local and standard-library imports and no model dependencies on controller/storage.
 
-Earlier coverage remains for four record schemas, all editable fields, all search field/operator categories, Boolean truth tables, precedence, missing-field semantics, deep iterative parsing/evaluation, stable IDs, complete snapshot validation and save atomicity. Terminal tests check display controls and limited encodings; process tests distinguish closed output pipes from input/device failures. Evidence tools compare complete transcripts, search IDs and full persisted data/counters, not merely process success.
-
-An independent read-only code reviewer reported no actionable findings, after rerunning 86 tests and additional random/deep-expression probes. These are review observations, not added unit methods. The AST import audit found 49 standard-library/local import references and no external dependency. NFR-01's exact network-disabled/no-graphical-session environment was not independently recorded. Real recordings, genuine member details, contribution agreement and the official declaration remain pending.
+Current Markdown source documentation is updated. Existing PDF exports, presentation and candidate ZIPs are the historical usability release; their file hashes do not describe this modified working tree. See [latest input-read verification](input-io-fix-2026-10-23.md) and [prior source hardening details](source-hardening-2026-10-23.md). Human group review and final recordings/declaration remain separate closeout items.

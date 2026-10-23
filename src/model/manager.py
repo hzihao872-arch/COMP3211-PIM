@@ -4,22 +4,18 @@ from collections.abc import Mapping, Sequence
 from dataclasses import replace
 
 from model.errors import RecordNotFoundError, ValidationError
+from model.diagnostics import preview
 from model.records import Contact, Event, Note, Record, Task
+from model.schema import FIELDS as _FIELDS, TIME_FIELDS as _TIME_FIELDS, MAX_RECORD_ID
 from model.search import Criterion
-from model.validation import parse_local_time, validate_id
+from model.validation import parse_local_time, validate_id, validate_next_id
 
-_FIELDS = {
-    "note": ("text",),
-    "task": ("description", "deadline"),
-    "event": ("description", "start_time", "alarm_time"),
-    "contact": ("name", "address", "mobile_number"),
-}
-_TIME_FIELDS = frozenset(("deadline", "start_time", "alarm_time"))
+_CLASSES = {"note": Note, "task": Task, "event": Event, "contact": Contact}
 
 
 def _type_name(value: object) -> str:
     if not isinstance(value, str) or value.casefold() not in _FIELDS:
-        raise ValidationError(f"unknown record type: {value!r}")
+        raise ValidationError(f"unknown record type: {preview(value)}")
     return value.casefold()
 
 
@@ -33,10 +29,11 @@ class PIMManager:
         return self._next_id
 
     def _create(self, record_type: str, *values: object) -> Record:
-        classes = {"note": Note, "task": Task, "event": Event, "contact": Contact}
+        if self._next_id > MAX_RECORD_ID:
+            raise ValidationError("record IDs are exhausted; no record was created")
         fields = _FIELDS[record_type]
         kwargs = {name: parse_local_time(value) if name in _TIME_FIELDS else value for name, value in zip(fields, values)}
-        record = classes[record_type](self._next_id, **kwargs)
+        record = _CLASSES[record_type](self._next_id, **kwargs)
         self._records[record.id] = record
         self._next_id += 1
         return record
@@ -67,10 +64,10 @@ class PIMManager:
     def update(self, record_id: int, field_name: str, value: str) -> Record:
         record = self.get(record_id)
         if not isinstance(field_name, str):
-            raise ValidationError(f"invalid field: {field_name!r}")
+            raise ValidationError(f"invalid field: {preview(field_name)}")
         field = field_name.casefold()
         if field not in _FIELDS[record.type]:
-            raise ValidationError(f"field {field_name!r} cannot be updated for {record.type}")
+            raise ValidationError(f"field {preview(field_name)} cannot be updated for {record.type}")
         replacement = replace(record, **{field: parse_local_time(value) if field in _TIME_FIELDS else value})
         self._records[record_id] = replacement
         return replacement
@@ -88,26 +85,31 @@ class PIMManager:
     def from_rows(cls, rows: Sequence[Mapping[str, object]], file_next_id: int, previous_next_id: int) -> "PIMManager":
         for label, value in (("file_next_id", file_next_id), ("previous_next_id", previous_next_id)):
             try:
-                validate_id(value)
+                validate_next_id(value)
             except ValidationError as error:
-                raise ValidationError(f"invalid {label}: {value!r}") from error
+                raise ValidationError(f"invalid {label}: {error}") from error
         if isinstance(rows, (str, bytes)) or not isinstance(rows, Sequence):
             raise ValidationError("records must be an array")
         result = cls()
         last_id = 0
-        classes = {"note": Note, "task": Task, "event": Event, "contact": Contact}
-        for row in rows:
-            if not isinstance(row, Mapping):
-                raise ValidationError("record must be an object")
-            record_type = _type_name(row.get("type"))
-            expected = {"id", "type", *_FIELDS[record_type]}
-            if set(row) != expected or row["type"] != record_type:
-                raise ValidationError(f"invalid {record_type} record keys or type")
-            record_id = validate_id(row["id"])
-            if record_id <= last_id:
-                raise ValidationError("record IDs must be unique and ascending")
-            values = {name: parse_local_time(row[name]) if name in _TIME_FIELDS else row[name] for name in _FIELDS[record_type]}
-            record = classes[record_type](record_id, **values)
+        for index, row in enumerate(rows, 1):
+            try:
+                if not isinstance(row, Mapping):
+                    raise ValidationError("record must be an object")
+                record_type = _type_name(row.get("type"))
+                expected = {"id", "type", *_FIELDS[record_type]}
+                if set(row) != expected or row["type"] != record_type:
+                    raise ValidationError(f"invalid {record_type} record keys or type")
+                record_id = validate_id(row["id"])
+                if record_id <= last_id:
+                    raise ValidationError("record IDs must be unique and ascending")
+                values = {
+                    name: parse_local_time(row[name]) if name in _TIME_FIELDS else row[name]
+                    for name in _FIELDS[record_type]
+                }
+                record = _CLASSES[record_type](record_id, **values)
+            except ValidationError as error:
+                raise ValidationError(f"record #{index}: {error}") from error
             result._records[record_id] = record
             last_id = record_id
         if file_next_id <= last_id:

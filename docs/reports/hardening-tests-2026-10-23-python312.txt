@@ -1,0 +1,134 @@
+test_add_list_show_update_delete_and_help (tests.controller.test_cli.CLITests.test_add_list_show_update_delete_and_help) ... ok
+test_constructor_rejects_invalid_dependencies (tests.controller.test_cli.CLITests.test_constructor_rejects_invalid_dependencies) ... ok
+test_errors_do_not_mutate_and_next_command_runs (tests.controller.test_cli.CLITests.test_errors_do_not_mutate_and_next_command_runs) ... ok
+test_quote_escapes_argument_counts_ids_and_eof (tests.controller.test_cli.CLITests.test_quote_escapes_argument_counts_ids_and_eof) ... ok
+test_save_load_swap_and_failure_preserves_active_manager (tests.controller.test_cli.CLITests.test_save_load_swap_and_failure_preserves_active_manager) ... ok
+test_search_compound_and_no_matches (tests.controller.test_cli.CLITests.test_search_compound_and_no_matches) ... ok
+test_tab_separated_search_and_invalid_path_recover (tests.controller.test_cli.CLITests.test_tab_separated_search_and_invalid_path_recover) ... ok
+test_cli_ids_accept_last_id_reject_counter_marker_and_allow_leading_zeroes (tests.controller.test_hardening.ControllerHardeningTests.test_cli_ids_accept_last_id_reject_counter_marker_and_allow_leading_zeroes) ... ok
+test_expected_error_subclasses_share_category_handling (tests.controller.test_hardening.ControllerHardeningTests.test_expected_error_subclasses_share_category_handling) ... ok
+test_full_megabyte_fields_remain_available_in_list_search_and_show (tests.controller.test_hardening.ControllerHardeningTests.test_full_megabyte_fields_remain_available_in_list_search_and_show)
+FR-18/19/39: only diagnostics are abbreviated, never stored fields. ... ok
+test_interrupt_warning_handles_a_closed_output_pipe (tests.controller.test_hardening.ControllerHardeningTests.test_interrupt_warning_handles_a_closed_output_pipe) ... ok
+test_interrupt_warns_once_when_dirty_and_retains_exit_130 (tests.controller.test_hardening.ControllerHardeningTests.test_interrupt_warns_once_when_dirty_and_retains_exit_130) ... ok
+test_megabyte_invalid_inputs_are_bounded_and_session_recovers (tests.controller.test_hardening.ControllerHardeningTests.test_megabyte_invalid_inputs_are_bounded_and_session_recovers)
+FR-49/50: errors do not echo entire tokens or mutate valid data. ... ok
+test_megabyte_os_error_is_safe_on_ascii_stdout (tests.controller.test_hardening.ControllerHardeningTests.test_megabyte_os_error_is_safe_on_ascii_stdout) ... ok
+test_prompt_is_visible_before_waiting_for_each_command (tests.controller.test_independent_review.PromptVisibilityTests.test_prompt_is_visible_before_waiting_for_each_command)
+A line-buffered terminal must receive its prompt before input blocks. ... ok
+test_all_command_forms_accept_mixed_case (tests.controller.test_requirement_edges.CLIRequirementTests.test_all_command_forms_accept_mixed_case)
+FR-13: every command and all types accept case variations; values retain case. ... ok
+test_bad_quoting_and_escapes_recover_without_mutation (tests.controller.test_requirement_edges.CLIRequirementTests.test_bad_quoting_and_escapes_recover_without_mutation)
+FR-15: unmatched quotes and unsupported escapes reject the entire command. ... ok
+test_each_failed_operation_preserves_state_and_returns_to_prompt (tests.controller.test_requirement_edges.CLIRequirementTests.test_each_failed_operation_preserves_state_and_returns_to_prompt)
+FR-50/49: create/update/delete/search/save/load failures are atomic and recover. ... ok
+test_empty_list_filter_and_show_all_have_clear_output (tests.controller.test_requirement_edges.CLIRequirementTests.test_empty_list_filter_and_show_all_have_clear_output)
+FR-21: empty display paths produce an explicit message, without errors. ... ok
+test_show_each_type_prints_all_details (tests.controller.test_requirement_edges.CLIRequirementTests.test_show_each_type_prints_all_details)
+FR-19: show ID exposes every stored field for each of the four types. ... ok
+test_ascii_output_escapes_unicode_without_losing_the_record (tests.controller.test_terminal.TerminalOutputTests.test_ascii_output_escapes_unicode_without_losing_the_record) ... ok
+test_io_error_messages_cannot_emit_terminal_controls (tests.controller.test_terminal.TerminalOutputTests.test_io_error_messages_cannot_emit_terminal_controls) ... ok
+test_record_controls_are_visible_and_round_trip_unchanged (tests.controller.test_terminal.TerminalOutputTests.test_record_controls_are_visible_and_round_trip_unchanged) ... ok
+test_unicode_output_preserves_ordinary_text_and_prompt_flush (tests.controller.test_terminal.TerminalOutputTests.test_unicode_output_preserves_ordinary_text_and_prompt_flush) ... ok
+test_bad_command_quote_has_one_based_position (tests.controller.test_usability.UsabilityTests.test_bad_command_quote_has_one_based_position) ... ok
+test_clean_load_accepts_false_and_force_flags_ignore_case (tests.controller.test_usability.UsabilityTests.test_clean_load_accepts_false_and_force_flags_ignore_case) ... ok
+test_dirty_load_is_refused_and_record_remains_editable (tests.controller.test_usability.UsabilityTests.test_dirty_load_is_refused_and_record_remains_editable) ... ok
+test_exit_and_eof_warn_once_without_saving_or_blocking (tests.controller.test_usability.UsabilityTests.test_exit_and_eof_warn_once_without_saving_or_blocking) ... ok
+test_failed_forced_load_keeps_state_counter_and_dirty_flag (tests.controller.test_usability.UsabilityTests.test_failed_forced_load_keeps_state_counter_and_dirty_flag) ... ok
+test_failed_mutations_and_read_commands_do_not_dirty_a_loaded_session (tests.controller.test_usability.UsabilityTests.test_failed_mutations_and_read_commands_do_not_dirty_a_loaded_session) ... ok
+test_failed_save_keeps_unsaved_protection (tests.controller.test_usability.UsabilityTests.test_failed_save_keeps_unsaved_protection) ... ok
+test_forced_load_replaces_and_preserves_high_id_counter (tests.controller.test_usability.UsabilityTests.test_forced_load_replaces_and_preserves_high_id_counter) ... ok
+test_help_and_wrong_arguments_offer_a_recovery_path (tests.controller.test_usability.UsabilityTests.test_help_and_wrong_arguments_offer_a_recovery_path) ... ok
+test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) ... ok
+test_invalid_force_options_do_not_bypass_protection (tests.controller.test_usability.UsabilityTests.test_invalid_force_options_do_not_bypass_protection) ... ok
+test_successful_save_clears_dirty_state (tests.controller.test_usability.UsabilityTests.test_successful_save_clears_dirty_state) ... ok
+test_update_and_delete_each_mark_the_session_dirty (tests.controller.test_usability.UsabilityTests.test_update_and_delete_each_mark_the_session_dirty) ... ok
+test_diagnostics_bound_unicode_and_keep_search_position (tests.model.test_hardening.ModelHardeningTests.test_diagnostics_bound_unicode_and_keep_search_position)
+Malformed values cannot overflow output or hide the positioned suffix. ... ok
+test_invalid_counter_and_root_errors_are_not_labelled_as_records (tests.model.test_hardening.ModelHardeningTests.test_invalid_counter_and_root_errors_are_not_labelled_as_records) ... ok
+test_last_id_and_exhaustion_preserve_state_for_every_record_type (tests.model.test_hardening.ModelHardeningTests.test_last_id_and_exhaustion_preserve_state_for_every_record_type)
+FR-09/10/50: the last ID is usable; later creates cannot mutate state. ... ok
+test_record_and_counter_ranges_are_distinct_and_reject_huge_integers (tests.model.test_hardening.ModelHardeningTests.test_record_and_counter_ranges_are_distinct_and_reject_huge_integers)
+A valid exhaustion marker is a counter, never a record ID. ... ok
+test_restore_reports_record_index_and_preserves_higher_counter (tests.model.test_hardening.ModelHardeningTests.test_restore_reports_record_index_and_preserves_higher_counter)
+FR-45/46: row failures are located, and an exhausted session stays exhausted. ... ok
+test_three_atom_compositions_against_independent_truth_tables (tests.model.test_independent_review.BooleanCompositionTests.test_three_atom_compositions_against_independent_truth_tables)
+US7/FR-33�C36: all eight assignments distinguish grouping and precedence. ... ok
+test_create_all_types_and_monotonic_ids (tests.model.test_manager.ManagerTests.test_create_all_types_and_monotonic_ids) ... ok
+test_failed_update_is_atomic_and_forbidden_fields (tests.model.test_manager.ManagerTests.test_failed_update_is_atomic_and_forbidden_fields) ... ok
+test_from_rows_checks_schema_order_and_counters (tests.model.test_manager.ManagerTests.test_from_rows_checks_schema_order_and_counters) ... ok
+test_get_list_update_delete_and_invalid_ids (tests.model.test_manager.ManagerTests.test_get_list_update_delete_and_invalid_ids) ... ok
+test_invalid_creation_does_not_consume_id (tests.model.test_manager.ManagerTests.test_invalid_creation_does_not_consume_id) ... ok
+test_external_time_has_exact_minute_format (tests.model.test_records.RecordTests.test_external_time_has_exact_minute_format) ... ok
+test_four_types_trim_values_and_keep_mobile_text (tests.model.test_records.RecordTests.test_four_types_trim_values_and_keep_mobile_text) ... ok
+test_invalid_direct_construction (tests.model.test_records.RecordTests.test_invalid_direct_construction) ... ok
+test_lone_surrogate_is_not_valid_text (tests.model.test_records.RecordTests.test_lone_surrogate_is_not_valid_text) ... ok
+test_unicode_line_separators_are_not_single_line_text (tests.model.test_records.RecordTests.test_unicode_line_separators_are_not_single_line_text) ... ok
+test_and_or_full_truth_tables (tests.model.test_requirement_edges.ModelRequirementTests.test_and_or_full_truth_tables)
+FR-33/34: both direct nodes and parsed expressions obey all four rows. ... ok
+test_every_mutable_field_changes_only_that_field (tests.model.test_requirement_edges.ModelRequirementTests.test_every_mutable_field_changes_only_that_field)
+FR-16: all nine fields are editable, retaining ID/type/other fields. ... ok
+test_invalid_model_api_inputs_preserve_collection (tests.model.test_requirement_edges.ModelRequirementTests.test_invalid_model_api_inputs_preserve_collection)
+Malformed direct API inputs must fail without changing existing data. ... ok
+test_past_times_and_alarm_after_start_are_accepted (tests.model.test_requirement_edges.ModelRequirementTests.test_past_times_and_alarm_after_start_are_accepted)
+FR-04/07: historical times and either alarm ordering are valid data. ... ok
+test_time_comparisons_cross_calendar_boundaries (tests.model.test_requirement_edges.ModelRequirementTests.test_time_comparisons_cross_calendar_boundaries)
+FR-32: <, >, = compare full dates, including leap days and years. ... ok
+test_unrecognized_search_character_is_rejected (tests.model.test_requirement_edges.ModelRequirementTests.test_unrecognized_search_character_is_rejected)
+A trailing invalid symbol cannot silently alter a valid search. ... ok
+test_boolean_precedence_parentheses_negation_and_absent_field (tests.model.test_search.SearchTests.test_boolean_precedence_parentheses_negation_and_absent_field) ... ok
+test_deep_valid_expressions_evaluate_without_recursion (tests.model.test_search.SearchTests.test_deep_valid_expressions_evaluate_without_recursion) ... ok
+test_direct_nodes_validate_and_remain_immutable (tests.model.test_search.SearchTests.test_direct_nodes_validate_and_remain_immutable) ... ok
+test_each_time_field_and_comparison_operator (tests.model.test_search.SearchTests.test_each_time_field_and_comparison_operator) ... ok
+test_invalid_expression_is_rejected_whole (tests.model.test_search.SearchTests.test_invalid_expression_is_rejected_whole) ... ok
+test_quoted_escapes_and_adjacent_symbols (tests.model.test_search.SearchTests.test_quoted_escapes_and_adjacent_symbols) ... ok
+test_type_and_all_text_fields_are_case_insensitive (tests.model.test_search.SearchTests.test_type_and_all_text_fields_are_case_insensitive) ... ok
+test_search_orders_records_and_does_not_mutate (tests.model.test_search_integration.SearchIntegrationTests.test_search_orders_records_and_does_not_mutate) ... ok
+test_bad_operator_and_missing_operator_point_to_the_offending_token (tests.model.test_search_positions.SearchPositionTests.test_bad_operator_and_missing_operator_point_to_the_offending_token) ... ok
+test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) ... ok
+test_invalid_escape_points_to_backslash_and_unclosed_quote_to_start (tests.model.test_search_positions.SearchPositionTests.test_invalid_escape_points_to_backslash_and_unclosed_quote_to_start) ... ok
+test_invalid_type_text_and_time_literals_point_to_opening_quote (tests.model.test_search_positions.SearchPositionTests.test_invalid_type_text_and_time_literals_point_to_opening_quote) ... ok
+test_unicode_and_escaped_literals_keep_original_source_offsets (tests.model.test_search_positions.SearchPositionTests.test_unicode_and_escaped_literals_keep_original_source_offsets) ... ok
+test_unknown_field_and_unexpected_token_point_to_the_token (tests.model.test_search_positions.SearchPositionTests.test_unknown_field_and_unexpected_token_point_to_the_token) ... ok
+test_unmatched_parentheses_point_to_the_unmatched_parenthesis (tests.model.test_search_positions.SearchPositionTests.test_unmatched_parentheses_point_to_the_unmatched_parenthesis) ... ok
+test_bom_is_accepted_and_writes_remain_without_bom (tests.storage.test_hardening.StorageHardeningTests.test_bom_is_accepted_and_writes_remain_without_bom) ... ok
+test_exhaustion_round_trip_and_restart_do_not_reuse_ids (tests.storage.test_hardening.StorageHardeningTests.test_exhaustion_round_trip_and_restart_do_not_reuse_ids)
+US10/11: the exhausted counter remains valid persisted state. ... ok
+test_flush_and_fsync_happen_before_replace (tests.storage.test_hardening.StorageHardeningTests.test_flush_and_fsync_happen_before_replace)
+US10: fsync sees the completed file before it is atomically published. ... ok
+test_fsync_failure_preserves_file_collection_and_dirty_flag (tests.storage.test_hardening.StorageHardeningTests.test_fsync_failure_preserves_file_collection_and_dirty_flag) ... ok
+test_huge_counter_load_is_bounded_and_preserves_dirty_state (tests.storage.test_hardening.StorageHardeningTests.test_huge_counter_load_is_bounded_and_preserves_dirty_state)
+The former 4,300-nine crash is rejected before swapping the manager. ... ok
+test_record_errors_include_path_and_index_root_errors_do_not (tests.storage.test_hardening.StorageHardeningTests.test_record_errors_include_path_and_index_root_errors_do_not) ... ok
+test_excessive_json_nesting_reports_format_error (tests.storage.test_independent_review.MalformedSnapshotTests.test_excessive_json_nesting_reports_format_error)
+An invalid nested snapshot must fail through the storage API contract. ... ok
+test_excessive_nesting_preserves_state_and_session (tests.storage.test_independent_review.MalformedSnapshotTests.test_excessive_nesting_preserves_state_and_session)
+Rejected load retains the manager and permits show/add after the error. ... ok
+test_load_rejects_text_that_cannot_be_saved_as_utf8 (tests.storage.test_pim_file.PersistenceTests.test_load_rejects_text_that_cannot_be_saved_as_utf8) ... ok
+test_reject_missing_invalid_and_duplicate_json (tests.storage.test_pim_file.PersistenceTests.test_reject_missing_invalid_and_duplicate_json) ... ok
+test_round_trip_four_types_and_preserve_higher_counter (tests.storage.test_pim_file.PersistenceTests.test_round_trip_four_types_and_preserve_higher_counter) ... ok
+test_wrong_extension_and_failed_save_preserve_existing_bytes (tests.storage.test_pim_file.PersistenceTests.test_wrong_extension_and_failed_save_preserve_existing_bytes) ... ok
+test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically)
+Mutate each root/record key and every data field in a valid four-type file. ... ok
+test_all_stories_across_save_and_restart (tests.test_acceptance.AcceptanceTests.test_all_stories_across_save_and_restart) ... ok
+test_deep_compound_search_and_following_command (tests.test_acceptance.AcceptanceTests.test_deep_compound_search_and_following_command) ... ok
+test_dirty_load_and_explicit_discard_in_real_process (tests.test_acceptance.AcceptanceTests.test_dirty_load_and_explicit_discard_in_real_process) ... ok
+test_help_and_positioned_search_error_in_real_process (tests.test_acceptance.AcceptanceTests.test_help_and_positioned_search_error_in_real_process) ... ok
+test_invalid_input_recovers_in_real_process (tests.test_acceptance.AcceptanceTests.test_invalid_input_recovers_in_real_process) ... ok
+test_very_long_id_is_reported_and_session_continues (tests.test_acceptance.AcceptanceTests.test_very_long_id_is_reported_and_session_continues) ... ok
+test_closed_stdout_pipe_exits_without_traceback (tests.test_process_boundaries.ProcessBoundaryTests.test_closed_stdout_pipe_exits_without_traceback) ... ok
+test_input_error_is_not_mistaken_for_a_closed_output_pipe (tests.test_process_boundaries.ProcessBoundaryTests.test_input_error_is_not_mistaken_for_a_closed_output_pipe) ... ok
+test_keyboard_interrupt_exits_without_traceback (tests.test_process_boundaries.ProcessBoundaryTests.test_keyboard_interrupt_exits_without_traceback) ... ok
+test_loaded_unicode_can_be_displayed_on_ascii_stdout (tests.test_process_boundaries.ProcessBoundaryTests.test_loaded_unicode_can_be_displayed_on_ascii_stdout) ... ok
+test_unrelated_output_error_is_not_silently_swallowed (tests.test_process_boundaries.ProcessBoundaryTests.test_unrelated_output_error_is_not_silently_swallowed) ... ok
+test_benchmark_checks_mixed_data_and_rejects_invalid_sizes (tests.tools.test_evidence.EvidenceToolTests.test_benchmark_checks_mixed_data_and_rejects_invalid_sizes) ... ok
+test_demo_rejects_incorrect_expected_output (tests.tools.test_evidence.EvidenceToolTests.test_demo_rejects_incorrect_expected_output) ... ok
+test_demo_rejects_invalid_command (tests.tools.test_evidence.EvidenceToolTests.test_demo_rejects_invalid_command) ... ok
+test_demo_runs_from_another_directory_without_leaving_a_snapshot (tests.tools.test_evidence.EvidenceToolTests.test_demo_runs_from_another_directory_without_leaving_a_snapshot) ... ok
+test_docstring_only_module_has_no_executable_source_lines (tests.tools.test_model_coverage.CoverageMeasurementTests.test_docstring_only_module_has_no_executable_source_lines) ... ok
+test_unexecuted_real_line_stays_in_denominator_and_is_listed (tests.tools.test_model_coverage.CoverageMeasurementTests.test_unexecuted_real_line_stays_in_denominator_and_is_listed) ... ok
+
+----------------------------------------------------------------------
+Ran 104 tests in 7.096s
+
+OK

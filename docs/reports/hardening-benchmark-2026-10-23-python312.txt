@@ -1,0 +1,16 @@
+Python: 3.12.14
+Executable: C:\Users\Administrator\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe
+Arguments: ['C:\\Users\\Administrator\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe', '-B', 'tools/benchmark.py', '--records', '1000', '--runs', '5']
+
+Local performance observations (not a course requirement or a timing guarantee)
+Python: 3.12.14
+Platform: Windows-11-10.0.26200-SP0
+Records: 1000 (250 of each type); runs: 5
+Milliseconds: median / min / max; validation excluded from timed interval.
+Search excludes parsing; file writes include flush, fsync and atomic replacement; no full power-loss guarantee.
+search: 2.141 / 1.973 / 2.394 ms
+save: 8.663 / 8.141 / 10.313 ms
+load: 9.184 / 8.819 / 9.330 ms
+PASS: search IDs and all loaded fields/counters verified
+
+Exit: 0

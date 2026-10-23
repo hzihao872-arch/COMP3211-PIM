@@ -1,0 +1,6 @@
+Product modules compiled: 15
+Import references: 63
+External imports: []
+Model reverse imports: []
+Python 3.11 grammar: accepted
+Actual runtime evidence: input-io-coverage logs for 3.11.9/3.12.14/3.13.0

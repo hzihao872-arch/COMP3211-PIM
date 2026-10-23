@@ -1,6 +1,9 @@
 # Developer Manual - COMP3211 PIM
 
-**Usability release, 2026-10-23:** 86 tests pass on Python 3.11.9, 3.12.3 and 3.13.5. Current PDFs and source are synchronized in the usability candidate. `controller/help.py` supplies focused help; `CommandController` tracks unsaved changes and protects load. Model search errors carry one-based positions. `controller/output.py` handles display controls/encoding, and `main.cli()` handles interruption and closed output pipes. Record and snapshot schemas remain unchanged.
+**Current source update (2026-10-23):** ID/exhaustion limits, bounded diagnostics, file/record error context, shared schema/help metadata, BOM input, fsync and dirty Ctrl+C warnings are implemented. See [source hardening verification](../reports/source-hardening-2026-10-23.md). Existing PDF exports and ZIPs describe the earlier usability candidate, not this working tree.
+
+
+**Usability release, 2026-10-23:** 86 tests pass on Python 3.11.9, 3.12.3 and 3.13.5. That historical usability candidate synchronized its PDFs and source; the source update linked above supersedes its implementation. `controller/help.py` supplies focused help; `CommandController` tracks unsaved changes and protects load. Model search errors carry one-based positions. `controller/output.py` handles display controls/encoding, and `main.cli()` handles interruption and closed output pipes. Record fields and snapshot keys are unchanged; the current source adds explicit ID/counter ranges.
 
 Two additional standard-library checks run from the source root:
 
@@ -13,8 +16,12 @@ The demo checker starts two independent processes in a temporary directory and c
 
 **Group:** 89. Member names and student IDs await human input.
 **Revision:** 2026-10-23. **Platform:** Windows 11, PowerShell.
-**Verified interpreters:** Python 3.11.9, 3.12.3 and 3.13.5.
+**Current source verification:** Python 3.11.9, 3.12.14 and 3.13.0 on Windows; all 112 tests and the two-process demo pass. Python 3.11.9 uses a temporary official portable runtime, not a system installation. The older usability candidate was verified on Python 3.11.9, 3.12.3 and 3.13.5.
 **Delivery version:** Usability release candidate, 2026-10-23. Use the accompanying manifest to identify the delivered source, tests and documents by their actual file hashes; an earlier source commit does not identify this complete delivery.
+
+## Input-read failure update
+
+The working tree now converts only OSError/UnicodeError from `readline` into fatal `InputReadError`. `main.cli()` reports bounded stderr and returns 1, including when stdout/stderr is unavailable. Dirty warnings are attempted once. Other programming defects remain visible. See [current input-I/O verification](../reports/input-io-fix-2026-10-23.md); the earlier source-hardening report is a prior snapshot.
 
 ## 1. Open and run the delivered project
 
@@ -26,7 +33,7 @@ python --version
 python src/main.py
 ```
 
-Select one of the verified Python versions. No installation of third-party Python packages, compilation step or build command is required. The project uses the standard library only. `python src/main.py` opens the interactive terminal prompt `pim> `; it does not open a separate application window.
+Use one of the currently verified Python versions listed above. No installation of third-party Python packages, compilation step or build command is required. The project uses the standard library only. `python src/main.py` opens the interactive terminal prompt `pim> `; it does not open a separate application window.
 
 At the prompt, enter:
 
@@ -91,7 +98,7 @@ If Python cannot find `src/main.py`, check the current directory. If tests canno
 
 `tests/controller/test_usability.py` covers all dirty-state transitions, forced-load syntax/failure, all help topics and quoted-command positions. `tests/model/test_search_positions.py` checks lexical, grammar, semantic, Unicode and EOF offsets. `tests/test_acceptance.py` verifies protection and recovery through actual processes. A dirty load is rejected before storage access, so malformed-file tests use `force=true` where needed to reach the intended validation. Do not remove their state-preservation assertions.
 
-Full-suite model coverage is 431/436 (98.85%). For the narrower model-unit-only measurement (430/436, 98.62%), run from the source root:
+The earlier usability baseline had full-suite model coverage 431/436 (98.85%) and model-unit-only coverage 430/436 (98.62%). For current figures see the source hardening report. Reproduce the narrower measurement from the source root:
 
 ```powershell
 python -c "from tools import model_coverage as c; c.TESTS /= 'model'; c.main()"

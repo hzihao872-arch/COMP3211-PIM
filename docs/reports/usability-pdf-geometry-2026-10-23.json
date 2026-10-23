@@ -1,0 +1,44 @@
+[
+  {
+    "file": "Design_Document.pdf",
+    "pages": 9,
+    "sha256": "b9a541ef8c7a35e73d8df8a8424dfe403ec190f553f031e045c3db3076f28b47",
+    "outside_page_text": []
+  },
+  {
+    "file": "Developer_Manual.pdf",
+    "pages": 2,
+    "sha256": "0baf9a58d6108a8b7529440bb20be012bc989c6d69d3c3a3d71836be1d1dd412",
+    "outside_page_text": []
+  },
+  {
+    "file": "Requirements_Coverage.pdf",
+    "pages": 8,
+    "sha256": "86f66159dd4562469a795345b8caa248b970140650d7242dae5c709bfef17615",
+    "outside_page_text": []
+  },
+  {
+    "file": "SRS.pdf",
+    "pages": 8,
+    "sha256": "27f421444f8b22b49527b3ef7128099ee39e24bf1a74ec672f9d698d2584361c",
+    "outside_page_text": []
+  },
+  {
+    "file": "Test_Coverage.pdf",
+    "pages": 2,
+    "sha256": "290de56f37db3f9787ecad51328909f068e659e5c483ae69bee2211c5a7797b3",
+    "outside_page_text": []
+  },
+  {
+    "file": "User_Manual.pdf",
+    "pages": 5,
+    "sha256": "3ee54c517186f968507d93fcf25a0b781d63322a2524577d3bfb03e5b648c90e",
+    "outside_page_text": []
+  },
+  {
+    "file": "Presentation.pdf",
+    "pages": 6,
+    "sha256": "9546f426ffcbadcccd7214fbca137460e5e526861aa8ae6e699d8e58331cce6e",
+    "outside_page_text": []
+  }
+]

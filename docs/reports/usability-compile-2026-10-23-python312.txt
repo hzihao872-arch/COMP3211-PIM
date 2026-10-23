@@ -1,0 +1,4 @@
+Executable: C:\Users\HANWANG\AppData\Local\Programs\Python\Python312\python.exe
+Arguments: ['-m', 'compileall', '-q', 'src', 'tests', 'tools']
+
+Exit: 0

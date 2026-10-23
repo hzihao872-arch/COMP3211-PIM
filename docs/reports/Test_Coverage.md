@@ -1,49 +1,70 @@
-# Model Test Coverage Report - COMP3211 PIM
+# Test Coverage Report - COMP3211 PIM
 
-**Group:** 89. **Revision:** independent review, 2026-10-23.
-**Delivery:** current candidate files identified by the manifest. Application fixes and tests are included; the old source commit is not the complete delivery.
+**Group:** 89; genuine member details pending. **Revision:** Usability release, 2026-10-23.
+**Environment:** Windows 11; Python 3.11.9, 3.12.3 and 3.13.5. Current payload hashes are in the candidate manifest. Earlier reports and archives are historical.
 
-## 1. Reproduce the full suite
+## 1. Test execution and scope
 
-From the submitted `03_Implementation` folder in PowerShell:
+All **86 test methods** passed with zero failures/errors on each interpreter. Subtests are not separate methods. The suite covers model rules, controller behavior, storage validation/atomicity, actual CLI processes and evidence-tool failure detection. All 86 also pass with site packages disabled using `-S`. This demonstrates the tested environments, not every future Python version or every possible input. `compileall`, the two-process demo checker and the 1,000-record/five-run search/save/load benchmark also pass on all three versions.
+
+Run from the repository root or the ZIP's `03_Implementation` folder:
 
 ```powershell
 $env:PYTHONPATH = "$PWD\src"
 python -m unittest discover -s tests -t . -v
 python tools/model_coverage.py
+python tools/verify_demo.py
+python tools/benchmark.py
+python -S -m unittest discover -s tests -t .
+python -m compileall -q src tests tools
 ```
 
-The independent revision passed **51 test methods, zero failures and errors**, on Python **3.11.9, 3.12.3 and 3.13.5**. These comprise 25 model, 13 controller, 7 storage, 4 real-process acceptance and 2 measurement-tool tests. `subTest` cases are included within method counts. All original 45 methods remain; this review added four application tests and two tool tests.
+The evidence directory contains `usability-verification`, `usability-coverage`, `usability-model-only`, `usability-stdlib`, `usability-demo`, `usability-benchmark` and `usability-compile` logs, each suffixed `-2026-10-23-python311.txt`, `python312.txt` or `python313.txt`. Each log records the executable, arguments and exit code. Evidence is in repository `docs/reports/` and packaged `evidence/`.
 
-Host: Windows 11, build 26200, confirmed using the operating-system record. Python 3.11's `platform.release()` reports Windows 10 on this host; that interpreter label in raw logs does not identify a second machine. The 3.11.9 runtime is an official standalone embeddable distribution configured for normal imports. A separate **51-test run with `-S` (site packages disabled)** also passed. No third-party runtime dependency is required or bundled.
-
-Raw logs are `independent-verification-2026-10-23-python311.txt`, `independent-verification-2026-10-23-python312.txt` and `independent-verification-2026-10-23-python313.txt`. Coverage uses the same suffixes after `independent-model-coverage-2026-10-23-`. Repository logs are in `docs/reports/`; candidate copies are in `03_Implementation/evidence/`.
+| Test file | Methods |
+|---|---:|
+| `tests/controller/test_cli.py` | 7 |
+| `tests/controller/test_independent_review.py` | 1 |
+| `tests/controller/test_requirement_edges.py` | 5 |
+| `tests/controller/test_terminal.py` | 4 |
+| `tests/controller/test_usability.py` | 13 |
+| `tests/model/test_independent_review.py` | 1 |
+| `tests/model/test_manager.py` | 5 |
+| `tests/model/test_records.py` | 5 |
+| `tests/model/test_requirement_edges.py` | 6 |
+| `tests/model/test_search.py` | 7 |
+| `tests/model/test_search_integration.py` | 1 |
+| `tests/model/test_search_positions.py` | 7 |
+| `tests/storage/test_independent_review.py` | 2 |
+| `tests/storage/test_pim_file.py` | 4 |
+| `tests/storage/test_requirement_edges.py` | 1 |
+| `tests/test_acceptance.py` | 6 |
+| `tests/test_process_boundaries.py` | 5 |
+| `tests/tools/test_evidence.py` | 4 |
+| `tests/tools/test_model_coverage.py` | 2 |
+| **Total** | **86** |
 
 ## 2. Model source-line coverage
 
-The full 51-test suite achieved **416/421 model source lines (98.81%)** on each of the three interpreters. The numerator and denominator include only `src/model/*.py`. Controller, storage, tests and tools are not included as measured source. CLI subprocess execution is outside the parent trace session.
+The full suite covers **431/436 model source lines (98.85%)**, identically on all three interpreters. Measured source is only `src/model/*.py`; controller, storage, tests and tools are excluded from the denominator. CLI subprocess execution is outside the parent tracer.
 
-| Model module | Covered / executable source lines | Coverage |
+| Model module | Full-suite covered / executable | Model units alone |
 |---|---:|---:|
-| `model/__init__.py` | 0/0 | n/a |
-| `model/errors.py` | 4/4 | 100.00% |
-| `model/manager.py` | 95/95 | 100.00% |
-| `model/records.py` | 57/57 | 100.00% |
-| `model/search.py` | 226/231 | 97.84% |
-| `model/validation.py` | 34/34 | 100.00% |
-| **Total model** | **416/421** | **98.81%** |
+| `__init__.py` | 0/0 (n/a) | 0/0 (n/a) |
+| `errors.py` | 7/7 | 7/7 |
+| `manager.py` | 95/95 | 94/95 |
+| `records.py` | 57/57 | 57/57 |
+| `search.py` | 238/243 | 238/243 |
+| `validation.py` | 34/34 | 34/34 |
+| **Total** | **431/436 (98.85%)** | **430/436 (98.62%)** |
 
-The tool uses standard-library `trace` to collect executed lines and its private `_find_executable_linenos` helper to identify candidate executable lines. It now excludes nonpositive/noninteger entries (`0` and `None`), which refer to interpreter bookkeeping, not source lines. It prints excluded-entry counts and actual missing source lines for each module. This private CPython helper is version-dependent, so results name the measured interpreter and are not a promise for future releases.
+The standard-library `trace` collector records executed lines. Its private `_find_executable_linenos` helper supplies executable source candidates; noninteger/nonpositive bookkeeping entries such as `0` and `None` are excluded. Missing real lines remain in the denominator. This is source-line coverage, not branch coverage. The private helper is interpreter dependent, so versions are named explicitly. Measurement-tool fixture tests check both a docstring-only module and an unexecuted function body.
 
-The prior Python 3.13 report counted 416/430 (96.74%); nine denominator entries were `0` or `None`. Removing these produces 416/421 without changing the numerator or model code. On Python 3.11 six such entries were removed from 427. The increase is **a corrected measurement, not newly covered model behavior**. The remaining five real lines, `search.py` 205-209, belong to the unused `_Parser._accept` helper. They remain in the denominator; dead code was not deleted or artificially called to inflate coverage.
-
-Two fixture-based regressions first failed against the old tool and passed after correction: a docstring-only module has 0/0 executable source lines, and an uncalled real function body remains in the denominator and is listed as missing. Nested tracing restores the previous tracer after each fixture run.
+The five full-suite missing lines are `model/search.py` 209–213, the unused `_Parser._accept` helper. They were not artificially executed or deleted to raise the result. Model-unit-only measurement also misses `model/manager.py` 22, an invalid record-type branch covered by boundary tests in the full suite. The source changed to support positions, so older 416/421 figures are not the denominator for this revision.
 
 ## 3. Model unit tests alone
 
-To distinguish model unit evidence from the full suite, a separate Python 3.11.9 run executed only the **25 model unit methods**, using the same coverage algorithm. It covered **415/421 lines (98.57%)**. The extra missing line is `manager.py` 22, the invalid record-type branch exercised through the boundary tests in the full suite. Other module counts are unchanged.
-
-Reproduce this narrower check from the same folder:
+The narrower run selects **32 model unit methods** and covers **430/436 lines (98.62%)** on each listed interpreter, using the same algorithm. Reproduce it with:
 
 ```powershell
 $check = "from tools import model_coverage as c; c.TESTS /= 'model'; "
@@ -51,12 +72,12 @@ $check += "raise SystemExit(c.main())"
 python -c $check
 ```
 
-The resulting log is `independent-model-units-only-2026-10-23.txt`. Its runner prints the default tool command in the header; the command above is the actual narrower invocation. The full-suite percentage must not be described as coverage produced only by model unit tests.
+The tool prints its default command header; the saved model-only log records the actual narrower invocation. Do not describe the full-suite percentage as coverage produced only by model unit tests.
 
-## 4. Assertion quality and limits
+## 4. Assertions and limitations
 
-Existing assertions cover all four PIR types, nine mutable fields, five text-search fields, three time fields and all three time comparisons, invalid inputs, immutable replacement, stable IDs, complete snapshot validation and failure atomicity. This review added an independent truth-table oracle for six three-atom Boolean compositions over all eight assignments (48 subcases), rather than assertions derived from the parser's own output.
+The 22 added methods cover dirty-state transitions, protected/forced load and failure preservation, all ten help topics, wrong topic/count recovery, quoted-command offsets, lexical/syntactic/semantic search offsets, Unicode and EOF positions, plus two real-process acceptance scenarios. Existing malformed-file tests explicitly use `force=true` when necessary to reach their original storage checks. Their record/counter preservation assertions remain. The initial 19-method red run failed before implementation; the final suite is green.
 
-Two fixes have observed failing-then-passing regressions: deeply nested malformed JSON is converted to a FORMAT error with the old state and next ID preserved, and a line-buffered terminal receives each prompt before input blocks. The nesting failure was reproduced on Python 3.11; the same sample takes a different rejection path on newer interpreters. A 40-import AST audit and the `-S` test run support the standard-library restriction.
+Earlier coverage remains for four record schemas, all editable fields, all search field/operator categories, Boolean truth tables, precedence, missing-field semantics, deep iterative parsing/evaluation, stable IDs, complete snapshot validation and save atomicity. Terminal tests check display controls and limited encodings; process tests distinguish closed output pipes from input/device failures. Evidence tools compare complete transcripts, search IDs and full persisted data/counters, not merely process success.
 
-This is source-line coverage, not branch, condition, mutation or exhaustive requirements coverage. No course minimum coverage percentage is specified. NFR-01's exact network-disabled/no-graphical-session environment remains untested. Human recordings, genuine identities and the official declaration remain separate deliverables. The final candidate's clean-extraction log records verification of the actual ZIP contents.
+An independent read-only code reviewer reported no actionable findings, after rerunning 86 tests and additional random/deep-expression probes. These are review observations, not added unit methods. The AST import audit found 49 standard-library/local import references and no external dependency. NFR-01's exact network-disabled/no-graphical-session environment was not independently recorded. Real recordings, genuine member details, contribution agreement and the official declaration remain pending.

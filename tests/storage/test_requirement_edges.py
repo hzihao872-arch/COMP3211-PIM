@@ -73,7 +73,8 @@ class SnapshotRequirementTests(unittest.TestCase):
                 with self.subTest(case=label):
                     (cwd / "candidate.pim").write_text(json.dumps(snapshot), encoding="utf-8")
                     output = io.StringIO()
-                    controller.run(io.StringIO('load "candidate.pim"\nshow 1\n'), output)
+                    # Explicitly authorize replacement so this still exercises file validation.
+                    controller.run(io.StringIO('load "candidate.pim" force=true\nshow 1\n'), output)
                     self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
                     self.assertIn("text: retain this collection", output.getvalue())
                     self.assertIs(controller._manager, manager)

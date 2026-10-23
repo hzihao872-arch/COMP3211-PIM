@@ -1,0 +1,14 @@
+Executable: C:\Users\HANWANG\AppData\Local\Programs\Python\Python312\python.exe
+Arguments: ['tools/benchmark.py']
+Local performance observations (not a course requirement or a timing guarantee)
+Python: 3.12.3
+Platform: Windows-11-10.0.26200-SP0
+Records: 1000 (250 of each type); runs: 5
+Milliseconds: median / min / max; validation excluded from timed interval.
+Search excludes parsing; file writes include atomic replacement, not an fsync durability guarantee.
+search: 1.837 / 1.701 / 2.069 ms
+save: 8.308 / 7.319 / 8.324 ms
+load: 8.677 / 7.799 / 9.274 ms
+PASS: search IDs and all loaded fields/counters verified
+
+Exit: 0

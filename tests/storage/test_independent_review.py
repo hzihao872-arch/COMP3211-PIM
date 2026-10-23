@@ -30,7 +30,7 @@ class MalformedSnapshotTests(unittest.TestCase):
             original = manager.create_note("keep")
             controller = CommandController(manager, cwd)
             output = io.StringIO()
-            controller.run(io.StringIO('load "nested.pim"\nshow 1\nadd note after\nexit\n'),
+            controller.run(io.StringIO('load "nested.pim" force=true\nshow 1\nadd note after\nexit\n'),
                            output)
             self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
             self.assertIn("text: keep", output.getvalue())

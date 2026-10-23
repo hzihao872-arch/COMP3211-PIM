@@ -43,4 +43,4 @@ pim> Created note 5
 pim> id: 5
 type: note
 text: after load
-pim>
+pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.

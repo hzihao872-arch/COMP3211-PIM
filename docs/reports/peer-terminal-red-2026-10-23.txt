@@ -1,0 +1,81 @@
+test_ascii_output_escapes_unicode_without_losing_the_record (tests.controller.test_terminal.TerminalOutputTests.test_ascii_output_escapes_unicode_without_losing_the_record) ... FAIL
+test_io_error_messages_cannot_emit_terminal_controls (tests.controller.test_terminal.TerminalOutputTests.test_io_error_messages_cannot_emit_terminal_controls) ... FAIL
+test_record_controls_are_visible_and_round_trip_unchanged (tests.controller.test_terminal.TerminalOutputTests.test_record_controls_are_visible_and_round_trip_unchanged) ... FAIL
+test_unicode_output_preserves_ordinary_text_and_prompt_flush (tests.controller.test_terminal.TerminalOutputTests.test_unicode_output_preserves_ordinary_text_and_prompt_flush) ... ok
+test_closed_stdout_pipe_exits_without_traceback (tests.test_process_boundaries.ProcessBoundaryTests.test_closed_stdout_pipe_exits_without_traceback) ... FAIL
+test_keyboard_interrupt_exits_without_traceback (tests.test_process_boundaries.ProcessBoundaryTests.test_keyboard_interrupt_exits_without_traceback) ... FAIL
+test_loaded_unicode_can_be_displayed_on_ascii_stdout (tests.test_process_boundaries.ProcessBoundaryTests.test_loaded_unicode_can_be_displayed_on_ascii_stdout) ... FAIL
+test_unrelated_output_error_is_not_silently_swallowed (tests.test_process_boundaries.ProcessBoundaryTests.test_unrelated_output_error_is_not_silently_swallowed) ... ok
+
+======================================================================
+FAIL: test_ascii_output_escapes_unicode_without_losing_the_record (tests.controller.test_terminal.TerminalOutputTests.test_ascii_output_escapes_unicode_without_losing_the_record)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_terminal.py", line 52, in test_ascii_output_escapes_unicode_without_losing_the_record
+    controller.run(io.StringIO("show 1\nadd note after\nexit\n"), output)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\src\controller\cli.py", line 197, in run
+    if self._dispatch(line, output_stream):
+       ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\src\controller\cli.py", line 161, in _dispatch
+    output_stream.write(_details(self._manager.get(_id(args[0]))) + "\n")
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 25-26: ordinal not in range(128)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_terminal.py", line 54, in test_ascii_output_escapes_unicode_without_losing_the_record
+    self.fail(f"display encoding terminated the command session: {error}")
+    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: display encoding terminated the command session: 'ascii' codec can't encode characters in position 25-26: ordinal not in range(128)
+
+======================================================================
+FAIL: test_io_error_messages_cannot_emit_terminal_controls (tests.controller.test_terminal.TerminalOutputTests.test_io_error_messages_cannot_emit_terminal_controls)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_terminal.py", line 38, in test_io_error_messages_cannot_emit_terminal_controls
+    self.assertNotIn("\x1b", output.getvalue())
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '\x1b' unexpectedly found in 'pim> Error: IO: cannot save C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmpu96e57ud\\x.pim: disk\x1b[31m\r\x08\npim> Created note 1\npim> '
+
+======================================================================
+FAIL: test_record_controls_are_visible_and_round_trip_unchanged (tests.controller.test_terminal.TerminalOutputTests.test_record_controls_are_visible_and_round_trip_unchanged)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_terminal.py", line 26, in test_record_controls_are_visible_and_round_trip_unchanged
+    self.assertNotIn(char, rendered)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^
+AssertionError: '\x1b' unexpectedly found in 'pim> 1 | note | memo\x1b[2J\x00\x08\x7f\x9b31m\npim> id: 1\ntype: note\ntext: memo\x1b[2J\x00\x08\x7f\x9b31m\npim> 1 | note | memo\x1b[2J\x00\x08\x7f\x9b31m\npim> Saved 1 PIR(s) to C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmpat4omfmo\\records.pim\npim> '
+
+======================================================================
+FAIL: test_closed_stdout_pipe_exits_without_traceback (tests.test_process_boundaries.ProcessBoundaryTests.test_closed_stdout_pipe_exits_without_traceback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\test_process_boundaries.py", line 60, in test_closed_stdout_pipe_exits_without_traceback
+    self.assertEqual(status, 0, errors)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : b'Traceback (most recent call last):\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\main.py", line 15, in <module>\r\n    main()\r\n    ~~~~^^\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\main.py", line 11, in main\r\n    CommandController(PIMManager(), Path.cwd()).run(sys.stdin, sys.stdout)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\controller\\cli.py", line 191, in run\r\n    output_stream.write("pim> ")\r\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^\r\nOSError: [Errno 22] Invalid argument\r\n'
+
+======================================================================
+FAIL: test_keyboard_interrupt_exits_without_traceback (tests.test_process_boundaries.ProcessBoundaryTests.test_keyboard_interrupt_exits_without_traceback)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\test_process_boundaries.py", line 42, in test_keyboard_interrupt_exits_without_traceback
+    self.assertEqual(result.returncode, 130, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 3221225786 != 130 : b'Traceback (most recent call last):\r\n  File "<string>", line 6, in <module>\r\n    runpy.run_path(\'D:\\\\comp3211\\\\COMP3211-PIM\\\\src\\\\main.py\', run_name=\'__main__\')\r\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File "<frozen runpy>", line 287, in run_path\r\n  File "<frozen runpy>", line 98, in _run_module_code\r\n  File "<frozen runpy>", line 88, in _run_code\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\main.py", line 15, in <module>\r\n    main()\r\n    ~~~~^^\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\main.py", line 11, in main\r\n    CommandController(PIMManager(), Path.cwd()).run(sys.stdin, sys.stdout)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\controller\\cli.py", line 193, in run\r\n    line = input_stream.readline()\r\n  File "<string>", line 3, in readline\r\n    def readline(self): raise KeyboardInterrupt\r\n                        ^^^^^^^^^^^^^^^^^^^^^^^\r\nKeyboardInterrupt\r\n'
+
+======================================================================
+FAIL: test_loaded_unicode_can_be_displayed_on_ascii_stdout (tests.test_process_boundaries.ProcessBoundaryTests.test_loaded_unicode_can_be_displayed_on_ascii_stdout)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\test_process_boundaries.py", line 25, in test_loaded_unicode_can_be_displayed_on_ascii_stdout
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : b'Traceback (most recent call last):\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\main.py", line 15, in <module>\r\n    main()\r\n    ~~~~^^\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\main.py", line 11, in main\r\n    CommandController(PIMManager(), Path.cwd()).run(sys.stdin, sys.stdout)\r\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\controller\\cli.py", line 197, in run\r\n    if self._dispatch(line, output_stream):\r\n       ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\r\n  File "D:\\comp3211\\COMP3211-PIM\\src\\controller\\cli.py", line 161, in _dispatch\r\n    output_stream.write(_details(self._manager.get(_id(args[0]))) + "\\n")\r\n    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nUnicodeEncodeError: \'ascii\' codec can\'t encode characters in position 25-26: ordinal not in range(128)\r\n'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.297s
+
+FAILED (failures=6)

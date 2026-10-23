@@ -1,0 +1,14 @@
+test_ascii_output_escapes_unicode_without_losing_the_record (tests.controller.test_terminal.TerminalOutputTests.test_ascii_output_escapes_unicode_without_losing_the_record) ... ok
+test_io_error_messages_cannot_emit_terminal_controls (tests.controller.test_terminal.TerminalOutputTests.test_io_error_messages_cannot_emit_terminal_controls) ... ok
+test_record_controls_are_visible_and_round_trip_unchanged (tests.controller.test_terminal.TerminalOutputTests.test_record_controls_are_visible_and_round_trip_unchanged) ... ok
+test_unicode_output_preserves_ordinary_text_and_prompt_flush (tests.controller.test_terminal.TerminalOutputTests.test_unicode_output_preserves_ordinary_text_and_prompt_flush) ... ok
+test_closed_stdout_pipe_exits_without_traceback (tests.test_process_boundaries.ProcessBoundaryTests.test_closed_stdout_pipe_exits_without_traceback) ... ok
+test_input_error_is_not_mistaken_for_a_closed_output_pipe (tests.test_process_boundaries.ProcessBoundaryTests.test_input_error_is_not_mistaken_for_a_closed_output_pipe) ... ok
+test_keyboard_interrupt_exits_without_traceback (tests.test_process_boundaries.ProcessBoundaryTests.test_keyboard_interrupt_exits_without_traceback) ... ok
+test_loaded_unicode_can_be_displayed_on_ascii_stdout (tests.test_process_boundaries.ProcessBoundaryTests.test_loaded_unicode_can_be_displayed_on_ascii_stdout) ... ok
+test_unrelated_output_error_is_not_silently_swallowed (tests.test_process_boundaries.ProcessBoundaryTests.test_unrelated_output_error_is_not_silently_swallowed) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.373s
+
+OK

@@ -1,0 +1,15 @@
+test_input_error_is_not_mistaken_for_a_closed_output_pipe (tests.test_process_boundaries.ProcessBoundaryTests.test_input_error_is_not_mistaken_for_a_closed_output_pipe) ... FAIL
+
+======================================================================
+FAIL: test_input_error_is_not_mistaken_for_a_closed_output_pipe (tests.test_process_boundaries.ProcessBoundaryTests.test_input_error_is_not_mistaken_for_a_closed_output_pipe)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\test_process_boundaries.py", line 87, in test_input_error_is_not_mistaken_for_a_closed_output_pipe
+    self.assertNotEqual(result.returncode, 0)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 == 0
+
+----------------------------------------------------------------------
+Ran 1 test in 0.071s
+
+FAILED (failures=1)

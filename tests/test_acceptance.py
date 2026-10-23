@@ -41,7 +41,7 @@ class AcceptanceTests(unittest.TestCase):
     def test_invalid_input_recovers_in_real_process(self):
         with tempfile.TemporaryDirectory() as directory:
             result = run_cli('add note "keep"\nupdate 1 text ""\nsearch bad = "x"\n'
-                             'load "missing.pim"\nshow 1\nexit\n', Path(directory))
+                             'load "missing.pim" force=true\nshow 1\nexit\n', Path(directory))
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn('Error: VALIDATION:', result.stdout)
             self.assertIn('Error: SEARCH:', result.stdout)
@@ -64,6 +64,26 @@ class AcceptanceTests(unittest.TestCase):
             self.assertEqual(result.returncode, 0, result.stderr)
             self.assertIn('1 | note | kept', result.stdout)
             self.assertIn('text: kept', result.stdout)
+
+    def test_dirty_load_and_explicit_discard_in_real_process(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = run_cli('add note saved\nsave "snapshot.pim"\nupdate 1 text unsaved\n'
+                             'load "snapshot.pim"\nshow 1\nload "snapshot.pim" force=true\n'
+                             'show 1\nexit\n', Path(directory))
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertEqual(result.stdout.count('Error: COMMAND:'), 1)
+            self.assertIn('text: unsaved', result.stdout)
+            self.assertIn('text: saved', result.stdout)
+            self.assertNotIn('Warning:', result.stdout)
+
+    def test_help_and_positioned_search_error_in_real_process(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = run_cli('help search\nsearch type = "note" && @\nadd note after\nexit\n', Path(directory))
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertIn('Usage: search EXPR', result.stdout)
+            self.assertIn('at character 18', result.stdout)
+            self.assertIn('Created note 1', result.stdout)
+            self.assertEqual(result.stdout.count('Warning: unsaved changes'), 1)
 
 
 if __name__ == '__main__':

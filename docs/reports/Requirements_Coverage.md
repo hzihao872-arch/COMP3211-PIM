@@ -1,15 +1,12 @@
-# Requirements Coverage Report — COMP3211 PIM
+# Requirements Coverage Report - COMP3211 PIM
 
 **Group:** 89; member names and student IDs await human input.
+**Revision:** Usability release, 2026-10-23. The candidate manifest identifies the current files.
+**Scope:** US1–US11, FR-01–FR-54 and NFR-01–NFR-05. Both coverage PDFs are directly in the packaged `03_Implementation` source root.
 
-**Revision:** independent review, 2026-10-23. The current working tree includes application fixes and new tests; the old commit is not the full delivered version. The candidate manifest identifies the exact files.
-**Scope:** US1–US11, FR-01–FR-50 and NFR-01–NFR-05 in the current SRS. Both coverage PDFs are placed directly in the submitted `03_Implementation` source-code root.
+All 86 test methods pass on Python 3.11.9, 3.12.3 and 3.13.5. Subtests are not counted separately. Fresh full logs are `usability-verification-2026-10-23-python311.txt`, `python312.txt` and `python313.txt` (same prefix), under repository `docs/reports/` and packaged `evidence/`. Implemented means source and named tests support the stated cases; it is not proof for all inputs. NFR-01 retains the exact-environment evidence gap below.
 
-**Implemented** means source inspection and the named, freshly rerun tests support the behavior. **Implemented; evidence gap** separates the presence of behavior from an exact environment check not performed. No test proves every possible input. All named tests below were rerun in this review; earlier fresh acceptance runs are historical context only.
-
-Test classes are located by name in `tests/model/`, `tests/controller/`, `tests/storage/` and `tests/test_acceptance.py`. The three `test_requirement_edges.py` files contain `ModelRequirementTests`, `CLIRequirementTests` and `SnapshotRequirementTests`. New `test_independent_review.py` files contain `BooleanCompositionTests`, `PromptVisibilityTests` and `MalformedSnapshotTests`. `tests/tools/test_model_coverage.py` checks the measurement tool, not application behavior.
-
-Fresh full logs are `independent-verification-2026-10-23-python311.txt`, `independent-verification-2026-10-23-python312.txt` and `independent-verification-2026-10-23-python313.txt` under `docs/reports/` (copied to `03_Implementation/evidence/` in the candidate). The suite has **51 test methods**; subtests are not counted separately.
+Named test classes are in the model, controller and storage test directories, plus real-process acceptance tests. `UsabilityTests` covers unsaved protection and help; `SearchPositionTests` covers source positions. Terminal/process/evidence-tool tests also retain the peer-comparison hardening. Earlier dated reports describe historical revisions.
 
 ## 1. Appendix B user stories
 
@@ -29,7 +26,7 @@ Fresh full logs are `independent-verification-2026-10-23-python311.txt`, `indepe
 
 ## 2. SRS functional requirements
 
-Source paths in this table are relative to `src/`. A symbol after `::` is the exact current class, function, method, or module constant. The edge checks from the prior working tree and four new application regression/oracle tests were independently rerun. These checks cover the stated cases; they are not proof over all possible inputs.
+Source paths in this table are relative to `src/`. A symbol after `::` is the exact current class, function, method, or module constant. All referenced checks were rerun on the current usability revision. These checks cover the stated cases; they are not proof over all possible inputs.
 
 | ID | Status | Current source file and symbol | Test or manual evidence | Notes |
 |---|---|---|---|---|
@@ -83,19 +80,25 @@ Source paths in this table are relative to `src/`. A symbol after `::` is the ex
 | FR-48 | Implemented | `controller/cli.py::CommandController._path` | `CLITests.test_save_load_swap_and_failure_preserves_active_manager`; `AcceptanceTests.test_all_stories_across_save_and_restart` | Tests set a process working directory and use relative paths. |
 | FR-49 | Implemented | `controller/cli.py::CommandController.run`; `storage/pim_file.py::PersistenceError` | `CLITests.test_errors_do_not_mutate_and_next_command_runs`, `.test_tab_separated_search_and_invalid_path_recover`; `AcceptanceTests.test_invalid_input_recovers_in_real_process`, `.test_very_long_id_is_reported_and_session_continues` | Categories and prompt recovery; `PromptVisibilityTests.test_prompt_is_visible_before_waiting_for_each_command` verifies buffered prompt visibility. |
 | FR-50 | Implemented | `model/manager.py::PIMManager._create`, `.update`, `.delete`; `storage/pim_file.py::save_pim`, `load_pim`; `controller/cli.py::CommandController._dispatch` | `ManagerTests.test_invalid_creation_does_not_consume_id`, `.test_failed_update_is_atomic_and_forbidden_fields`; `CLITests.test_errors_do_not_mutate_and_next_command_runs`, `.test_save_load_swap_and_failure_preserves_active_manager`; `CLIRequirementTests.test_each_failed_operation_preserves_state_and_returns_to_prompt` | Failed create/update/delete/search/save/load and every documented error category preserve records and next ID. Failed replacement preserves destination bytes; the next valid command succeeds. |
+| FR-51 | Implemented | `controller/cli.py::CommandController._dispatch`, `._warn_unsaved` | `tests/controller/test_usability.py` | Successful/failed operations, read-only commands and injected existing records preserve the intended dirty state. |
+| FR-52 | Implemented | `controller/cli.py::CommandController._dispatch` | `tests/controller/test_usability.py`; `tests/test_acceptance.py` | Protected/forced loads, force=false, malformed options, failure state and counter retention. |
+| FR-53 | Implemented | `controller/help.py::COMMAND_HELP`, `command_help`; controller dispatch | `tests/controller/test_usability.py` | All ten topics, case, usage/examples and recoverable errors. |
+| FR-54 | Implemented | `model/search.py::_tokenize`, `_Parser`; `model/errors.py::SearchSyntaxError`; `controller/cli.py::_arguments` | `tests/model/test_search_positions.py`; `tests/controller/test_usability.py`; `tests/test_acceptance.py` | Lexical/syntax/semantic/Unicode/EOF offsets and next-command recovery. |
+
+FR-24 now includes focused-help evidence in FR-53; FR-25 includes dirty exit/EOF warning checks in FR-51. FR-44 and FR-46 loads are subject to FR-52; invalid-file tests explicitly force loading when dirty so they still reach storage validation. FR-49 positioned diagnostics are checked by FR-54.
 
 ## 3. SRS non-functional requirements
 
 | ID | Status | Current source file and symbol | Test or manual evidence | Notes |
 |---|---|---|---|---|
 | NFR-01 | Implemented; evidence gap | `main.py::main`; `controller/cli.py::CommandController.run` | `AcceptanceTests.test_all_stories_across_save_and_restart` | Local CLI runs; a network-disabled/no-graphical-session environment was not separately recorded. |
-| NFR-02 | Verified on listed versions | `main.py::main`; all application packages | 51 tests including real-process restart acceptance on Python 3.11.9, 3.12.3 and 3.13.5; the three independent-verification logs listed above | Windows 11. The isolated 3.11.9 runtime contains no third-party packages. This verifies the listed versions, not every future Python release. |
-| NFR-03 | Implemented | `main.py::main`; `model/manager.py::PIMManager`; `controller/cli.py::CommandController`; `storage/pim_file.py::save_pim` | Fresh AST audit of 40 source imports; `independent-import-audit-2026-10-23.txt`; Python 3.11 launch and suite with site packages disabled | Whole-source import audit found only standard-library or local imports. |
+| NFR-02 | Verified on listed versions | `main.py::main`; all application packages | 86 tests including real-process restart acceptance on Python 3.11.9, 3.12.3 and 3.13.5; the three usability-verification logs listed above | Windows 11. The isolated 3.11.9 runtime contains no third-party packages. This verifies the listed versions, not every future Python release. |
+| NFR-03 | Implemented | `main.py::main`; `model/manager.py::PIMManager`; `controller/cli.py::CommandController`; `storage/pim_file.py::save_pim` | Fresh AST audit of 49 source imports; `usability-import-audit-2026-10-23.txt`; Python 3.11 launch and suite with site packages disabled | Whole-source import audit found only standard-library or local imports. |
 | NFR-04 | Implemented | `model/records.py::Note`, `Task`, `Event`, `Contact`; `model/manager.py::PIMManager`; `model/search.py::parse_criterion` | `ManagerTests.test_create_all_types_and_monotonic_ids`; `SearchIntegrationTests.test_search_orders_records_and_does_not_mutate`; fresh import audit | Model behavior resides in separate `model` package. |
 | NFR-05 | Implemented | `controller/cli.py::CommandController`; `storage/pim_file.py::save_pim`, `load_pim` | `CLITests.test_add_list_show_update_delete_and_help`; `PersistenceTests.test_round_trip_four_types_and_preserve_higher_counter`; `docs/design/Design_Document.md` | Distinct command and file components. |
 
 ## 4. Evidence and remaining gaps
 
-The independent revision passed **51 test methods** on Python **3.11.9, 3.12.3 and 3.13.5** on Windows 11. The fixes handle excessive JSON nesting as FORMAT and flush the prompt before waiting for input. All original tests remain. The model source did not change; the current manifest covers the changed controller, storage, tests and measurement tool.
+The usability revision passes **86 test methods** on all three listed Python versions. The controller and model changes add unsaved protection, help topics and positioned diagnostics. Existing schemas and persistence rules remain unchanged; the candidate manifest identifies the synchronized payload.
 
 NFR-01's exact network-disabled/no-graphical-session environment remains unverified: execution used terminal streams on a Windows desktop. Source imports and a standard-library-only runtime support the dependency assessment but do not replace that exact environment check. Human group review, recordings and declaration remain pending. See Test Coverage for model-only measurement and its limits.

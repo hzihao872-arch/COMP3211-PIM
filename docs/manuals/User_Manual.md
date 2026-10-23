@@ -3,7 +3,7 @@
 **Course:** COMP3211 Software Engineering, Fall 2026<br>
 **Group:** 89<br>
 **Member names and student IDs:** Pending group-provided data<br>
-**Delivery version:** Independent review candidate; exact files are identified by the accompanying manifest.<br>
+**Delivery version:** Usability release candidate, 2026-10-23.<br>
 **Document revision:** 2026-10-23
 
 ## 1. What the program does
@@ -20,7 +20,9 @@ Extract the delivery ZIP, then open PowerShell inside `03_Implementation`, the f
 python src/main.py
 ```
 
-The program writes `pim> ` and waits for one command per line. Type `help` to display the built-in command summary. Type `exit` to finish. End-of-file also exits normally. Exiting does **not** save automatically: run `save` first if you want to keep the current collection for a later process. Every new process starts empty until you load a saved file.
+The program writes `pim> ` and waits for one command per line. Type `help` for the command summary, or `help search` (and any other command name) for usage, details and an example. Type `exit` to finish. End-of-file also exits normally. If the collection has unsaved changes, exit or EOF prints one warning and still terminates; it does not wait for another command. Exiting does **not** save automatically: run `save` first if you want to keep the current collection for a later process. Every new process starts empty until you load a saved file.
+
+Ctrl+C terminates without a traceback (process exit code 130). If a program receiving piped output closes its input, the PIM exits quietly. Neither case saves the collection automatically.
 
 The Windows 11 development and verification versions are Python 3.11.9, 3.12.3 and 3.13.5. The Developer Manual provides setup and test commands; `Test_Coverage.pdf` identifies the exact verification results for this delivery.
 
@@ -43,7 +45,7 @@ All record fields are required. Text fields must be single-line valid UTF-8 and 
 
 | Command | Format and example | Result |
 |---|---|---|
-| Help | `help` | Prints all command forms, field order, quoting, time, and search rules. |
+| Help | `help` or `help search` | Prints the overview or a command-specific guide; topics ignore case. |
 | Create note | `add note "memo"` | Creates a note; prints `Created note ID`. |
 | Create task | `add task "draft" "2026-10-01 09:00"` | Creates a task; prints `Created task ID`. |
 | Create event | `add event "meeting" "2026-10-02 10:00" "2026-10-01 08:00"` | Creates an event; prints `Created event ID`. |
@@ -54,12 +56,24 @@ All record fields are required. Text fields must be single-line valid UTF-8 and 
 | Delete one | `delete 2` | Removes the specified PIR; prints `Deleted 2`. Its ID is not reused. |
 | Search | `search type = "task"` | Prints matching summaries in ascending ID order. Full grammar is in §5. |
 | Save | `save "snapshot.pim"` | Writes the full collection and next-ID counter; prints `Saved N PIR(s) to PATH`. |
-| Load | `load "snapshot.pim"` | Replaces the current collection with the file's records; prints `Loaded N PIR(s) from PATH`. |
+| Load | `load "snapshot.pim"` | Loads a validated replacement when there are no unsaved changes. Append `force=true` to explicitly discard unsaved changes. |
 | Exit | `exit` | Ends the process without an implicit save. |
 
-`help` and `exit` take no arguments. `add` needs exactly the fields listed in the table and in that order. `update` changes exactly one field per command. `list` accepts at most one type. `show`, `delete`, `save`, and `load` each require exactly one argument. `search` requires an expression after the command word. Blank input simply returns to the next prompt.
+`exit` takes no arguments; `help` accepts at most one command topic. `add` needs exactly the fields listed in the table and in that order. `update` changes exactly one field per command. `list` accepts at most one type. `show`, `delete` and `save` each require exactly one argument. `load` requires a path and optionally the final token `force=true` or `force=false`; the option ignores case. `search` requires an expression after the command word. Blank input simply returns to the next prompt.
+
+### Protecting unsaved changes
+
+A successful create, update or delete marks the collection as unsaved. Saving or loading successfully clears that status. Failed operations and reading/listing/searching do not clear it. An update that repeats the same value still marks the session unsaved.
+
+If you have unsaved edits, `load "snapshot.pim"` reports an error and leaves the current data intact. Save those edits first, or deliberately use `load "snapshot.pim" force=true` to discard them and load the snapshot. `force=false` keeps protection. A failed forced load still preserves the existing records, next ID and unsaved status. Exit and EOF only warn; save before exiting to retain your work.
+
+### Finding input errors
+
+Search errors append `at character N`, counting from the first character of EXPR after `search` and its separator. For example, `search type =` points to character 7, where the missing literal should begin. A missing item at the end points to the expression length plus one. Non-ASCII characters count as single Unicode code points; tabs are not expanded into screen columns. Malformed quoted command arguments use positions in the whole command line, including leading spaces. Correct the indicated input and try again, or use `help search`. Errors return to the prompt.
 
 ### Reading output
+
+Terminal control characters such as Escape, NUL and backspace are displayed as visible `\x1b`, `\x00` and `\x08` text. Normal line breaks and tabs remain layout characters. If the output encoding cannot display a character, it appears as a Python-style escape such as `\u4e2d`; a UTF-8 terminal displays ordinary Chinese and emoji directly. These are display representations only: searching and `.pim` files retain the original stored text. These output escapes do not add new command-input escape syntax.
 
 `list` and `search` display `ID | type | first text field` on each line. The first text field is `text` for a note, `description` for a task or event, and `name` for a contact; the entire stored value is shown. `show` prints `id:` and `type:` followed by all data-field labels and values. `show all` separates records with a blank line. An empty `list` or `show all` prints `No PIRs.`; an empty search prints `No matching PIRs.`. These messages are different so you can distinguish an empty collection/list filter from a search with no result.
 
@@ -115,7 +129,7 @@ The CLI tests check that an invalid update leaves the old value visible, a faile
 
 ## 8. Complete two-process example
 
-The independent review reran this example on 2026-10-23. Both Python processes exited with code 0, the snapshot existed, and the output matched the transcript below. Only the absolute temporary directory is replaced with `<TEMP_DIR>` below. That token is a redaction of the test location, not text to type as a path. Run both sessions from the **same** working directory so the relative `snapshot.pim` resolves to the same file.
+The usability release verification reran this example on 2026-10-23. Both Python processes exited with code 0, the snapshot existed, and the output matched the transcript below. Only the absolute temporary directory is replaced with `<TEMP_DIR>` below. That token is a redaction of the test location, not text to type as a path. Run both sessions from the **same** working directory so the relative `snapshot.pim` resolves to the same file.
 
 First start `python src/main.py`, then enter:
 
@@ -185,7 +199,9 @@ pim> Created note 5
 pim> id: 5
 type: note
 text: after load
-pim>
+pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.
 ```
 
 The loaded collection contains IDs 2–4 because ID 1 was deleted before saving. The next creation gets ID 5, confirming that deletion and reload did not reuse ID 1.
+
+The final warning is expected: note 5 was added after loading and was not saved. It is absent from the snapshot on disk.

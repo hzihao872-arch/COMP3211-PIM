@@ -1,0 +1,387 @@
+test_bad_command_quote_has_one_based_position (tests.controller.test_usability.UsabilityTests.test_bad_command_quote_has_one_based_position) ... FAIL
+test_dirty_load_is_refused_and_record_remains_editable (tests.controller.test_usability.UsabilityTests.test_dirty_load_is_refused_and_record_remains_editable) ... FAIL
+test_exit_and_eof_warn_once_without_saving_or_blocking (tests.controller.test_usability.UsabilityTests.test_exit_and_eof_warn_once_without_saving_or_blocking) ... 
+  test_exit_and_eof_warn_once_without_saving_or_blocking (tests.controller.test_usability.UsabilityTests.test_exit_and_eof_warn_once_without_saving_or_blocking) (ending='exit\nadd note never\n') ... FAIL
+  test_exit_and_eof_warn_once_without_saving_or_blocking (tests.controller.test_usability.UsabilityTests.test_exit_and_eof_warn_once_without_saving_or_blocking) (ending='') ... FAIL
+test_failed_forced_load_keeps_state_counter_and_dirty_flag (tests.controller.test_usability.UsabilityTests.test_failed_forced_load_keeps_state_counter_and_dirty_flag) ... FAIL
+test_failed_mutations_and_read_commands_do_not_dirty_a_loaded_session (tests.controller.test_usability.UsabilityTests.test_failed_mutations_and_read_commands_do_not_dirty_a_loaded_session) ... FAIL
+test_failed_save_keeps_unsaved_protection (tests.controller.test_usability.UsabilityTests.test_failed_save_keeps_unsaved_protection) ... FAIL
+test_forced_load_replaces_and_preserves_high_id_counter (tests.controller.test_usability.UsabilityTests.test_forced_load_replaces_and_preserves_high_id_counter) ... FAIL
+test_help_and_wrong_arguments_offer_a_recovery_path (tests.controller.test_usability.UsabilityTests.test_help_and_wrong_arguments_offer_a_recovery_path) ... FAIL
+test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) ... 
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='help') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='add') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='list') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='show') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='update') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='delete') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='search') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='save') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='load') ... FAIL
+  test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='exit') ... FAIL
+test_invalid_force_options_do_not_bypass_protection (tests.controller.test_usability.UsabilityTests.test_invalid_force_options_do_not_bypass_protection) ... FAIL
+test_successful_save_clears_dirty_state (tests.controller.test_usability.UsabilityTests.test_successful_save_clears_dirty_state) ... ok
+test_update_and_delete_each_mark_the_session_dirty (tests.controller.test_usability.UsabilityTests.test_update_and_delete_each_mark_the_session_dirty) ... 
+  test_update_and_delete_each_mark_the_session_dirty (tests.controller.test_usability.UsabilityTests.test_update_and_delete_each_mark_the_session_dirty) (mutation='update 1 text changed') ... FAIL
+  test_update_and_delete_each_mark_the_session_dirty (tests.controller.test_usability.UsabilityTests.test_update_and_delete_each_mark_the_session_dirty) (mutation='delete 1') ... FAIL
+test_bad_operator_and_missing_operator_point_to_the_offending_token (tests.model.test_search_positions.SearchPositionTests.test_bad_operator_and_missing_operator_point_to_the_offending_token) ... FAIL
+test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) ... 
+  test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) (expression='') ... FAIL
+  test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) (expression='   ') ... FAIL
+  test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) (expression='type =') ... FAIL
+  test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) (expression='type = "note" && ') ... FAIL
+test_invalid_escape_points_to_backslash_and_unclosed_quote_to_start (tests.model.test_search_positions.SearchPositionTests.test_invalid_escape_points_to_backslash_and_unclosed_quote_to_start) ... FAIL
+test_invalid_type_text_and_time_literals_point_to_opening_quote (tests.model.test_search_positions.SearchPositionTests.test_invalid_type_text_and_time_literals_point_to_opening_quote) ... 
+  test_invalid_type_text_and_time_literals_point_to_opening_quote (tests.model.test_search_positions.SearchPositionTests.test_invalid_type_text_and_time_literals_point_to_opening_quote) (expression='type = "unknown"') ... FAIL
+  test_invalid_type_text_and_time_literals_point_to_opening_quote (tests.model.test_search_positions.SearchPositionTests.test_invalid_type_text_and_time_literals_point_to_opening_quote) (expression='text contains ""') ... FAIL
+  test_invalid_type_text_and_time_literals_point_to_opening_quote (tests.model.test_search_positions.SearchPositionTests.test_invalid_type_text_and_time_literals_point_to_opening_quote) (expression='deadline < "bad time"') ... FAIL
+test_unicode_and_escaped_literals_keep_original_source_offsets (tests.model.test_search_positions.SearchPositionTests.test_unicode_and_escaped_literals_keep_original_source_offsets) ... FAIL
+test_unknown_field_and_unexpected_token_point_to_the_token (tests.model.test_search_positions.SearchPositionTests.test_unknown_field_and_unexpected_token_point_to_the_token) ... FAIL
+test_unmatched_parentheses_point_to_the_unmatched_parenthesis (tests.model.test_search_positions.SearchPositionTests.test_unmatched_parentheses_point_to_the_unmatched_parenthesis) ... FAIL
+
+======================================================================
+FAIL: test_bad_command_quote_has_one_based_position (tests.controller.test_usability.UsabilityTests.test_bad_command_quote_has_one_based_position)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 114, in test_bad_command_quote_has_one_based_position
+    self.assertIn("character 10", output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'character 10' not found in 'pim> Error: COMMAND: unterminated quoted argument\npim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_dirty_load_is_refused_and_record_remains_editable (tests.controller.test_usability.UsabilityTests.test_dirty_load_is_refused_and_record_remains_editable)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 31, in test_dirty_load_is_refused_and_record_remains_editable
+    self.assertIn("unsaved changes", output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'unsaved changes' not found in 'pim> Created note 1\npim> Loaded 1 PIR(s) from C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmpucflrf_b\\saved.pim\npim> id: 1\ntype: note\ntext: saved\npim> Updated 1\npim> '
+
+======================================================================
+FAIL: test_exit_and_eof_warn_once_without_saving_or_blocking (tests.controller.test_usability.UsabilityTests.test_exit_and_eof_warn_once_without_saving_or_blocking) (ending='exit\nadd note never\n')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 91, in test_exit_and_eof_warn_once_without_saving_or_blocking
+    self.assertEqual(output.count("Warning: unsaved changes"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_exit_and_eof_warn_once_without_saving_or_blocking (tests.controller.test_usability.UsabilityTests.test_exit_and_eof_warn_once_without_saving_or_blocking) (ending='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 91, in test_exit_and_eof_warn_once_without_saving_or_blocking
+    self.assertEqual(output.count("Warning: unsaved changes"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_failed_forced_load_keeps_state_counter_and_dirty_flag (tests.controller.test_usability.UsabilityTests.test_failed_forced_load_keeps_state_counter_and_dirty_flag)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 58, in test_failed_forced_load_keeps_state_counter_and_dirty_flag
+    self.assertIn("Error: IO:", output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error: IO:' not found in 'pim> Created note 1\npim> Error: COMMAND: wrong argument count for load\npim> Loaded 1 PIR(s) from C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmpb5067von\\saved.pim\npim> '
+
+======================================================================
+FAIL: test_failed_mutations_and_read_commands_do_not_dirty_a_loaded_session (tests.controller.test_usability.UsabilityTests.test_failed_mutations_and_read_commands_do_not_dirty_a_loaded_session)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 67, in test_failed_mutations_and_read_commands_do_not_dirty_a_loaded_session
+    self.assertEqual(output.count("Error:"), 3)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 4 != 3
+
+======================================================================
+FAIL: test_failed_save_keeps_unsaved_protection (tests.controller.test_usability.UsabilityTests.test_failed_save_keeps_unsaved_protection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 53, in test_failed_save_keeps_unsaved_protection
+    self.assertIn("unsaved changes", output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'unsaved changes' not found in 'pim> Created note 1\npim> Error: IO: cannot save C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmpaza9buzx\\new.pim: denied\npim> Loaded 1 PIR(s) from C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmpaza9buzx\\saved.pim\npim> '
+
+======================================================================
+FAIL: test_forced_load_replaces_and_preserves_high_id_counter (tests.controller.test_usability.UsabilityTests.test_forced_load_replaces_and_preserves_high_id_counter)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 38, in test_forced_load_replaces_and_preserves_high_id_counter
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Created note 1\npim> Created note 2\npim> Error: COMMAND: wrong argument count for load\npim> id: 1\ntype: note\ntext: first\n\nid: 2\ntype: note\ntext: second\npim> '
+
+======================================================================
+FAIL: test_help_and_wrong_arguments_offer_a_recovery_path (tests.controller.test_usability.UsabilityTests.test_help_and_wrong_arguments_offer_a_recovery_path)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 107, in test_help_and_wrong_arguments_offer_a_recovery_path
+    self.assertEqual(output.count("Error: COMMAND:"), 2)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 3 != 2
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='help')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='add')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='list')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='show')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='update')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='delete')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='search')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='save')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='load')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_help_topics_cover_every_command_without_mutation (tests.controller.test_usability.UsabilityTests.test_help_topics_cover_every_command_without_mutation) (topic='exit')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 99, in test_help_topics_cover_every_command_without_mutation
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Error: COMMAND: wrong argument count for help\npim> '
+
+======================================================================
+FAIL: test_invalid_force_options_do_not_bypass_protection (tests.controller.test_usability.UsabilityTests.test_invalid_force_options_do_not_bypass_protection)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 84, in test_invalid_force_options_do_not_bypass_protection
+    self.assertIn("unsaved changes", self.session('load "saved.pim" force=false\n'))
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'unsaved changes' not found in 'pim> Error: COMMAND: wrong argument count for load\npim> '
+
+======================================================================
+FAIL: test_update_and_delete_each_mark_the_session_dirty (tests.controller.test_usability.UsabilityTests.test_update_and_delete_each_mark_the_session_dirty) (mutation='update 1 text changed')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 74, in test_update_and_delete_each_mark_the_session_dirty
+    self.assertIn("unsaved changes", output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'unsaved changes' not found in 'pim> Loaded 1 PIR(s) from C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmp11ra1250\\saved.pim\npim> Updated 1\npim> Loaded 1 PIR(s) from C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmp11ra1250\\saved.pim\npim> '
+
+======================================================================
+FAIL: test_update_and_delete_each_mark_the_session_dirty (tests.controller.test_usability.UsabilityTests.test_update_and_delete_each_mark_the_session_dirty) (mutation='delete 1')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_usability.py", line 74, in test_update_and_delete_each_mark_the_session_dirty
+    self.assertIn("unsaved changes", output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'unsaved changes' not found in 'pim> Loaded 1 PIR(s) from C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmp11ra1250\\saved.pim\npim> Deleted 1\npim> Loaded 1 PIR(s) from C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmp11ra1250\\saved.pim\npim> '
+
+======================================================================
+FAIL: test_bad_operator_and_missing_operator_point_to_the_offending_token (tests.model.test_search_positions.SearchPositionTests.test_bad_operator_and_missing_operator_point_to_the_offending_token)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 21, in test_bad_operator_and_missing_operator_point_to_the_offending_token
+    self.check_position('deadline ! "2026-01-01 00:00"', 10)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 10
+
+======================================================================
+FAIL: test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) (expression='')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 41, in test_incomplete_expression_points_one_character_past_end
+    self.check_position(expression, len(expression) + 1)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 1
+
+======================================================================
+FAIL: test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) (expression='   ')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 41, in test_incomplete_expression_points_one_character_past_end
+    self.check_position(expression, len(expression) + 1)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 4
+
+======================================================================
+FAIL: test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) (expression='type =')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 41, in test_incomplete_expression_points_one_character_past_end
+    self.check_position(expression, len(expression) + 1)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 7
+
+======================================================================
+FAIL: test_incomplete_expression_points_one_character_past_end (tests.model.test_search_positions.SearchPositionTests.test_incomplete_expression_points_one_character_past_end) (expression='type = "note" && ')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 41, in test_incomplete_expression_points_one_character_past_end
+    self.check_position(expression, len(expression) + 1)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 18
+
+======================================================================
+FAIL: test_invalid_escape_points_to_backslash_and_unclosed_quote_to_start (tests.model.test_search_positions.SearchPositionTests.test_invalid_escape_points_to_backslash_and_unclosed_quote_to_start)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 30, in test_invalid_escape_points_to_backslash_and_unclosed_quote_to_start
+    self.check_position(r'text contains "bad\q"', 19)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 19
+
+======================================================================
+FAIL: test_invalid_type_text_and_time_literals_point_to_opening_quote (tests.model.test_search_positions.SearchPositionTests.test_invalid_type_text_and_time_literals_point_to_opening_quote) (expression='type = "unknown"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 27, in test_invalid_type_text_and_time_literals_point_to_opening_quote
+    self.check_position(expression, expression.index('"') + 1)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 8
+
+======================================================================
+FAIL: test_invalid_type_text_and_time_literals_point_to_opening_quote (tests.model.test_search_positions.SearchPositionTests.test_invalid_type_text_and_time_literals_point_to_opening_quote) (expression='text contains ""')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 27, in test_invalid_type_text_and_time_literals_point_to_opening_quote
+    self.check_position(expression, expression.index('"') + 1)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 15
+
+======================================================================
+FAIL: test_invalid_type_text_and_time_literals_point_to_opening_quote (tests.model.test_search_positions.SearchPositionTests.test_invalid_type_text_and_time_literals_point_to_opening_quote) (expression='deadline < "bad time"')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 27, in test_invalid_type_text_and_time_literals_point_to_opening_quote
+    self.check_position(expression, expression.index('"') + 1)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 12
+
+======================================================================
+FAIL: test_unicode_and_escaped_literals_keep_original_source_offsets (tests.model.test_search_positions.SearchPositionTests.test_unicode_and_escaped_literals_keep_original_source_offsets)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 45, in test_unicode_and_escaped_literals_keep_original_source_offsets
+    self.check_position(expression, expression.index('@') + 1)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 26
+
+======================================================================
+FAIL: test_unknown_field_and_unexpected_token_point_to_the_token (tests.model.test_search_positions.SearchPositionTests.test_unknown_field_and_unexpected_token_point_to_the_token)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 16, in test_unknown_field_and_unexpected_token_point_to_the_token
+    self.check_position('  unknown = "x"', 3)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 3
+
+======================================================================
+FAIL: test_unmatched_parentheses_point_to_the_unmatched_parenthesis (tests.model.test_search_positions.SearchPositionTests.test_unmatched_parentheses_point_to_the_unmatched_parenthesis)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 34, in test_unmatched_parentheses_point_to_the_unmatched_parenthesis
+    self.check_position(' (type = "note"', 2)
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\comp3211\COMP3211-PIM\tests\model\test_search_positions.py", line 12, in check_position
+    self.assertEqual(getattr(raised.exception, "position", None), position)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 2
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.035s
+
+FAILED (failures=34)

@@ -1,0 +1,9 @@
+Executable: C:\Users\HANWANG\AppData\Local\Programs\Python\Python312\python.exe
+Arguments: ['-S', '-m', 'unittest', 'discover', '-s', 'tests', '-t', '.']
+......................................................................................
+----------------------------------------------------------------------
+Ran 86 tests in 2.594s
+
+OK
+
+Exit: 0

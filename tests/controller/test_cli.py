@@ -62,7 +62,7 @@ class CLITests(unittest.TestCase):
         self.assertEqual(self.controller._manager.get(1).text, 'a "quote" and \\ slash')
         self.assertIn('Error: COMMAND:', output)
         self.assertIn('Error: VALIDATION:', output)
-        self.assertTrue(output.endswith('pim> '))
+        self.assertTrue(output.endswith('pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.\n'))
 
     def test_tab_separated_search_and_invalid_path_recover(self):
         output = self.session('add note memo\nsearch\ttype = "note"\nsave "bad\x00.pim"\nshow 1\nexit\n')
@@ -73,7 +73,7 @@ class CLITests(unittest.TestCase):
     def test_save_load_swap_and_failure_preserves_active_manager(self):
         output = self.session(
             'add note "old"\nsave "file.pim"\nadd note "new"\n'
-            'load "missing.pim"\nlist\nload "file.pim"\nlist\n'
+            'load "missing.pim" force=true\nlist\nload "file.pim" force=true\nlist\n'
             'add note "after reload"\nshow 3\nexit\n'
         )
         self.assertIn('Saved 1 PIR(s)', output)

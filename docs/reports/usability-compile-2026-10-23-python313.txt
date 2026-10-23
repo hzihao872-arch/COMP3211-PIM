@@ -1,0 +1,4 @@
+Executable: D:\conda\python.exe
+Arguments: ['-m', 'compileall', '-q', 'src', 'tests', 'tools']
+
+Exit: 0

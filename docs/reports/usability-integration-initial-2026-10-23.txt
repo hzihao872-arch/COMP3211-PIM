@@ -1,0 +1,1354 @@
+...FF...F.FFFFFFF...F.............................................F....FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF..F.........F..
+======================================================================
+FAIL: test_quote_escapes_argument_counts_ids_and_eof (tests.controller.test_cli.CLITests.test_quote_escapes_argument_counts_ids_and_eof)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_cli.py", line 65, in test_quote_escapes_argument_counts_ids_and_eof
+    self.assertTrue(output.endswith('pim> '))
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_save_load_swap_and_failure_preserves_active_manager (tests.controller.test_cli.CLITests.test_save_load_swap_and_failure_preserves_active_manager)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_cli.py", line 80, in test_save_load_swap_and_failure_preserves_active_manager
+    self.assertIn('Error: IO:', output)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error: IO:' not found in 'pim> Created note 1\npim> Saved 1 PIR(s) to C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmpscyocrmp\\file.pim\npim> Created note 2\npim> Error: COMMAND: unsaved changes; save first or use load "PATH.pim" force=true to discard them\npim> 1 | note | old\n2 | note | new\npim> Error: COMMAND: unsaved changes; save first or use load "PATH.pim" force=true to discard them\npim> 1 | note | old\n2 | note | new\npim> Created note 3\npim> id: 3\ntype: note\ntext: after reload\npim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.\n'
+
+======================================================================
+FAIL: test_all_command_forms_accept_mixed_case (tests.controller.test_requirement_edges.CLIRequirementTests.test_all_command_forms_accept_mixed_case)
+FR-13: every command and all types accept case variations; values retain case.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_requirement_edges.py", line 35, in test_all_command_forms_accept_mixed_case
+    self.assertNotIn("Error:", output)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error:' unexpectedly found in 'pim> Commands:\n  help [COMMAND]\n  add TYPE "FIELD"...  (note: text; task: description deadline; event: description start_time alarm_time; contact: name address mobile_number)\n  list [TYPE]\n  show ID | show all\n  update ID FIELD "VALUE"\n  delete ID\n  search EXPR\n  save "PATH.pim" | load "PATH.pim" [force=true|force=false]\n  exit\nTypes/fields/commands ignore case. Values with spaces need double quotes; inside quotes use \\" and \\\\.\nTime: YYYY-MM-DD HH:mm (local, 24-hour).\nSearch atoms: type = "TYPE"; FIELD contains "TEXT"; deadline/start_time/alarm_time <, >, or = "TIME".\nCombine with !, &&, ||, and parentheses; precedence: parentheses, !, &&, ||.\nUse help COMMAND for details and examples. Unsaved changes block load unless force=true.\nExit/EOF warn about unsaved changes; they do not save automatically.\npim> Created note 1\npim> Created task 2\npim> Created event 3\npim> Created contact 4\npim> 1 | note | MiXeD\n2 | task | Task\n3 | event | Event\n4 | contact | Name\npim> 1 | note | MiXeD\npim> id: 1\ntype: note\ntext: MiXeD\npim> id: 1\ntype: note\ntext: MiXeD\n\nid: 2\ntype: task\ndescription: Task\ndeadline: 2026-01-01 00:00\n\nid: 3\ntype: event\ndescription: Event\nstart_time: 2026-01-01 00:00\nalarm_time: 2026-01-02 00:00\n\nid: 4\ntype: contact\nname: Name\naddress: Road\nmobile_number: +001\npim> Updated 1\npim> 1 | note | Changed\npim> Saved 4 PIR(s) to C:\\Users\\HANWANG\\AppData\\Local\\Temp\\tmpxz2qkd4r\\Case.pim\npim> Deleted 1\npim> Error: COMMAND: unsaved changes; save first or use load "PATH.pim" force=true to discard them\npim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.\n'
+
+======================================================================
+FAIL: test_each_failed_operation_preserves_state_and_returns_to_prompt (tests.controller.test_requirement_edges.CLIRequirementTests.test_each_failed_operation_preserves_state_and_returns_to_prompt) (command='load "missing.pim"')
+FR-50/49: create/update/delete/search/save/load failures are atomic and recover.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_requirement_edges.py", line 93, in test_each_failed_operation_preserves_state_and_returns_to_prompt
+    self.assertEqual(output.count(f"Error: {category}:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_each_failed_operation_preserves_state_and_returns_to_prompt (tests.controller.test_requirement_edges.CLIRequirementTests.test_each_failed_operation_preserves_state_and_returns_to_prompt) (command='load "broken.pim"')
+FR-50/49: create/update/delete/search/save/load failures are atomic and recover.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_requirement_edges.py", line 93, in test_each_failed_operation_preserves_state_and_returns_to_prompt
+    self.assertEqual(output.count(f"Error: {category}:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_empty_list_filter_and_show_all_have_clear_output (tests.controller.test_requirement_edges.CLIRequirementTests.test_empty_list_filter_and_show_all_have_clear_output)
+FR-21: empty display paths produce an explicit message, without errors.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_requirement_edges.py", line 76, in test_empty_list_filter_and_show_all_have_clear_output
+    self.assertEqual(self.session("list contact\n"), "pim> No PIRs.\npim> ")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'pim> No PIRs.\npim> Warning: unsaved changes will be lost; us[31 chars]g.\n' != 'pim> No PIRs.\npim> '
+  pim> No PIRs.
++ pim> 
+- pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.
+- 
+
+
+======================================================================
+FAIL: test_show_each_type_prints_all_details (tests.controller.test_requirement_edges.CLIRequirementTests.test_show_each_type_prints_all_details) (record_id=1)
+FR-19: show ID exposes every stored field for each of the four types.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_requirement_edges.py", line 68, in test_show_each_type_prints_all_details
+    self.assertEqual(self.session(f"show {record_id}\n"), f"pim> {details}\npim> ")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'pim>[32 chars]pim> Warning: unsaved changes will be lost; us[31 chars]g.\n' != 'pim>[32 chars]pim> '
+  pim> id: 1
+  type: note
+  text: memo
++ pim> 
+- pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.
+- 
+
+
+======================================================================
+FAIL: test_show_each_type_prints_all_details (tests.controller.test_requirement_edges.CLIRequirementTests.test_show_each_type_prints_all_details) (record_id=2)
+FR-19: show ID exposes every stored field for each of the four types.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_requirement_edges.py", line 68, in test_show_each_type_prints_all_details
+    self.assertEqual(self.session(f"show {record_id}\n"), f"pim> {details}\npim> ")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'pim>[67 chars]pim> Warning: unsaved changes will be lost; us[31 chars]g.\n' != 'pim>[67 chars]pim> '
+  pim> id: 2
+  type: task
+  description: work
+  deadline: 2026-01-01 09:00
++ pim> 
+- pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.
+- 
+
+
+======================================================================
+FAIL: test_show_each_type_prints_all_details (tests.controller.test_requirement_edges.CLIRequirementTests.test_show_each_type_prints_all_details) (record_id=3)
+FR-19: show ID exposes every stored field for each of the four types.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_requirement_edges.py", line 68, in test_show_each_type_prints_all_details
+    self.assertEqual(self.session(f"show {record_id}\n"), f"pim> {details}\npim> ")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'pim>[100 chars]pim> Warning: unsaved changes will be lost; us[31 chars]g.\n' != 'pim>[100 chars]pim> '
+  pim> id: 3
+  type: event
+  description: meet
+  start_time: 2026-01-02 10:00
+  alarm_time: 2026-01-01 08:00
++ pim> 
+- pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.
+- 
+
+
+======================================================================
+FAIL: test_show_each_type_prints_all_details (tests.controller.test_requirement_edges.CLIRequirementTests.test_show_each_type_prints_all_details) (record_id=4)
+FR-19: show ID exposes every stored field for each of the four types.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_requirement_edges.py", line 68, in test_show_each_type_prints_all_details
+    self.assertEqual(self.session(f"show {record_id}\n"), f"pim> {details}\npim> ")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'pim>[73 chars]pim> Warning: unsaved changes will be lost; us[31 chars]g.\n' != 'pim>[73 chars]pim> '
+  pim> id: 4
+  type: contact
+  name: Li
+  address: Room 1
+  mobile_number: +00123
++ pim> 
+- pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.
+- 
+
+
+======================================================================
+FAIL: test_unicode_output_preserves_ordinary_text_and_prompt_flush (tests.controller.test_terminal.TerminalOutputTests.test_unicode_output_preserves_ordinary_text_and_prompt_flush)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\controller\test_terminal.py", line 65, in test_unicode_output_preserves_ordinary_text_and_prompt_flush
+    self.assertEqual(output.getvalue(), "pim> id: 1\ntype: note\ntext: 中文 café 😀\npim> ")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'pim>[37 chars]pim> Warning: unsaved changes will be lost; us[31 chars]g.\n' != 'pim>[37 chars]pim> '
+  pim> id: 1
+  type: note
+  text: 中文 café 😀
++ pim> 
+- pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.
+- 
+
+
+======================================================================
+FAIL: test_excessive_nesting_preserves_state_and_session (tests.storage.test_independent_review.MalformedSnapshotTests.test_excessive_nesting_preserves_state_and_session)
+Rejected load retains the manager and permits show/add after the error.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_independent_review.py", line 35, in test_excessive_nesting_preserves_state_and_session
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing root format')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing root version')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing root next_id')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing root records')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='extra root key')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root format: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid root format: 'unknown'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root version: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root version: True')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root version: 2')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root next_id: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root next_id: True')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root next_id: 0')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root next_id: 4')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid root next_id: '5'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root records: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid root records: {}')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid root records: 'records'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing note id')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing note type')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing note text')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='extra note key')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid note id: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid note id: True')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid note id: 0')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid note id: '1'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid note id: 99')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid note type: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid note type: 'unknown'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid note type: 'NOTE'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid note text: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid note text: 3')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid note text: '   '")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid note text: 'two\\nlines'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid note text: 'bad\\ud800'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing task id')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing task type')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing task description')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing task deadline')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='extra task key')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid task id: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid task id: True')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid task id: 0')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task id: '1'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid task id: 99')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid task type: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task type: 'unknown'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task type: 'TASK'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid task description: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid task description: 3')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task description: '   '")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task description: 'two\\nlines'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task description: 'bad\\ud800'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid task deadline: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task deadline: '2026-02-30 00:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task deadline: '2026-01-01T00:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid task deadline: '2026-01-01 00:00+08:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing event id')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing event type')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing event description')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing event start_time')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing event alarm_time')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='extra event key')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event id: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event id: True')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event id: 0')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event id: '1'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event id: 99')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event type: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event type: 'unknown'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event type: 'EVENT'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event description: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event description: 3')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event description: '   '")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event description: 'two\\nlines'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event description: 'bad\\ud800'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event start_time: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event start_time: '2026-02-30 00:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event start_time: '2026-01-01T00:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event start_time: '2026-01-01 00:00+08:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid event alarm_time: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event alarm_time: '2026-02-30 00:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event alarm_time: '2026-01-01T00:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid event alarm_time: '2026-01-01 00:00+08:00'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing contact id')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing contact type')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing contact name')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing contact address')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='missing contact mobile_number')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='extra contact key')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact id: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact id: True')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact id: 0')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact id: '1'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact id: 99')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact type: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact type: 'unknown'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact type: 'CONTACT'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact name: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact name: 3')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact name: '   '")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact name: 'two\\nlines'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact name: 'bad\\ud800'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact address: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact address: 3')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact address: '   '")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact address: 'two\\nlines'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact address: 'bad\\ud800'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact mobile_number: None')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='invalid contact mobile_number: 3')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact mobile_number: '   '")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact mobile_number: 'two\\nlines'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case="invalid contact mobile_number: 'bad\\ud800'")
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='non-object row')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='duplicate IDs')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_missing_extra_keys_and_invalid_fields_are_rejected_atomically (tests.storage.test_requirement_edges.SnapshotRequirementTests.test_missing_extra_keys_and_invalid_fields_are_rejected_atomically) (case='descending IDs')
+Mutate each root/record key and every data field in a valid four-type file.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\storage\test_requirement_edges.py", line 77, in test_missing_extra_keys_and_invalid_fields_are_rejected_atomically
+    self.assertEqual(output.getvalue().count("Error: FORMAT:"), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+======================================================================
+FAIL: test_invalid_input_recovers_in_real_process (tests.test_acceptance.AcceptanceTests.test_invalid_input_recovers_in_real_process)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\test_acceptance.py", line 48, in test_invalid_input_recovers_in_real_process
+    self.assertIn('Error: IO:', result.stdout)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'Error: IO:' not found in 'pim> Created note 1\npim> Error: VALIDATION: text must not be empty\npim> Error: SEARCH: unknown search field: \'bad\' at character 1\npim> Error: COMMAND: unsaved changes; save first or use load "PATH.pim" force=true to discard them\npim> id: 1\ntype: note\ntext: keep\npim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.\n'
+
+======================================================================
+FAIL: test_demo_runs_from_another_directory_without_leaving_a_snapshot (tests.tools.test_evidence.EvidenceToolTests.test_demo_runs_from_another_directory_without_leaving_a_snapshot)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\tools\test_evidence.py", line 25, in test_demo_runs_from_another_directory_without_leaving_a_snapshot
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : FAIL: transcript mismatch
+--- expected
++++ actual
+@@ -43,4 +43,4 @@
+ pim> id: 5
+ type: note
+ text: after load
+-pim>
++pim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.
+
+
+----------------------------------------------------------------------
+Ran 83 tests in 1.827s
+
+FAILED (failures=130)

@@ -47,10 +47,16 @@ def main():
         files[f"05_Presentation/Presentation.{suffix}"] = ROOT / "artifacts/presentation" / f"Presentation.{suffix}"
     files["03_Implementation/README.md"] = ROOT / "submission/release-README.md"
     files["AI_Assistance_Record.md"] = ROOT / "submission/ai-use-log.md"
-    for source in sorted((ROOT / "docs/reports").glob("independent-*.txt")):
+    for source in sorted((ROOT / "media/demo").glob("*.txt")):
+        files["03_Implementation/media/demo/" + source.name] = source
+    for source in sorted((ROOT / "docs/reports").glob("usability-*-python*.txt")):
         files["03_Implementation/evidence/" + source.name] = source
-    for name in ("independent-traceability-2026-10-23.json", "independent-pdf-geometry-2026-10-23.json"):
+    for name in ("usability-import-audit-2026-10-23.txt", "usability-traceability-2026-10-23.json",
+                 "usability-pdf-geometry-2026-10-23.json", "usability-release-2026-10-23.md"):
         files["03_Implementation/evidence/" + name] = ROOT / "docs/reports" / name
+    for folder in ("demo", "presentation"):
+        for source in sorted((ROOT / "media" / folder).glob("*.md")):
+            files[("04_Demo/" if folder == "demo" else "05_Presentation/") + source.name] = source
     # Check the complete input list before creating the staging directory.
     for source in files.values():
         if not source.is_file():
@@ -60,12 +66,12 @@ def main():
         target = stage / relative
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source, target)
-    (stage / "04_Demo").mkdir()
+    (stage / "04_Demo").mkdir(exist_ok=True)
     (stage / "04_Demo/README.txt").write_text(
         "Pending real System_Demo.mp4 (at most 4 minutes). No recording has been fabricated.\n",
         encoding="utf-8")
     (stage / "00_README.txt").write_text(
-        "COMP3211 Group 89 - INDEPENDENT REVIEW CANDIDATE\n"
+        "COMP3211 Group 89 - USABILITY RELEASE CANDIDATE\n"
         "Not a final submission: real System_Demo.mp4, Presentation_Recording.mp4 and\n"
         "the completed official Honour Declaration are still missing.\n"
         "Final deadline in the supplied course PDF: 20 November 2026, 20:00.\n"
@@ -83,10 +89,11 @@ def main():
         for source in payload:
             bundle.write(source, source.relative_to(stage).as_posix())
     with zipfile.ZipFile(archive) as bundle:
-        assert bundle.testzip() is None
-        assert len(bundle.namelist()) == len(payload)
+        if bundle.testzip() is not None or len(bundle.namelist()) != len(payload):
+            raise RuntimeError("archive integrity/count verification failed")
         for source in payload:
-            assert bundle.read(source.relative_to(stage).as_posix()) == source.read_bytes()
+            if bundle.read(source.relative_to(stage).as_posix()) != source.read_bytes():
+                raise RuntimeError(f"archive byte mismatch: {source}")
     manifest = (
         "# Current candidate manifest - COMP3211 Group 89\n\n"
         f"**Candidate:** `output/{archive.name}`\n\n"
@@ -96,11 +103,11 @@ def main():
         "Current working-tree files, including uncommitted fixes, identify this release. "
         "Historical commit 4d3508d is not the complete delivery. Older archives are retained.\n\n"
         "## Verification\n\n"
-        "Payload byte equality and ZIP CRC checked during assembly. Repository runs: "
-        "51 tests passed on Python 3.11.9/3.12.3/3.13.5; full-suite model coverage "
-        "416/421 (98.81%); model-only 415/421 (98.57%). See "
-        "`docs/reports/independent-review-2026-10-23.md` and the final clean-extraction log "
-        "for post-packaging verification. Re-run after any subsequent change.\n\n"
+        "Payload byte equality and ZIP CRC checked during assembly. Repository verification "
+        "is recorded in `docs/reports/usability-release-2026-10-23.md` and the packaged "
+        "evidence logs. Assembly alone does not establish that tests passed. "
+        "Post-packaging clean-extraction verification must be recorded below before "
+        "calling this candidate verified. Re-run after any subsequent change.\n\n"
         "## Pending real deliverables\n\n"
         "- `04_Demo/System_Demo.mp4`: actual recording, <=4 minutes.\n"
         "- `05_Presentation/Presentation_Recording.mp4`: <=5 minutes, each member >=1 minute; "

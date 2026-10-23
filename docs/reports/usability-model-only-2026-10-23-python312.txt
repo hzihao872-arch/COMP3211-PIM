@@ -1,0 +1,35 @@
+Executable: C:\Users\HANWANG\AppData\Local\Programs\Python\Python312\python.exe
+Arguments: ['-c', "from tools import model_coverage as c; c.TESTS = c.TESTS / 'model'; raise SystemExit(c.main())"]
+................................
+----------------------------------------------------------------------
+Ran 32 tests in 0.674s
+
+OK
+Model line coverage (Python standard-library trace)
+Python: 3.12.3
+OS: Windows 11
+Command: python tools/model_coverage.py
+Tests: 32; failures: 0; errors: 0
+Scope: src/model/*.py; subprocess CLI execution is outside trace scope
+Method: trace executable source lines; non-source 0/None entries excluded
+model/__init__.py: 0/0 (n/a)
+  Missing source lines: none
+  Excluded non-source entries: 1
+model/errors.py: 7/7 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 1
+model/manager.py: 94/95 (98.95%)
+  Missing source lines: 22
+  Excluded non-source entries: 1
+model/records.py: 57/57 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 1
+model/search.py: 238/243 (97.94%)
+  Missing source lines: 209, 210, 211, 212, 213
+  Excluded non-source entries: 1
+model/validation.py: 34/34 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 1
+TOTAL model: 430/436 (98.62%)
+
+Exit: 0

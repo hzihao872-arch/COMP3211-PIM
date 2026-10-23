@@ -29,7 +29,7 @@ class CLIRequirementTests(unittest.TestCase):
             'AdD EvEnT "Event" "2026-01-01 00:00" "2026-01-02 00:00"\n'
             'AdD CoNtAcT "Name" "Road" "+001"\nLiSt\nLiSt NoTe\nShOw 1\n'
             'ShOw AlL\nUpDaTe 1 TeXt "Changed"\nSeArCh TyPe = "NoTe"\n'
-            'SaVe "Case.pim"\nDeLeTe 1\nLoAd "Case.pim"\nExIt\n'
+            'SaVe "Case.pim"\nDeLeTe 1\nLoAd "Case.pim" FoRcE=TrUe\nExIt\n'
             'add note "must not execute"\n'
         )
         self.assertNotIn("Error:", output)
@@ -65,7 +65,7 @@ class CLIRequirementTests(unittest.TestCase):
         )
         for record_id, details in enumerate(expected, 1):
             with self.subTest(record_id=record_id):
-                self.assertEqual(self.session(f"show {record_id}\n"), f"pim> {details}\npim> ")
+                self.assertEqual(self.session(f"show {record_id}\n"), f'pim> {details}\npim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.\n')
 
     def test_empty_list_filter_and_show_all_have_clear_output(self):
         """FR-21: empty display paths produce an explicit message, without errors."""
@@ -73,7 +73,7 @@ class CLIRequirementTests(unittest.TestCase):
             with self.subTest(command=command):
                 self.assertEqual(self.session(command + "\n"), "pim> No PIRs.\npim> ")
         self.session('add note "memo"\n')
-        self.assertEqual(self.session("list contact\n"), "pim> No PIRs.\npim> ")
+        self.assertEqual(self.session("list contact\n"), 'pim> No PIRs.\npim> Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.\n')
 
     def test_each_failed_operation_preserves_state_and_returns_to_prompt(self):
         """FR-50/49: create/update/delete/search/save/load failures are atomic and recover."""
@@ -85,8 +85,8 @@ class CLIRequirementTests(unittest.TestCase):
             ('add task "bad" "not a date"', "VALIDATION"),
             ('update 1 text ""', "VALIDATION"), ('delete 999', "NOT_FOUND"),
             ('search text contains "keep" &&', "SEARCH"), ('save "bad.txt"', "PATH"),
-            ('save "missing/records.pim"', "IO"), ('load "missing.pim"', "IO"),
-            ('load "broken.pim"', "FORMAT"), ('unknown', "COMMAND"),
+            ('save "missing/records.pim"', "IO"), ('load "missing.pim" force=true', "IO"),
+            ('load "broken.pim" force=true', "FORMAT"), ('unknown', "COMMAND"),
         ):
             with self.subTest(command=command):
                 output = self.session(command + '\nshow 1\n')

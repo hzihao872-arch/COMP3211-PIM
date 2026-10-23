@@ -15,3 +15,7 @@ class RecordNotFoundError(PIMError):
 
 class SearchSyntaxError(ValidationError):
     """The complete search expression cannot be parsed."""
+
+    def __init__(self, detail: str, position: int | None = None) -> None:
+        self.position = position
+        super().__init__(detail + (f" at character {position}" if position is not None else ""))

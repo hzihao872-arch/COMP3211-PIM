@@ -4,7 +4,7 @@
 **Project:** Command-line Personal Information Management (PIM) system<br>
 **Group number:** 89<br>
 **Members and student IDs:** [Human input pending: member names and student IDs]<br>
-**Version:** Independent-review candidate 1.3<br>
+**Version:** Usability release candidate 1.5<br>
 **Date:** 2026-10-23<br>
 **Implementation basis:** Current candidate source and tests, including local review changes; historical starting commit `4d3508db0447a3ac6346a2a2789da89208f88fd5` does not identify the complete delivery. See the candidate manifest for packaged file hashes.
 
@@ -18,6 +18,8 @@ This specification is for the project group, course assessors, designers, implem
 | WP05 final source 1.1 | 2026-09-30 | Recorded group 89 and the historical implementation SHA; retained requirement IDs. Python 3.11 verification was pending at that stage. |
 | Group-review candidate 1.2 | 2026-10-23 | Rechecked Lecture 04 structure; added rationale and compatibility evidence. |
 | Independent-review candidate 1.3 | 2026-10-23 | Independently checked official stories and actual code; clarified text/time normalization, ID scope, observable save atomicity and file-error recovery; retained all requirement IDs. |
+| Peer-comparison source revision 1.4 | 2026-10-23 | Clarified safe terminal representation and process termination; unchanged command grammar, model rules and FR/NFR IDs. |
+| Usability release candidate 1.5 | 2026-10-23 | Added FR-51–FR-54; refined help, exit warnings, protected load and positioned errors. |
 
 Every numbered requirement below is mandatory within this working specification and uses **shall**; a group-selected rule is not thereby a new course requirement. A verification idea describes how to check a requirement; it is not itself evidence of a passing test. The companion `requirements-catalog.csv` contains the same IDs, statements, source links, and verification ideas for coverage tracking. The current Requirements Coverage and Test Coverage reports record the independently rerun test results and their interpreter versions; this specification does not treat a verification idea or an earlier pass as current evidence.
 
@@ -82,6 +84,8 @@ At a high level, a **command interface** reads commands and presents results; a 
 
 ### 6.1 Shared record and command conventions
 
+Display convention for this source revision: complete stored text is represented on output, with C0/C1 terminal controls other than newline/tab shown as visible hexadecimal escapes. Characters unsupported by the output encoding use visible backslash escapes. These representations do not alter stored/searchable values or extend input escape syntax. Ctrl+C terminates with exit code 130 and no traceback; closing a downstream output pipe ends the process quietly. Neither operation saves implicitly. These are group-selected robustness refinements, not additional Appendix B features.
+
 The four schemas and creation argument order are:
 
 | Type | Required data fields, in `add` order |
@@ -91,7 +95,7 @@ The four schemas and creation argument order are:
 | `event` | `description`, `start_time`, `alarm_time` |
 | `contact` | `name`, `address`, `mobile_number` |
 
-The public commands are `help`, `add TYPE "FIELD"...`, `list [TYPE]`, `show ID`, `show all`, `update ID FIELD "VALUE"`, `delete ID`, `search EXPR`, `save "PATH.pim"`, `load "PATH.pim"`, and `exit`. Quotation marks indicate a quoted argument, not literal characters in the stored value. One-token non-search values may be unquoted. In quoted arguments, `\"` represents a quote and `\\` represents a backslash. Other backslash escapes are invalid. The entire remainder after `search` is its expression; search literals must be quoted even when they contain one token. Command arguments require separating whitespace; search operators and parentheses may be adjacent to atoms where their boundaries remain clear. Examples in §6.2 illustrate the grammar.
+The public commands are `help [COMMAND]`, `add TYPE "FIELD"...`, `list [TYPE]`, `show ID`, `show all`, `update ID FIELD "VALUE"`, `delete ID`, `search EXPR`, `save "PATH.pim"`, `load "PATH.pim" [force=true|force=false]`, and `exit`. Quotation marks indicate a quoted argument, not literal characters in the stored value. One-token non-search values may be unquoted. In quoted arguments, `\"` represents a quote and `\\` represents a backslash. Other backslash escapes are invalid. The entire remainder after `search` is its expression; search literals must be quoted even when they contain one token. Command arguments require separating whitespace; search operators and parentheses may be adjacent to atoms where their boundaries remain clear. Examples in §6.2 illustrate the grammar.
 
 **FR-01** [US1] The system shall hold `note`, `task`, `event`, and `contact` PIRs together in one current collection.<br>
 *Verify:* Create one of each type and list the collection.
@@ -162,10 +166,10 @@ The public commands are `help`, `add TYPE "FIELD"...`, `list [TYPE]`, `show ID`,
 **FR-23** [US6, US8, US9] The system shall report an absent or invalid ID for `show`, `update`, or `delete` without changing the collection.<br>
 *Verify:* Try zero, negative, noninteger, and missing IDs and compare state.
 
-**FR-24** [US1–US11] The `help` command shall display the available command forms and the record, quoting, time, and search syntax needed to use them.<br>
+**FR-24** [US1–US11] The bare `help` command shall display the available command forms and the record, quoting, time, and search syntax needed to use them.<br>
 *Verify:* Compare help output with the command and syntax definitions in this SRS.
 
-**FR-25** [US1–US11] The `exit` command or end of input shall terminate the command session normally.<br>
+**FR-25** [US1–US11] The `exit` command or end of input shall warn once if there are unsaved changes, then terminate normally without implicitly saving.<br>
 *Verify:* Run a session ending with `exit` and another ending at EOF.
 
 ### 6.2 Search criteria and execution
@@ -256,13 +260,13 @@ Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, 
 **FR-43** [US10] Saving shall replace the destination with the complete serialized snapshot only after a successful write; if saving fails, the previous destination contents shall remain unchanged.<br>
 *Verify:* Save successfully and compare the complete snapshot; induce serialization, write, and replacement failures and compare the destination's previous bytes.
 
-**FR-44** [US11] The `load "PATH.pim"` command shall read a `.pim` file and validate its complete contents before changing current state.<br>
+**FR-44** [US11] A permitted `load "PATH.pim" [force=true|force=false]` command shall read a `.pim` file and validate its complete contents before changing current state, subject to FR-52.<br>
 *Verify:* Load a valid file and separately attempt truncated, wrong-extension, and unreadable files.
 
 **FR-45** [US11] Load validation shall reject an incorrect format or version, missing or extra keys or fields, invalid field values, nonpositive or duplicate IDs, or a `next_id` no greater than the maximum stored ID.<br>
 *Verify:* Mutate one aspect of an otherwise valid file for each listed category and attempt load.
 
-**FR-46** [US11] Successful loading shall replace, rather than merge with, the current collection and shall use the greater of the pre-load and file `next_id` values for later creation.<br>
+**FR-46** [US11] Successful loading permitted by FR-52 shall replace, rather than merge with, the current collection and shall use the greater of the pre-load and file `next_id` values for later creation.<br>
 *Verify:* Load a snapshot over different in-memory records, including an older snapshot with a lower counter; add a PIR and inspect the assigned ID.
 
 **FR-47** [US11] A failed load shall preserve the entire prior in-memory collection and next ID.<br>
@@ -271,13 +275,29 @@ Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, 
 **FR-48** [US10, US11] The system shall resolve a relative `save` or `load` path against the process working directory.<br>
 *Verify:* Run from a chosen directory and use relative paths for save and load.
 
-**FR-49** [US1–US11] An unknown command, invalid argument, invalid path or file, or file I/O failure shall produce an error message identifying the rejected input or failure category and return to the command prompt.<br>
+**FR-49** [US1–US11] An unknown command, invalid argument, invalid path or file, or file I/O failure shall produce an error message identifying the rejected input or failure category and return to the command prompt; malformed search and quoted-command syntax shall include the position specified in FR-54.<br>
 *Verify:* Exercise each error category, inspect the message for the input or category, and issue a subsequent valid command.
 
 **FR-50** [US1–US11] A failed command shall not partially change the in-memory collection.<br>
 *Verify:* Compare the collection before and after failed create, update, delete, search, save, and load operations.
 
 The recovery requirement concerns command processing with usable input/output streams. Terminal disconnection or failure of the supplied streams can prevent a prompt from being displayed; it is not classified as a recoverable file operation.
+
+### 6.3.1 Usability safeguards (group-selected refinement)
+
+These narrow additions were requested after peer comparison. They refine the CLI without changing record schemas, ID rules or snapshot version; they are not additional course mandates.
+
+**FR-51** [US1–US11; group choice] The command interface shall track unsaved changes conservatively: successful add, update or delete marks the session unsaved; successful save or load clears it; failed commands and read-only commands preserve it. A controller initialized with existing records shall treat them as unsaved.<br>
+*Verify:* Exercise all three mutations, failed/successful save and load, read-only commands and a prepopulated controller; observe protected load and exit warnings.
+
+**FR-52** [US11; group choice] The system shall reject load while unsaved changes exist unless its final argument is `force=true`; omitted force or `force=false` shall retain protection, and other options shall be rejected. Option names and Boolean values shall ignore case.<br>
+*Verify:* Attempt protected, forced, malformed-option and failed forced loads; confirm state, counter and unsaved status are preserved on failure.
+
+**FR-53** [US1–US11; group choice] The `help COMMAND` form shall provide usage, explanatory details and an example for each supported command, ignoring the topic's letter case; unknown topics and excess arguments shall produce a recoverable command error.<br>
+*Verify:* Request all ten help topics, mixed-case topics, unknown topics and excessive arguments; run another valid command afterwards.
+
+**FR-54** [US7; group choice] Malformed search input shall report a one-based character position within EXPR, including invalid fields, operators, literals, escapes and grouping; missing input shall point to length plus one. Quoted-command syntax errors shall report positions in the complete command line. Positions shall count Unicode code points rather than display columns.<br>
+*Verify:* Check lexical, syntactic and semantic failures, end of input, initial command whitespace, escaped strings and non-ASCII characters, then verify session recovery.
 
 ### 6.4 Non-functional requirements
 
@@ -314,7 +334,7 @@ These are checkable product or implementation constraints, not claims of measure
 | US10 | FR-41–FR-43, FR-48 |
 | US11 | FR-44–FR-48 |
 
-The ranges above are inclusive. FR-12, FR-13, FR-15, FR-24, FR-25, FR-49, and FR-50 apply to **every** story in addition to its row. FR-14 applies to US2–US5. Each story has a direct behavior requirement independent of those cross-cutting rules.
+FR-51–FR-53 apply across the command session; FR-52 specifically refines US11. FR-54 refines US7 and quoted input diagnostics. The ranges above are inclusive. FR-12, FR-13, FR-15, FR-24, FR-25, FR-49, and FR-50 apply to **every** story in addition to its row. FR-14 applies to US2–US5. Each story has a direct behavior requirement independent of those cross-cutting rules.
 
 
 ### 6.6 Rationale for the requirements
@@ -334,5 +354,6 @@ Lecture 04 (p. 27) asks for reasons as well as consistent mandatory language. Th
 | FR-41–FR-43 | A saved snapshot must be usable in a later session; a failed save must not destroy the existing saved copy. |
 | FR-44–FR-48 | Full-file validation avoids importing partial or inconsistent data. Preserving the ID counter avoids reusing a previously allocated identifier after a load. |
 | FR-49–FR-50 | Recoverable errors allow users to correct input without restarting or losing valid records. |
+| FR-51–FR-54 | Protect unsaved data, make commands discoverable and locate malformed input without changing core record behavior. |
 | NFR-01–NFR-03 | A local CLI and standard-library implementation keep setup appropriate to the course scope. The explicit Python support list makes compatibility verifiable. |
 | NFR-04–NFR-05 | Keeping the model separate enables direct unit tests, while identifiable command and file components make responsibilities reviewable. |

@@ -4,9 +4,15 @@ Group repository for the Fall 2026 COMP3211 Software Engineering course project.
 
 The project is a command-line Personal Information Management (PIM) system. It manages notes, tasks, events, and contacts; supports modification, deletion, printing, compound search conditions, and `.pim` file persistence.
 
-## Current independent review candidate
+## Current source revision
 
-The latest reviewed package is `output/COMP3211_Group_Project-independent-review-2026-10-23-v2.zip`. Its file hashes are in [the current manifest](submission/manifest.md); findings and verification are in [the independent review](docs/reports/independent-review-2026-10-23.md). Earlier ZIPs and dated reports are historical. The candidate still requires the two real recordings, the official declaration, and human group review before submission.
+The usability release preserves this PIM mainline and adds unsaved-load protection, `help COMMAND`, and positioned search/quoting diagnostics. It also includes terminal escaping, limited-encoding output, Ctrl+C/closed-pipe handling and reproducible demo/performance tools. All 86 tests pass on Python 3.11.9, 3.12.3 and 3.13.5. The six document PDFs and presentation match this revision; see [current verification](docs/reports/usability-release-2026-10-23.md).
+
+## Latest packaged usability candidate
+
+The latest reviewed package is `output/COMP3211_Group_Project-usability-2026-10-23.zip`. Its file hashes are in [the current manifest](submission/manifest.md); findings and verification are in [the usability release report](docs/reports/usability-release-2026-10-23.md). Earlier ZIPs and dated reports are historical. The candidate still requires the two real recordings, the official declaration, and human group review before submission.
+
+Download the verified ZIP from the [usability release](https://github.com/hzihao872-arch/COMP3211-PIM/releases/tag/usability-2026-10-23). The release is marked as a prerelease because the human deliverables above remain pending.
 
 ## Important dates
 
@@ -51,6 +57,8 @@ python src/main.py
 $env:PYTHONPATH = "$PWD\src"
 python -m unittest discover -s tests -t . -v
 python tools/model_coverage.py
+python tools/verify_demo.py
+python tools/benchmark.py
 ```
 
 Type `help` for every command form, field order, quoting rule, and search syntax. For example:
@@ -63,6 +71,8 @@ exit
 ```
 
 The program starts with an empty collection. Use `load "records.pim"` in a later session to restore a saved snapshot. The `.pim` suffix must be lowercase. Dates use local `YYYY-MM-DD HH:mm` format. A failed command reports an error and returns to the prompt.
+
+The last two verification commands are available in the current source revision. They use temporary directories and never replace your snapshots. Keep `media/demo/demo-commands.txt` and `media/demo/demo-expected-output.txt` alongside `src`, `tests` and `tools` when copying it. Benchmark timings are local observations, not pass/fail performance requirements.
 
 ## Candidate status
 

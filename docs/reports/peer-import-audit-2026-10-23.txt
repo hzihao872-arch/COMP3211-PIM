@@ -1,0 +1,5 @@
+Python: 3.13.5
+Files: 15; import roots checked: 71
+Scope: src/**/*.py and tools/*.py
+Non-standard external imports: []
+PASS

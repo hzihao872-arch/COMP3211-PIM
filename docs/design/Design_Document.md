@@ -4,7 +4,7 @@
 **Project:** Command-line Personal Information Management system<br>
 **Group number:** 89<br>
 **Members and student IDs:** [Human input pending: member names and student IDs]<br>
-**Version/date:** Independent-review candidate 1.3, 2026-10-23<br>
+**Version/date:** Usability release candidate 1.5, 2026-10-23<br>
 **Implementation basis:** Current candidate source and tests, including local review changes. Historical starting commit: `4d3508db0447a3ac6346a2a2789da89208f88fd5`; the candidate manifest identifies the delivered files.
 
 This document describes the architecture and public interfaces present in the current candidate source. It maps the behavior in [SRS.md](../srs/SRS.md) and the product choices in [decisions.md](../../decisions.md) to code. The companion [technical contract](TECHNICAL_CONTRACT.md) records the interface contract reconciled with the current source, which is the authority for implementation details. Class/module names are group design choices; the official Project Description requires design explanations and diagrams but does not prescribe these names.
@@ -71,7 +71,7 @@ Each dataclass also supplies generated `__init__`, equality, and representation 
 | `search(criterion: Criterion) -> tuple[Record, ...]` | Matches, ID ascending | `ValidationError` for a non-criterion argument |
 | `from_rows(rows: Sequence[Mapping[str, object]], file_next_id: int, previous_next_id: int) -> PIMManager` | Fully validated replacement manager | `ValidationError` |
 
-`PIMError` is the common model exception. `ValidationError` covers invalid schema, field, time, or ID input; `RecordNotFoundError` covers an absent valid ID; `SearchSyntaxError` is a `ValidationError` for a malformed criterion. They identify the rejected input or failure category. `CommandSyntaxError(Exception)` is the controller-specific syntax exception; it carries a message and adds no fields or methods to the standard exception interface. No manager method performs terminal or file I/O. `from_rows` validates a complete snapshot without mutating the active manager, rejects duplicate/out-of-order IDs or invalid counters, and sets the new counter to `max(previous_next_id, file_next_id)`.
+`PIMError` is the common model exception. `ValidationError` covers invalid schema, field, time, or ID input; `RecordNotFoundError` covers an absent valid ID; `SearchSyntaxError` is a `ValidationError` for a malformed criterion. They identify the rejected input or failure category. `CommandSyntaxError(Exception)` is the controller-specific syntax exception; both syntax exceptions accept `(detail: str, position: int | None = None)`, retain `.position`, and append `at character N` when a position is available. No manager method performs terminal or file I/O. `from_rows` validates a complete snapshot without mutating the active manager, rejects duplicate/out-of-order IDs or invalid counters, and sets the new counter to `max(previous_next_id, file_next_id)`.
 
 ### 3.3 Time validation and search
 
@@ -110,12 +110,20 @@ The tokenizer recognizes quoted literals and only `\"` and `\\` escapes, field/t
 | `CommandController.__init__(self, manager: PIMManager, working_directory: Path) -> None` | Initialized controller holding the active manager and working directory | `ValidationError` for invalid constructor inputs |
 | `CommandController.run(input_stream: TextIO, output_stream: TextIO) -> None` | None at `exit` or EOF | I/O exceptions from the supplied streams may propagate; handled command errors are printed and do not escape |
 | `main() -> None` | None | Unexpected setup/stream errors may propagate |
+| `TerminalOutput.__init__(self, stream: TextIO) -> None` | Adapter retaining `_stream: TextIO` | None for usable text streams |
+| `TerminalOutput.write(self, text: str) -> int` | Number of input characters consumed | `ClosedOutputPipe` for closed output pipes; other stream I/O errors propagate; unencodable characters are visibly escaped |
+| `TerminalOutput.flush(self) -> None` | None | `ClosedOutputPipe` or other underlying flush errors |
+| `cli() -> int` | 0 on normal exit/closed output pipe, 130 on Ctrl+C | Other setup/stream errors propagate |
 
 Storage owns UTF-8 JSON decoding/encoding, exact `format`/`version`/key checks, record serialization, and same-directory temporary-file replacement. It rejects malformed files, including JSON nesting beyond the runtime parser limit, and returns a new manager only after full validation. A JSON parser `RecursionError` becomes `PersistenceError` with category `FORMAT`, so the controller can continue. A failed save leaves an existing destination intact; a failed load leaves the current manager and its counter intact. `PersistenceError` names a safe category such as path, format, or I/O. The version 1 JSON schema and failure rules are fully specified in the technical contract.
 
-The controller owns `_manager: PIMManager` and `_working_directory: Path`. It accepts the SRS command vocabulary, writes and flushes `pim> ` before waiting for input, resolves relative paths, and turns expected model, storage, and `CommandSyntaxError` failures into `Error: CATEGORY: DETAIL` followed by another prompt. The fixed categories are `COMMAND`, `VALIDATION`, `NOT_FOUND`, `SEARCH`, `PATH`, `FORMAT`, and `IO`, mapped by exception type or storage failure category as specified in the technical contract. It formats complete record details and ID-ordered list/search summaries. It parses an ID token as positive decimal digits, handles `exit` and EOF, and never performs model validation in place of the model. `main()` only composes these objects and passes standard input/output. The explicit stream parameters permit CLI tests without patching global streams.
+The controller owns `_manager: PIMManager`, `_working_directory: Path` and `_dirty: bool`. Successful mutations set `_dirty`; successful save/load clears it. Failures and read-only commands preserve it. Existing injected records start dirty. Protected load is rejected before file access unless `force=true`; exit/EOF calls `_warn_unsaved` once before termination. The flag is deliberately conservative, not a record-by-record diff. It accepts the SRS command vocabulary, writes and flushes `pim> ` before waiting for input, resolves relative paths, and turns expected model, storage, and `CommandSyntaxError` failures into `Error: CATEGORY: DETAIL` followed by another prompt. The fixed categories are `COMMAND`, `VALIDATION`, `NOT_FOUND`, `SEARCH`, `PATH`, `FORMAT`, and `IO`, mapped by exception type or storage failure category as specified in the technical contract. It formats complete record details and ID-ordered list/search summaries. It parses an ID token as positive decimal digits, handles `exit` and EOF, and never performs model validation in place of the model. `main()` only composes these objects and passes standard input/output. The explicit stream parameters permit CLI tests without patching global streams.
+
+The `controller/help.py` catalogue `COMMAND_HELP` maps each of ten command names to a usage/details/example tuple. `command_help(command: str) -> str` formats a known topic; dispatch validates the key first. Wrong argument counts reuse this catalogue. `_warn_unsaved(output_stream: TextIO) -> None` emits the warning only when dirty. The search tokenizer stores token kind, value and original one-based character offset. Operator stacks retain opening positions; missing tokens use `end_position`. Unicode offsets count code points. These helpers remain inside the existing controller/model components in the diagrams.
 
 ### 3.5 Internal method relationships
+
+The peer-comparison revision adds `controller/output.py::TerminalOutput` inside `run` as the common output boundary for prompts, results and errors. It escapes C0/C1 controls except newline/tab and converts unencodable characters to visible escapes using the stream's encoding. It never changes the model or serialized values. `_output_boundary(stream: TextIO) -> Iterator[None]` is a context manager around actual output writes/flushes: it converts `BrokenPipeError`, or Windows EINVAL with a pipe descriptor, to `ClosedOutputPipe` (a `BrokenPipeError` subclass). Other errors propagate, including EINVAL from input. `src/main.py::cli` catches this output-specific signal and Ctrl+C. Redirecting a closed stdout descriptor to the null device prevents a second flush error during interpreter shutdown. This refinement stays within the controller/terminal boundary shown in the diagrams. No model/storage dependency changes.
 
 Python's leading underscore marks the following implementation methods as non-public. They are included because they explain how the main classes collaborate; callers should use the public entry points above. The stated exceptions are those produced for valid internal call shapes with potentially invalid user data. For `_print_records`, the table states the tuple contract supplied by its current callers; the implementation leaves that parameter unannotated.
 
@@ -125,14 +133,14 @@ Python's leading underscore marks the following implementation methods as non-pu
 | `CommandController._path(value: str) -> Path` | Absolute or working-directory-relative path | None for a string argument; storage validates the `.pim` suffix. |
 | `CommandController._print_records(records: tuple[Record, ...], output_stream: TextIO, empty: str, detailed: bool = False) -> None` | None | Supplied stream I/O errors may propagate; renders summaries or details. |
 | `CommandController._dispatch(line: str, output_stream: TextIO) -> bool` | `True` only for `exit` | `CommandSyntaxError`, model errors, `PersistenceError`, or supplied stream I/O errors; `run` catches the expected command errors. |
-| `_Parser.__init__(tokens: list[tuple[str, str]]) -> None` | Parser state with `tokens` and `position` fields | None for token lists from `_tokenize`. |
-| `_Parser._peek() -> tuple[str, str] \| None` | Current token, if present | None. |
+| `_Parser.__init__(tokens: list[tuple[str, str, int]], length: int) -> None` | Parser state with `tokens`, `position` and `end_position = length + 1` | None for token lists from `_tokenize`. |
+| `_Parser._peek() -> tuple[str, str, int] \| None` | Current token, if present | None. |
 | `_Parser._take(kind: str \| None = None, value: str \| None = None) -> str` | Consumed token text | `SearchSyntaxError` when the expected token is absent. |
 | `_Parser._accept(value: str) -> bool` | Whether matching token was consumed | None. |
-| `_Parser.parse() -> Criterion` | Validated criterion tree | `SearchSyntaxError`; `parse_criterion` also translates node `ValidationError` to this category. |
-| `_Parser._atom() -> Criterion` | Type, text, or time criterion | `SearchSyntaxError` or a node `ValidationError`, translated by `parse_criterion`. |
+| `_Parser.parse() -> Criterion` | Validated criterion tree | `SearchSyntaxError`; `_atom` translates node `ValidationError` to this category at the relevant literal. |
+| `_Parser._atom() -> Criterion` | Type, text, or time criterion | `SearchSyntaxError`, including node validation failures annotated at their literal. |
 
-The module helpers `_tokenize(expression: str) -> list[tuple[str, str]]` and `_evaluate(root: Criterion, record: Record) -> bool` respectively produce `SearchSyntaxError` for bad lexical input and a Boolean for a valid node and record. Storage's underscored helpers validate paths and JSON object keys; they are called only by `save_pim` or `load_pim`. No external caller depends on those helpers.
+The module helpers `_tokenize(expression: str) -> list[tuple[str, str, int]]` and `_evaluate(root: Criterion, record: Record) -> bool` respectively produce `SearchSyntaxError` for bad lexical input and a Boolean for a valid node and record. Storage's underscored helpers validate paths and JSON object keys; they are called only by `save_pim` or `load_pim`. No external caller depends on those helpers.
 
 ## 4. Search, select, and update example
 
@@ -157,6 +165,7 @@ An unmatched search parenthesis raises `SearchSyntaxError` before `PIMManager.se
 | FR-26–FR-40 | Search tokenizer/parser, criterion nodes, manager evaluation, controller summaries |
 | FR-41–FR-48 | Storage and manager restoration; controller reference swap and path resolution |
 | FR-49–FR-50 | Controller error display and validation-before-commit in every mutating boundary |
+| FR-51–FR-54 | Controller dirty-state transitions, load gate, help catalogue, tokenizer/parser positions and syntax exceptions |
 | NFR-01–NFR-05 | Local CLI, Python version, standard-library imports, separate model and identifiable other packages |
 
-The ranges are inclusive and allocate every FR-01–FR-50 and NFR-01–NFR-05. Tests in `tests/model/`, `tests/storage/`, `tests/controller/`, and `tests/test_acceptance.py` exercise the implemented paths. The current coverage reports contain the rerun counts, interpreter versions and requirement-level evidence for this candidate; earlier frozen-commit results do not identify the delivered working tree. The independent review added recovery for excessive JSON nesting without changing the public signatures.
+The ranges are inclusive and allocate every FR-01–FR-54 and NFR-01–NFR-05. Tests in `tests/model/`, `tests/storage/`, `tests/controller/`, and `tests/test_acceptance.py` exercise the implemented paths. The current coverage reports contain the rerun counts, interpreter versions and requirement-level evidence for this candidate; earlier frozen-commit results do not identify the delivered working tree. The independent review added recovery for excessive JSON nesting without changing the public signatures.

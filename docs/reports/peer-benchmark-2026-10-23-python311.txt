@@ -1,0 +1,10 @@
+Local performance observations (not a course requirement or a timing guarantee)
+Python: 3.11.9
+Platform: Windows-10-10.0.26200-SP0
+Records: 1000 (250 of each type); runs: 5
+Milliseconds: median / min / max; validation excluded from timed interval.
+Search excludes parsing; file writes include atomic replacement, not an fsync durability guarantee.
+search: 2.328 / 2.040 / 2.562 ms
+save: 9.052 / 8.584 / 9.677 ms
+load: 8.758 / 8.702 / 9.218 ms
+PASS: search IDs and all loaded fields/counters verified

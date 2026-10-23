@@ -1,0 +1,7 @@
+{
+  "srs_catalogue_statements_equal": true,
+  "functional": 54,
+  "nonfunctional": 5,
+  "stories": 11,
+  "coverage_rows_present": 59
+}

@@ -1,0 +1,47 @@
+test_benchmark_checks_mixed_data_and_rejects_invalid_sizes (tests.tools.test_evidence.EvidenceToolTests.test_benchmark_checks_mixed_data_and_rejects_invalid_sizes) ... FAIL
+test_demo_rejects_incorrect_expected_output (tests.tools.test_evidence.EvidenceToolTests.test_demo_rejects_incorrect_expected_output) ... FAIL
+test_demo_rejects_invalid_command (tests.tools.test_evidence.EvidenceToolTests.test_demo_rejects_invalid_command) ... FAIL
+test_demo_runs_from_another_directory_without_leaving_a_snapshot (tests.tools.test_evidence.EvidenceToolTests.test_demo_runs_from_another_directory_without_leaving_a_snapshot) ... FAIL
+
+======================================================================
+FAIL: test_benchmark_checks_mixed_data_and_rejects_invalid_sizes (tests.tools.test_evidence.EvidenceToolTests.test_benchmark_checks_mixed_data_and_rejects_invalid_sizes)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\tools\test_evidence.py", line 52, in test_benchmark_checks_mixed_data_and_rejects_invalid_sizes
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : D:\conda\python.exe: can't open file 'D:\\comp3211\\COMP3211-PIM\\tools\\benchmark.py': [Errno 2] No such file or directory
+
+
+======================================================================
+FAIL: test_demo_rejects_incorrect_expected_output (tests.tools.test_evidence.EvidenceToolTests.test_demo_rejects_incorrect_expected_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\tools\test_evidence.py", line 37, in test_demo_rejects_incorrect_expected_output
+    self.assertIn("transcript mismatch", result.stderr)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'transcript mismatch' not found in "D:\\conda\\python.exe: can't open file 'D:\\\\comp3211\\\\COMP3211-PIM\\\\tools\\\\verify_demo.py': [Errno 2] No such file or directory\n"
+
+======================================================================
+FAIL: test_demo_rejects_invalid_command (tests.tools.test_evidence.EvidenceToolTests.test_demo_rejects_invalid_command)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\tools\test_evidence.py", line 47, in test_demo_rejects_invalid_command
+    self.assertIn("command failed", result.stderr)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'command failed' not found in "D:\\conda\\python.exe: can't open file 'D:\\\\comp3211\\\\COMP3211-PIM\\\\tools\\\\verify_demo.py': [Errno 2] No such file or directory\n"
+
+======================================================================
+FAIL: test_demo_runs_from_another_directory_without_leaving_a_snapshot (tests.tools.test_evidence.EvidenceToolTests.test_demo_runs_from_another_directory_without_leaving_a_snapshot)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "D:\comp3211\COMP3211-PIM\tests\tools\test_evidence.py", line 25, in test_demo_runs_from_another_directory_without_leaving_a_snapshot
+    self.assertEqual(result.returncode, 0, result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 2 != 0 : D:\conda\python.exe: can't open file 'D:\\comp3211\\COMP3211-PIM\\tools\\verify_demo.py': [Errno 2] No such file or directory
+
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.130s
+
+FAILED (failures=4)

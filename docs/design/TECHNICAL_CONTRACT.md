@@ -131,13 +131,13 @@ For save, resolve the path already supplied by the controller, require the exact
 
 ## 6. CLI boundary and output contract
 
-`CommandController.__init__(self, manager: PIMManager, working_directory: Path) -> None` holds `_manager` and `_working_directory`; it raises `ValidationError` for an argument of the wrong type. Its public `run(input_stream: TextIO, output_stream: TextIO) -> None` writes and flushes `pim> ` before reading one line at a time, dispatches the command, and prints results or `Error: CATEGORY: DETAIL`; EOF and `exit` terminate normally. It catches `PIMError`, `PersistenceError`, and its own `CommandSyntaxError`, then continues. It does not catch unrelated programming defects as user errors. `main() -> None` in `src/main.py` creates the manager and controller and calls `run` with standard streams and `Path.cwd()`.
+`CommandController.__init__(self, manager: PIMManager, working_directory: Path) -> None` holds `_manager` and `_working_directory`; it raises `ValidationError` for an argument of the wrong type. Its public `run(input_stream: TextIO, output_stream: TextIO) -> None` writes and flushes `pim> ` before reading one line at a time, dispatches the command, and prints results or `Error: CATEGORY: DETAIL`; EOF and `exit` warn once if dirty, then terminate normally. It catches `PIMError`, `PersistenceError`, and its own `CommandSyntaxError`, then continues. It does not catch unrelated programming defects as user errors. `main() -> None` in `src/main.py` creates the manager and controller and calls `run` with standard streams and `Path.cwd()`.
 
 The error categories are fixed: `COMMAND` for command syntax, `VALIDATION` for model field/type/ID validation, `NOT_FOUND` for an absent valid ID, and `SEARCH` for a malformed criterion. `PersistenceError` carries one of `PATH`, `FORMAT`, or `IO`; the controller prints that category. Catch `SearchSyntaxError` before its `ValidationError` base class. `DETAIL` identifies the rejected token, field, path, or failure category without a traceback. This mapping gives CLI tests stable categories while leaving platform-specific I/O wording flexible.
 
 | Command | Parsing and output |
 |---|---|
-| `help` | No arguments; print all command forms, field order, quoting/escaping, time format, and search grammar. |
+| `help [COMMAND]` | Bare help prints the overview; a case-insensitive topic prints usage, details and example from `controller.help.COMMAND_HELP`. |
 | `add TYPE "FIELD"...` | Exactly the number of fields in §2 order. Print `Created TYPE ID`. |
 | `list [TYPE]` | Optional type filter. Print one `ID | TYPE | FIRST_TEXT_VALUE` line per PIR in ID order, or `No PIRs.` if empty. The complete first text field is shown. |
 | `show ID` / `show all` | Print `id:`, `type:`, and every data field label/value; separate multiple records by a blank line. `show all` is ID ordered; an empty collection prints `No PIRs.`. |
@@ -145,12 +145,16 @@ The error categories are fixed: `COMMAND` for command syntax, `VALIDATION` for m
 | `delete ID` | Print `Deleted ID`. |
 | `search EXPR` | Pass the untouched expression remainder to `parse_criterion`, then to `manager.search`; print the same summaries as `list` or `No matching PIRs.`. A criterion is defined and applied in this one command. |
 | `save "PATH.pim"` | Resolve path against `_working_directory`, call `save_pim`, then print `Saved N PIR(s) to PATH`. |
-| `load "PATH.pim"` | Resolve path, call `load_pim(path, manager.next_id)`, swap `_manager` only on success, then print `Loaded N PIR(s) from PATH`. |
-| `exit` | No arguments; end without saving implicitly. |
+| `load "PATH.pim" [force=true&#124;force=false]` | Reject dirty loads unless force is true; reject other options. Resolve path, call `load_pim(path, manager.next_id)`, swap `_manager` only on success, then print `Loaded N PIR(s) from PATH`. |
+| `exit` | No arguments; warn once if dirty, then end without saving implicitly. EOF uses the same warning. |
 
 Commands, type names, and field names are case-insensitive. Command tokens require separating whitespace. Non-search values and paths with spaces need double quotes; one-token values may be unquoted. Inside quotes only `\"` and `\\` are escapes. Wrong counts, malformed quoting, unknown commands, invalid decimal-positive ID tokens, and unknown types/fields raise `CommandSyntaxError` or model validation errors before a mutation. ID tokens contain decimal digits and must represent a value greater than zero. Search parsing is separate from command-argument parsing so symbolic operators may adjoin atoms. A useful error identifies the rejected input or failure category; the next prompt appears after every handled error.
 
+The controller has a conservative `_dirty` Boolean initialized from whether the injected manager has records. Only successful create/update/delete sets it and successful save/load clears it. Errors preserve it, including failed forced loads. The optional final load token accepts `force=true` or `force=false` ignoring case. No automatic save or prompt loop is introduced. `SearchSyntaxError` and `CommandSyntaxError` accept an optional integer `position`; malformed search positions refer to one-based Unicode code points within EXPR, and quoted-command positions refer to the original line. End-of-expression errors use `len(EXPR) + 1`. Node validation failures are translated by `_Parser._atom` at their literal. The tokenizer returns `(kind, value, position)` triples; `_Parser(tokens, length)` retains `end_position` and opening-parenthesis offsets.
+
 ## 7. FR/NFR allocation and WP03 test seams
+
+Peer-comparison source refinement (2026-10-23): every output write from `CommandController.run` passes through `TerminalOutput`. C0/C1 controls other than newline/tab are visibly escaped; characters outside the output encoding use backslash escapes without changing stored text. The process entry wrapper returns 130 on Ctrl+C and exits quietly on an output-specific `ClosedOutputPipe` signal from write/flush. Other stream/device failures remain outside the recoverable file-command contract. The snapshot version is unchanged; display escapes are not accepted as new input escapes.
 
 | Requirement IDs | Owning component/API and verified test seam |
 |---|---|
@@ -161,6 +165,7 @@ Commands, type names, and field names are case-insensitive. Command tokens requi
 | FR-26–FR-40 | `parse_criterion`, criterion nodes, `PIMManager.search`, controller summaries; model tests cover every text field, all nine time field/comparator pairs, Boolean operators, precedence, absent-field semantics, and errors. |
 | FR-41–FR-48 | `save_pim`, `load_pim`, `PIMManager.from_rows`, controller reference swap; round-trip, malformed-file, atomic-failure, and higher-counter tests. |
 | FR-49–FR-50 | Controller error translation plus validation-before-commit in model and storage; failure-state and next-command checks. |
+| FR-51–FR-54 | Dirty-state/load protection, help topics and positioned diagnostics; controller usability tests, model position tests and real CLI acceptance tests. |
 | NFR-01–NFR-05 | Local CLI, declared Python versions, import audit, separate `model` package and identifiable `controller`/`storage` packages. |
 
 The current candidate includes the model, CLI, storage, and acceptance tests summarized above. [Requirements Coverage](../reports/Requirements_Coverage.md) and [Test Coverage](../reports/Test_Coverage.md) provide current evidence and limitations. [code-freeze.md](../reports/code-freeze.md) is a historical record, not a statement that Python 3.11 remains untested or that subsequent local fixes are absent.

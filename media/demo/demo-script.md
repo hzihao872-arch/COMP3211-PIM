@@ -1,6 +1,6 @@
 # System demo recording script
 
-**Product version:** Current independent review candidate, identified by its accompanying manifest<br>
+**Product version:** Current usability release candidate, identified by its accompanying manifest<br>
 **Group:** 89. Member names and student IDs await group input.<br>
 **Deliverable:** `System_Demo.mp4`, maximum **4:00** under the official Project Description. The sections below are a recording plan, not observed video timings.
 
@@ -37,3 +37,5 @@ Keep typing and narration concise enough to finish the **actual MP4** by 4:00. O
 - If a command is mistyped, read the `Error:` category, correct it, and continue only if the output and remaining IDs still match the script. For the final take, restart in a **new empty directory** for the deterministic sequence.
 - If `snapshot.pim` is not found in session 2, return to the directory used by session 1 and restart the second process. `load` resolves relative paths against the process working directory.
 - If the result differs from the captured output, stop and compare the typed command and candidate manifest. Rehearse again against the exact files intended for recording.
+
+The current final exit warns because note 5 remains unsaved; this is expected and does not update the saved snapshot. `python tools/verify_demo.py` checks the maintained two-process transcript. Optional rehearsal: use `help load`, create an unsaved edit, then compare ordinary load with `load "snapshot.pim" force=true`.

@@ -1,9 +1,20 @@
 # Developer Manual - COMP3211 PIM
 
+**Usability release, 2026-10-23:** 86 tests pass on Python 3.11.9, 3.12.3 and 3.13.5. Current PDFs and source are synchronized in the usability candidate. `controller/help.py` supplies focused help; `CommandController` tracks unsaved changes and protects load. Model search errors carry one-based positions. `controller/output.py` handles display controls/encoding, and `main.cli()` handles interruption and closed output pipes. Record and snapshot schemas remain unchanged.
+
+Two additional standard-library checks run from the source root:
+
+```powershell
+python tools/verify_demo.py
+python tools/benchmark.py
+```
+
+The demo checker starts two independent processes in a temporary directory and compares the complete maintained transcript. The benchmark checks search IDs and full snapshot round trips for 1,000 mixed records over five runs. Both return nonzero on failed verification. Keep `media/demo/demo-commands.txt` and `media/demo/demo-expected-output.txt` in source distributions; the evidence-tool tests need them. Results are printed to stdout, so redirect to a chosen log file if needed. Neither tool modifies application snapshots in the caller's working directory. Fresh logs use the `usability-` prefix in the repository reports and packaged `evidence/` directory.
+
 **Group:** 89. Member names and student IDs await human input.
 **Revision:** 2026-10-23. **Platform:** Windows 11, PowerShell.
 **Verified interpreters:** Python 3.11.9, 3.12.3 and 3.13.5.
-**Delivery version:** Independent review candidate, 2026-10-23. Use the accompanying manifest to identify the delivered source, tests and documents by their actual file hashes; an earlier source commit does not identify this complete delivery.
+**Delivery version:** Usability release candidate, 2026-10-23. Use the accompanying manifest to identify the delivered source, tests and documents by their actual file hashes; an earlier source commit does not identify this complete delivery.
 
 ## 1. Open and run the delivered project
 
@@ -54,7 +65,7 @@ Visual Studio Code with a Python extension is a suitable editor. Open `03_Implem
 | `src/model/records.py`, `validation.py`, `errors.py` | Immutable record types, value checks and domain errors. |
 | `src/model/manager.py` | Collection, stable IDs, create/list/get/update/delete/search and snapshot reconstruction. |
 | `src/model/search.py` | Criterion nodes, search tokenization, parsing and evaluation. |
-| `src/controller/cli.py` | Command parsing, output, error recovery and coordination. |
+| `src/controller/cli.py`, `help.py`, `output.py` | Command parsing, dirty state, protected load, focused help, safe output and recovery. |
 | `src/storage/pim_file.py` | Validated UTF-8 JSON `.pim` save/load and atomic file replacement. |
 | `tests/model/`, `tests/controller/`, `tests/storage/` | Direct model and boundary tests, including targeted requirement checks. |
 | `tests/test_acceptance.py` | Actual CLI subprocess acceptance tests. |
@@ -75,3 +86,15 @@ For IDE debugging, set the debug program to `src/main.py`, working directory to 
 Useful breakpoints are `CommandController._dispatch`, `PIMManager.update`, `parse_criterion` and `load_pim`. Expected invalid input is printed as an error and the program accepts another command. For a failed load, inspect validation before the controller replaces its manager. For a failed update, inspect replacement-record validation before collection assignment.
 
 If Python cannot find `src/main.py`, check the current directory. If tests cannot import `model`, check both `PYTHONPATH` and `-t .`. If a saved file cannot be found, check the process working directory and exact lowercase `.pim` suffix. Do not run `pip install` to resolve these path errors: the delivered product has no third-party dependency.
+
+## 5. Usability regression checks
+
+`tests/controller/test_usability.py` covers all dirty-state transitions, forced-load syntax/failure, all help topics and quoted-command positions. `tests/model/test_search_positions.py` checks lexical, grammar, semantic, Unicode and EOF offsets. `tests/test_acceptance.py` verifies protection and recovery through actual processes. A dirty load is rejected before storage access, so malformed-file tests use `force=true` where needed to reach the intended validation. Do not remove their state-preservation assertions.
+
+Full-suite model coverage is 431/436 (98.85%). For the narrower model-unit-only measurement (430/436, 98.62%), run from the source root:
+
+```powershell
+python -c "from tools import model_coverage as c; c.TESTS /= 'model'; c.main()"
+```
+
+The full-suite tool's report labels the generic command; the saved model-only log records the exact invocation and 32 selected methods. Neither measurement includes CLI subprocess execution or branch coverage.

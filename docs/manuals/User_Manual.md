@@ -3,8 +3,8 @@
 **Course:** COMP3211 Software Engineering, Fall 2026<br>
 **Group:** 89<br>
 **Member names and student IDs:** Pending group-provided data<br>
-**Product baseline:** `4d3508db0447a3ac6346a2a2789da89208f88fd5`<br>
-**Document version:** WP05 final document, 2026-09-30
+**Delivery version:** Independent review candidate; exact files are identified by the accompanying manifest.<br>
+**Document revision:** 2026-10-23
 
 ## 1. What the program does
 
@@ -14,7 +14,7 @@ Each new PIR receives a positive integer ID. IDs start at 1 in a new empty proce
 
 ## 2. Start, prompt, and exit
 
-Open PowerShell in the repository root and run:
+Extract the delivery ZIP, then open PowerShell inside `03_Implementation`, the folder containing `src` and the two manuals. If working from a repository checkout, use its root instead. Run:
 
 ```powershell
 python src/main.py
@@ -22,13 +22,13 @@ python src/main.py
 
 The program writes `pim> ` and waits for one command per line. Type `help` to display the built-in command summary. Type `exit` to finish. End-of-file also exits normally. Exiting does **not** save automatically: run `save` first if you want to keep the current collection for a later process. Every new process starts empty until you load a saved file.
 
-The WP04 freeze was run on Windows 11 with Python 3.12.3 and 3.13.5. Python 3.11 was not available for verification and is not claimed as tested.
+The Windows 11 development and verification versions are Python 3.11.9, 3.12.3 and 3.13.5. The Developer Manual provides setup and test commands; `Test_Coverage.pdf` identifies the exact verification results for this delivery.
 
 ## 3. Input rules and record fields
 
 Commands, type names, and field names ignore letter case. Separate command arguments with whitespace. Enclose a value or path containing spaces in double quotes; a one-token non-search value can be unquoted. Inside a quoted argument, `\"` represents a literal double quote and `\\` represents a literal backslash. Other backslash escapes are invalid. A quoted argument must be followed by whitespace or the end of the command. Search expressions have their own quoting rules in §5.
 
-All record fields are required, must be nonempty after leading and trailing whitespace is trimmed, and must contain a single line of valid UTF-8 text. Stored text is the trimmed value. A mobile number is text, so `+` and leading zeroes are retained; the program does not apply a regional phone-number format. Time fields use local 24-hour `YYYY-MM-DD HH:mm` at minute precision, for example `2026-10-01 09:00`. Impossible calendar dates and other time formats are rejected. Past dates are allowed, and an event's `alarm_time` need not precede its `start_time`.
+All record fields are required. Text fields must be single-line valid UTF-8 and nonempty after trimming; the trimmed text is stored. A mobile number is text, so `+` and leading zeroes are retained; the program does not apply a regional phone-number format. Time fields accept no surrounding whitespace and use exact local 24-hour `YYYY-MM-DD HH:mm` at minute precision, for example `2026-10-01 09:00`. Impossible calendar dates and other time formats are rejected. Past dates are allowed, and an event's `alarm_time` need not precede its `start_time`.
 
 | Type | `add` field order | Fields shown by `show` |
 |---|---|---|
@@ -83,17 +83,19 @@ search !name contains "Li"
 search start_time = "2026-10-02 10:00"
 ```
 
-The first line is the verified WP04 search in §8. The other forms follow the frozen parser and search tests. A malformed expression, wrong operator, invalid type or time value, empty `contains` string, or unmatched parenthesis produces `Error: SEARCH: ...` and no partial search result.
+The first line is demonstrated in §8. The other forms use the same search grammar. A malformed expression, wrong operator, invalid type or time value, empty `contains` string, or unmatched parenthesis produces `Error: SEARCH: ...` and no partial search result.
 
 ## 6. Saving, loading, and paths
 
-Use a filename ending in the exact lowercase suffix `.pim`; `.PIM` and other suffixes are rejected. Quote a path containing spaces. A relative path is resolved against the working directory from which this program was started. The success message shows the resolved path. An absolute path is used as entered.
+Use a filename ending in the exact lowercase suffix `.pim`; `.PIM` and other suffixes are rejected. Quote a path containing spaces. A relative path is interpreted against the working directory from which this program was started; the success message shows the path used. An absolute path is used as entered. The parent directory must already exist.
+
+On Windows, forward slashes avoid escape ambiguity: for example, `save "my records/snapshot.pim"` after creating the `my records` folder. If using backslashes inside quotes, double each one: `save "my records\\snapshot.pim"`. Both forms select the same file. Apply the same path rules to `load`.
 
 `save` writes all current PIRs, including an empty collection, and the next-ID counter as a UTF-8 version-one `.pim` snapshot. Saving to an existing destination replaces that file after a complete temporary write. A failed save does not change the in-memory records; if the destination already exists, the failed write leaves its prior bytes unchanged under ordinary handled I/O failure. Save does not happen automatically when exiting.
 
 `load` reads and validates the **whole** `.pim` file before replacing the current collection. It replaces rather than merges records. If it fails, the active collection and next-ID counter remain intact. After a successful load, a new PIR uses the higher of the session's former next ID and the file's saved next ID. This prevents reuse of an ID already issued in the current session, even when loading an older snapshot. A fresh process only knows the counter present in the loaded file.
 
-The `.pim` file is a program snapshot, not a free-form text import. The loader rejects unreadable files, invalid UTF-8 or JSON, unsupported format/version, duplicate or unexpected keys, invalid fields or values, duplicate or unordered IDs, and an invalid next-ID counter. Editing the file manually can make it unloadable.
+The `.pim` file is a program snapshot, not a free-form text import. The loader rejects unreadable files, invalid UTF-8 or JSON (including excessively nested malformed data), unsupported format/version, duplicate or unexpected keys, invalid fields or values, duplicate or unordered IDs, and an invalid next-ID counter. A rejected file produces a handled error so you can enter another command. Editing the file manually can make it unloadable.
 
 ## 7. Invalid input and recovery
 
@@ -109,11 +111,11 @@ Handled errors use `Error: CATEGORY: DETAIL` and then show another `pim> ` promp
 | `FORMAT` | Existing `.pim` content is invalid or unsupported | Load a snapshot written by this program. |
 | `IO` | File is missing, directory is unavailable, or the operating system refuses a read/write | Check the resolved path and filesystem access. |
 
-For example, WP04's CLI tests verify that an invalid update leaves the old value visible, a failed load leaves the active collection visible, and the next command still runs. The frozen executable also produced `Error: VALIDATION: text must not be empty` for `add note ""`, `Error: COMMAND: invalid positive decimal ID: '0'` for `show 0`, and `Error: NOT_FOUND: record ID 99 was not found` for `show 99`. Exact operating-system wording after an `IO` error depends on the path and machine.
+The CLI tests check that an invalid update leaves the old value visible, a failed load leaves the active collection visible, and the next command still runs. The independent review reproduced `Error: VALIDATION: text must not be empty` for `add note ""`, `Error: COMMAND: invalid positive decimal ID: '0'` for `show 0`, and `Error: NOT_FOUND: record ID 99 was not found` for `show 99`. Exact operating-system wording after an `IO` error depends on the path and machine.
 
 ## 8. Complete two-process example
 
-This is the WP04 manual CLI acceptance transcript from `docs/reports/integration-test-log.md`, recorded against the freeze commit. Both Python processes exited with code 0; the snapshot existed. The evidence file replaced only the absolute temporary directory with `<TEMP_DIR>` below. That token is a redaction of the test location, not text to type as a path. Run both sessions from the **same** working directory so the relative `snapshot.pim` resolves to the same file.
+The independent review reran this example on 2026-10-23. Both Python processes exited with code 0, the snapshot existed, and the output matched the transcript below. Only the absolute temporary directory is replaced with `<TEMP_DIR>` below. That token is a redaction of the test location, not text to type as a path. Run both sessions from the **same** working directory so the relative `snapshot.pim` resolves to the same file.
 
 First start `python src/main.py`, then enter:
 

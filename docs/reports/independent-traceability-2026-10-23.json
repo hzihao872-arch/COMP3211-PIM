@@ -1,0 +1,20 @@
+{
+  "requirement_catalog_exact_matches": 55,
+  "unique_coverage_rows": 66,
+  "named_test_references_verified": 37,
+  "delivered_test_methods": 51,
+  "model_test_methods": 25,
+  "source_tree_sha256": {
+    "src/controller/__init__.py": "b57a037a6a7f097fbc8d3f502d0c654f64c80d1ad85c847dd6ddcbb7436bb3c5",
+    "src/controller/cli.py": "fc1b1ce0537988e850e8c0cdbb22bcacd08578945ea24c255026b7f00643e21b",
+    "src/main.py": "c157135d3cee85e1fe45bef9ff37879042083d7ba00a002a752ddbeb68698095",
+    "src/model/__init__.py": "81cc7a8d1f068d8bbdfbcab3aac34005649affa8ab5d08bf0467b829c382a341",
+    "src/model/errors.py": "4bcecae48f3783efabb108e5b961d31aee23bfd79bcfce95f293d2afd296ff8f",
+    "src/model/manager.py": "110c81878915abed4ae53f1b39e72a47d4c743de16a63e54ecfa5fcb41afb5cd",
+    "src/model/records.py": "5f1c2f75211330e263b4fe7352bfc693d84102b4944d72af43b425c2e3a991e4",
+    "src/model/search.py": "1930a0c07c69b8e02b3d9fb1931b9c44e2bf756e559e03a73cd5b5e1ed97b5c8",
+    "src/model/validation.py": "8827cfeaf0e879df4dab616edb5f1f950c2ac67fb74e5d49bf8926cd59a338c3",
+    "src/storage/__init__.py": "972c5ae0bc93c80a7a2171ae0b39fed5b979e1ecc7939b178f0f71c0041fdc39",
+    "src/storage/pim_file.py": "5c0eebe8c8f8719387d7ee2980541dacd00595a443a7b651bd8ad8ad91953402"
+  }
+}

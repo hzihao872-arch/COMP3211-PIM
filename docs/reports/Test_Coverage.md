@@ -1,67 +1,62 @@
-# Model Test Coverage Report — COMP3211 PIM
+# Model Test Coverage Report - COMP3211 PIM
 
-**Group:** 89; member names and student IDs await human input.
+**Group:** 89. **Revision:** independent review, 2026-10-23.
+**Delivery:** current candidate files identified by the manifest. Application fixes and tests are included; the old source commit is not the complete delivery.
 
-**Frozen product and test commit:** `4d3508db0447a3ac6346a2a2789da89208f88fd5` (2026-09-30).
-**Evidence:** `docs/reports/model-coverage-raw.txt`, `docs/reports/code-freeze.md`, and `docs/reports/integration-test-log.md`. The course requires a separate model line-coverage report in the submitted source-code root; WP08 must place the final PDF there. This Markdown is the maintained report source.
+## 1. Reproduce the full suite
 
-## 1. Environment and method
-
-WP04 ran on Windows 11 with Python 3.13.5 and 3.12.3. The test framework is Python's standard-library `unittest`. The coverage tool is `tools/model_coverage.py`, using the standard-library `trace` module. Python 3.11 was unavailable and remains unverified.
-
-From the repository root, WP04 used:
+From the submitted `03_Implementation` folder in PowerShell:
 
 ```powershell
 $env:PYTHONPATH = "$PWD\src"
 python -m unittest discover -s tests -t . -v
-py -3.12 -m unittest discover -s tests -t . -q
 python tools/model_coverage.py
-python -m compileall -q src tests tools
 ```
 
-The explicit `-t .` prevents `tests/model` from shadowing `src/model`. `tools/model_coverage.py` discovers and runs the full suite under `trace`, intersects traced line numbers with `trace._find_executable_linenos` for every `src/model/*.py` file, and prints covered/executable counts and percentages. No third-party coverage package or IDE coverage view generated the submitted figures.
+The independent revision passed **51 test methods, zero failures and errors**, on Python **3.11.9, 3.12.3 and 3.13.5**. These comprise 25 model, 13 controller, 7 storage, 4 real-process acceptance and 2 measurement-tool tests. `subTest` cases are included within method counts. All original 45 methods remain; this review added four application tests and two tool tests.
 
-## 2. Observed WP04 results
+Host: Windows 11, build 26200, confirmed using the operating-system record. Python 3.11's `platform.release()` reports Windows 10 on this host; that interpreter label in raw logs does not identify a second machine. The 3.11.9 runtime is an official standalone embeddable distribution configured for normal imports. A separate **51-test run with `-S` (site packages disabled)** also passed. No third-party runtime dependency is required or bundled.
 
-| Check | Observed result |
-|---|---|
-| Python 3.13.5 full suite | 33 tests; 0 failures; 0 errors. |
-| Python 3.12.3 full suite | 33 tests; 0 failures; 0 errors. |
-| Python 3.13.5 model line coverage | 411/430 executable lines; 95.58%. |
-| Compile check | Exit code 0. |
-| Manual CLI acceptance | Two separate processes created, searched, updated, deleted, saved, loaded, and continued with next ID 5; both exit codes 0. |
+Raw logs are `independent-verification-2026-10-23-python311.txt`, `independent-verification-2026-10-23-python312.txt` and `independent-verification-2026-10-23-python313.txt`. Coverage uses the same suffixes after `independent-model-coverage-2026-10-23-`. Repository logs are in `docs/reports/`; candidate copies are in `03_Implementation/evidence/`.
 
-The raw coverage output reports:
+## 2. Model source-line coverage
 
-| Model module | Covered/executable lines | Line coverage | Uncovered entries |
-|---|---:|---:|---:|
-| `model/__init__.py` | 0/1 | 0.00% | 1 |
-| `model/errors.py` | 4/5 | 80.00% | 1 |
-| `model/manager.py` | 92/97 | 94.85% | 5 |
-| `model/records.py` | 57/58 | 98.28% | 1 |
-| `model/search.py` | 224/233 | 96.14% | 9 |
-| `model/validation.py` | 34/36 | 94.44% | 2 |
-| **Total model** | **411/430** | **95.58%** | **19** |
+The full 51-test suite achieved **416/421 model source lines (98.81%)** on each of the three interpreters. The numerator and denominator include only `src/model/*.py`. Controller, storage, tests and tools are not included as measured source. CLI subprocess execution is outside the parent trace session.
 
-The full raw text is retained in `docs/reports/model-coverage-raw.txt`; these values are copied exactly, without replacing the tool's denominator or rounding its module percentages. The reported coverage is **model-only**. The suite also contains controller, storage, and real-process acceptance tests, but those packages are outside the model numerator and denominator. The acceptance tests launch a new CLI subprocess, whose executed lines are outside the parent `trace` session. Thus this report does not claim controller, storage, subprocess CLI, branch, condition, or mutation coverage.
+| Model module | Covered / executable source lines | Coverage |
+|---|---:|---:|
+| `model/__init__.py` | 0/0 | n/a |
+| `model/errors.py` | 4/4 | 100.00% |
+| `model/manager.py` | 95/95 | 100.00% |
+| `model/records.py` | 57/57 | 100.00% |
+| `model/search.py` | 226/231 | 97.84% |
+| `model/validation.py` | 34/34 | 100.00% |
+| **Total model** | **416/421** | **98.81%** |
 
-## 3. Uncovered-line explanation
+The tool uses standard-library `trace` to collect executed lines and its private `_find_executable_linenos` helper to identify candidate executable lines. It now excludes nonpositive/noninteger entries (`0` and `None`), which refer to interpreter bookkeeping, not source lines. It prints excluded-entry counts and actual missing source lines for each module. This private CPython helper is version-dependent, so results name the measured interpreter and are not a promise for future releases.
 
-A read-only repeat of the frozen tool's line accounting showed the 19 unexecuted entries below. Python's `trace._find_executable_linenos` includes bookkeeping keys `0` or `None` in these files; they have no corresponding executable source statement. They account for nine denominator entries: one each in `model/__init__.py`, `errors.py`, and `records.py`, and two each in `manager.py`, `search.py`, and `validation.py`. The `model/__init__.py` file contains only a docstring, so its single counted entry is untraced. These entries are retained because WP04's raw calculation includes them.
+The prior Python 3.13 report counted 416/430 (96.74%); nine denominator entries were `0` or `None`. Removing these produces 416/421 without changing the numerator or model code. On Python 3.11 six such entries were removed from 427. The increase is **a corrected measurement, not newly covered model behavior**. The remaining five real lines, `search.py` 205-209, belong to the unused `_Parser._accept` helper. They remain in the denominator; dead code was not deleted or artificially called to inflate coverage.
 
-The remaining ten entries correspond to actual frozen source lines:
+Two fixture-based regressions first failed against the old tool and passed after correction: a docstring-only module has 0/0 executable source lines, and an uncalled real function body remains in the denominator and is listed as missing. Nested tracing restores the previous tracer after each fixture run.
 
-| Source | Untraced line(s) | Explanation |
-|---|---|---|
-| `model/manager.py::PIMManager.update` | 70 | The `field_name` non-string rejection branch was not reached by the 33 tests; CLI fields arrive as strings. |
-| `model/manager.py::PIMManager.from_rows` | 95 | Direct non-array `rows` input to the model constructor was not exercised; file loading checks for an array in `storage/pim_file.py::load_pim` first. |
-| `model/manager.py::PIMManager.from_rows` | 101 | Direct non-mapping record input was not exercised; the tests use malformed mappings and other file errors. |
-| `model/search.py::OrCriterion.__post_init__` | 98 | The tests construct a valid `OrCriterion`, but do not pass it a non-criterion operand. |
-| `model/search.py::_tokenize` | 185 | The invalid-character branch was not reached by the sampled malformed search expressions. |
-| `model/search.py::_Parser._accept` | 205–209 | This helper is present in the frozen parser but the iterative parse path never calls it; all five counted lines remain untraced. |
+## 3. Model unit tests alone
 
-The source-line numbers above are from freeze commit `4d3508d`; line numbers in a later edited source could differ. The untraced branches show limits of the automated suite, not observed failures of those behaviors. The `_accept` helper is unused in the frozen product path. No official minimum coverage percentage is specified in the Project Description PDF.
+To distinguish model unit evidence from the full suite, a separate Python 3.11.9 run executed only the **25 model unit methods**, using the same coverage algorithm. It covered **415/421 lines (98.57%)**. The extra missing line is `manager.py` 22, the invalid record-type branch exercised through the boundary tests in the full suite. Other module counts are unchanged.
 
-## 4. Test scope and remaining verification
+Reproduce this narrower check from the same folder:
 
-The 33-test suite includes `tests/model/test_records.py`, `test_manager.py`, `test_search.py`, and `test_search_integration.py`; it also includes controller, storage, and real-process acceptance tests. WP04's two-process manual session independently exercised the user-facing path, and its import audit found only standard-library or local source imports. `docs/reports/Requirements_Coverage.md` records requirement-level tests and direct-check gaps. Python 3.11 remains a requirement target without a passing run; neither the 3.12.3 nor the 3.13.5 result proves it.
+```powershell
+$check = "from tools import model_coverage as c; c.TESTS /= 'model'; "
+$check += "raise SystemExit(c.main())"
+python -c $check
+```
+
+The resulting log is `independent-model-units-only-2026-10-23.txt`. Its runner prints the default tool command in the header; the command above is the actual narrower invocation. The full-suite percentage must not be described as coverage produced only by model unit tests.
+
+## 4. Assertion quality and limits
+
+Existing assertions cover all four PIR types, nine mutable fields, five text-search fields, three time fields and all three time comparisons, invalid inputs, immutable replacement, stable IDs, complete snapshot validation and failure atomicity. This review added an independent truth-table oracle for six three-atom Boolean compositions over all eight assignments (48 subcases), rather than assertions derived from the parser's own output.
+
+Two fixes have observed failing-then-passing regressions: deeply nested malformed JSON is converted to a FORMAT error with the old state and next ID preserved, and a line-buffered terminal receives each prompt before input blocks. The nesting failure was reproduced on Python 3.11; the same sample takes a different rejection path on newer interpreters. A 40-import AST audit and the `-S` test run support the standard-library restriction.
+
+This is source-line coverage, not branch, condition, mutation or exhaustive requirements coverage. No course minimum coverage percentage is specified. NFR-01's exact network-disabled/no-graphical-session environment remains untested. Human recordings, genuine identities and the official declaration remain separate deliverables. The final candidate's clean-extraction log records verification of the actual ZIP contents.

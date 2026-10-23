@@ -100,5 +100,5 @@ def load_pim(path: Path, current_next_id: int) -> PIMManager:
         if not isinstance(root["records"], list):
             raise ValueError("records must be an array")
         return PIMManager.from_rows(root["records"], root["next_id"], current_next_id)
-    except (ValueError, TypeError, ValidationError) as error:
+    except (ValueError, TypeError, ValidationError, RecursionError) as error:
         raise PersistenceError("FORMAT", f"invalid .pim file: {error}") from error

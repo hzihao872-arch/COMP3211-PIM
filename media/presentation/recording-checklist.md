@@ -4,7 +4,7 @@
 
 - [ ] Use `artifacts/presentation/Presentation.pdf` for the recorded presentation; keep its editable `Presentation.pptx` with the project.
 - [ ] Cover PIR creation (FR-03), criterion definition (FR-26), PIR searching (FR-27 and FR-39), architecture and main components, and the documented lesson from the deep-search regression.
-- [ ] Say coverage as **411/430 model lines, 95.58%**, measured by WP04 on Python 3.13.5. Do not claim Python 3.11 was verified.
+- [ ] Use the 2026-10-23 evidence: **51 tests passed** on Python **3.11.9, 3.12.3 and 3.13.5**, with results recorded in the candidate's `Test_Coverage.pdf`. Quote model source-line coverage as **416/421 lines, 98.81%**, measured on **Python 3.13.5**, after excluding non-source `0`/`None` entries. This is model-only coverage, not whole-project or branch coverage. Cross-check the exact candidate report and slide 6 before recording.
 - [ ] Replace `MEMBER_A`–`MEMBER_D` only after checking the real four-member roster and student IDs.
 
 ## Camera, speaking, and timing

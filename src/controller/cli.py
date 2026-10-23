@@ -189,6 +189,7 @@ class CommandController:
     def run(self, input_stream: TextIO, output_stream: TextIO) -> None:
         while True:
             output_stream.write("pim> ")
+            output_stream.flush()
             line = input_stream.readline()
             if line == "":
                 return

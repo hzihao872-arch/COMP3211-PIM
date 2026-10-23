@@ -1,10 +1,10 @@
-# WP02 Technical Contract — COMP3211 PIM
+# Technical Contract — COMP3211 PIM
 
-**Status:** WP02 interface baseline, reconciled at WP05 against frozen source commit `4d3508db0447a3ac6346a2a2789da89208f88fd5` (2026-09-30). **Group:** 89; member names and student IDs pending group-provided data. [SRS.md](../srs/SRS.md) and [decisions.md](../../decisions.md) govern observable behavior. The class and module names below are group design choices, not course requirements.
+**Status:** Independently reconciled with the current candidate working tree on 2026-10-23. Historical starting commit: `4d3508db0447a3ac6346a2a2789da89208f88fd5`; use the candidate manifest to identify delivered content, including local fixes. **Group:** 89; member names and student IDs pending group-provided data. [SRS.md](../srs/SRS.md) and [decisions.md](../../decisions.md) govern observable behavior. The class and module names below are group design choices, not course requirements.
 
 ## 1. Module boundaries and dependencies
 
-| Frozen source file | Responsibility | May import |
+| Source file | Responsibility | May import |
 |---|---|---|
 | `src/model/records.py` | Four immutable PIR types and `Record` union | `model.errors`, `model.validation`, standard library |
 | `src/model/validation.py` | Text and local-minute validation/conversion | `model.errors`, standard library |
@@ -15,7 +15,7 @@
 | `src/controller/cli.py` | Command parsing, prompt, display, error translation, active-manager swap | `model`, `storage`, standard library |
 | `src/main.py` | Construct initial manager and controller, then start CLI | `controller`, `model`, standard library |
 
-`model` does not import `controller` or `storage` and performs no terminal, path, or file I/O. `storage` does not print or read terminal input. The product invokes only standard-library or local modules and does not use Python `eval`/`exec` for search. The files under `src/` implement the API below at the frozen commit.
+`model` does not import `controller` or `storage` and performs no terminal, path, or file I/O. `storage` does not print or read terminal input. The product invokes only standard-library or local modules and does not use Python `eval`/`exec` for search. The files under `src/` implement the API below in the current candidate.
 
 ## 2. Types, records, and validation
 
@@ -102,7 +102,7 @@ The public parser API is `parse_criterion(expression: str) -> Criterion`; it rai
 
 Direct construction of a concrete node is supported. Each frozen node validates in `__post_init__` and raises `ValidationError` on invalid arguments: type values must be one of the four canonical names (case-folded on input); text/time field names must be in their respective vocabularies (case-folded on input); a text needle must be a nonempty string and is preserved without trimming; a time operator must be `<`, `>`, or `=` and its `datetime` must be naive at minute precision; Boolean child operands must be `Criterion` instances. The parser catches such validation failures and exposes them as `SearchSyntaxError` for an invalid expression. Quoting is checked only by the parser because direct constructors receive decoded values.
 
-The tokenizer recognizes identifiers, quoted literals with only `\"` and `\\` escapes, `(`, `)`, `!`, `&&`, `||`, `<`, `>`, and `=`. It accepts adjacent symbolic tokens (`!name`, `(type`, `)`) and optional whitespace where token boundaries remain clear. It rejects unknown escapes and unterminated quotes. The frozen parser uses explicit operator and criterion-value stacks to implement this grammar; binary chains are constructed left to right. Boolean evaluation also uses an explicit work stack, so deep valid expressions do not rely on the Python call stack:
+The tokenizer recognizes identifiers, quoted literals with only `\"` and `\\` escapes, `(`, `)`, `!`, `&&`, `||`, `<`, `>`, and `=`. It accepts adjacent symbolic tokens (`!name`, `(type`, `)`) and optional whitespace where token boundaries remain clear. It rejects unknown escapes and unterminated quotes. The current parser uses explicit operator and criterion-value stacks to implement this grammar; binary chains are constructed left to right. Boolean evaluation also uses an explicit work stack, so deep valid expressions do not rely on the Python call stack:
 
 ```text
 expression := or_expr
@@ -114,7 +114,7 @@ atom       := "type" "=" QUOTED_TYPE
             | TIME_FIELD ("<" | ">" | "=") QUOTED_LOCAL_TIME
 ```
 
-`type` and field names are case-insensitive. `contains` is the fixed operator spelling. All three atom categories require quoted literals, including one-token values. Unknown fields, wrong operators for a field, unknown type literals, invalid time strings, empty containment strings, trailing tokens, and unmatched parentheses raise `SearchSyntaxError` for the whole expression. Tokenization and parsing finish before `PIMManager.search` is called; no partial results are printed.
+`type` and field names are case-insensitive. The `contains` keyword is also matched case-insensitively by `_Parser._take`; symbolic operators retain their exact spelling. All three atom categories require quoted literals, including one-token values. Unknown fields, wrong operators for a field, unknown type literals, invalid time strings, empty containment strings, trailing tokens, and unmatched parentheses raise `SearchSyntaxError` for the whole expression. Tokenization and parsing finish before `PIMManager.search` is called; no partial results are printed.
 
 ## 5. `.pim` storage boundary
 
@@ -125,13 +125,13 @@ def load_pim(path: Path, current_next_id: int) -> PIMManager: ...
 
 Both functions raise `PersistenceError(Exception)` for invalid `.pim` path/extension, malformed or unsupported file, model validation failure in loaded data, or file-system I/O failure. `PersistenceError` carries a user-safe failure category and detail. `save_pim` does not mutate its manager; `load_pim` never mutates the caller's manager. The controller replaces its active manager reference only after `load_pim` returns successfully.
 
-The JSON root has **exactly** `format`, `version`, `next_id`, and `records`: `format` is `"COMP3211-PIM"`, `version` is the integer `1`, `next_id` is a positive integer, and `records` is an ascending-ID array. Every record object has `id`, `type`, and exactly its type's data fields; time fields use the exact external string format. No extra or missing keys are accepted. `load_pim` rejects duplicate JSON object keys, nonstandard JSON constants, incorrect primitive types, duplicate/nonpositive IDs, unsupported version, invalid fields, and a file counter no greater than its maximum ID. UTF-8 decoding and JSON parsing must finish before a new manager is returned.
+The JSON root has **exactly** `format`, `version`, `next_id`, and `records`: `format` is `"COMP3211-PIM"`, `version` is the integer `1`, `next_id` is a positive integer, and `records` is an ascending-ID array. Every record object has `id`, `type`, and exactly its type's data fields; time fields use the exact external string format. No extra or missing keys are accepted. `load_pim` rejects duplicate JSON object keys, nonstandard JSON constants, incorrect primitive types, duplicate/nonpositive IDs, unsupported version, invalid fields, and a file counter no greater than its maximum ID. UTF-8 decoding and JSON parsing must finish before a new manager is returned. A parser recursion-limit failure on excessive JSON nesting is converted to `PersistenceError(FORMAT)`, preserving the active state and allowing another command.
 
 For save, resolve the path already supplied by the controller, require the exact lowercase `.pim` suffix, serialize the complete state, write it to a temporary file in the destination directory, and call `os.replace` only after successful serialization and write. Clean up a leftover temporary file on failure. A failed save leaves an existing destination's bytes unchanged; this is not a promise against sudden power loss. For load, validate the entire file and call `PIMManager.from_rows(rows, file_next_id, current_next_id)`; a failure preserves the active manager and its counter. Relative paths are resolved by the controller against the process working directory captured for the session.
 
 ## 6. CLI boundary and output contract
 
-`CommandController.__init__(self, manager: PIMManager, working_directory: Path) -> None` holds `_manager` and `_working_directory`; it raises `ValidationError` for an argument of the wrong type. Its public `run(input_stream: TextIO, output_stream: TextIO) -> None` writes `pim> `, reads one line at a time, dispatches the command, and prints results or `Error: CATEGORY: DETAIL`; EOF and `exit` terminate normally. It catches `PIMError`, `PersistenceError`, and its own `CommandSyntaxError`, then continues. It does not catch unrelated programming defects as user errors. `main() -> None` in `src/main.py` creates the manager and controller and calls `run` with standard streams and `Path.cwd()`.
+`CommandController.__init__(self, manager: PIMManager, working_directory: Path) -> None` holds `_manager` and `_working_directory`; it raises `ValidationError` for an argument of the wrong type. Its public `run(input_stream: TextIO, output_stream: TextIO) -> None` writes and flushes `pim> ` before reading one line at a time, dispatches the command, and prints results or `Error: CATEGORY: DETAIL`; EOF and `exit` terminate normally. It catches `PIMError`, `PersistenceError`, and its own `CommandSyntaxError`, then continues. It does not catch unrelated programming defects as user errors. `main() -> None` in `src/main.py` creates the manager and controller and calls `run` with standard streams and `Path.cwd()`.
 
 The error categories are fixed: `COMMAND` for command syntax, `VALIDATION` for model field/type/ID validation, `NOT_FOUND` for an absent valid ID, and `SEARCH` for a malformed criterion. `PersistenceError` carries one of `PATH`, `FORMAT`, or `IO`; the controller prints that category. Catch `SearchSyntaxError` before its `ValidationError` base class. `DETAIL` identifies the rejected token, field, path, or failure category without a traceback. This mapping gives CLI tests stable categories while leaving platform-specific I/O wording flexible.
 
@@ -163,4 +163,4 @@ Commands, type names, and field names are case-insensitive. Command tokens requi
 | FR-49–FR-50 | Controller error translation plus validation-before-commit in model and storage; failure-state and next-command checks. |
 | NFR-01–NFR-05 | Local CLI, declared Python versions, import audit, separate `model` package and identifiable `controller`/`storage` packages. |
 
-The frozen commit includes the model, CLI, storage, and acceptance tests summarized above. The WP04 results and remaining Python 3.11 evidence gap are recorded in [code-freeze.md](../reports/code-freeze.md); the WP05 coverage reports provide requirement-level evidence.
+The current candidate includes the model, CLI, storage, and acceptance tests summarized above. [Requirements Coverage](../reports/Requirements_Coverage.md) and [Test Coverage](../reports/Test_Coverage.md) provide current evidence and limitations. [code-freeze.md](../reports/code-freeze.md) is a historical record, not a statement that Python 3.11 remains untested or that subsequent local fixes are absent.

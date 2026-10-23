@@ -1,5 +1,7 @@
 # Human Closeout — Group 89
 
+**Current candidate:** `output/COMP3211_Group_Project-independent-review-2026-10-23-v2.zip`; see the current manifest. The original pre-video ZIP and dated audit records are historical.
+
 **Current state:** pre-video release candidate only. The two real MP4s and completed official Honour Declaration have not been supplied. Do not upload the candidate ZIP as the final submission. The official deadline is 2026-11-20 20:00.
 
 ## 1. Supply and confirm real group information
@@ -11,7 +13,7 @@
 
 ## 2. Record the two different videos
 
-- [ ] Run the two-process demonstration in `media/demo/demo-script.md` and `demo-commands.txt` against frozen source SHA `4d3508db0447a3ac6346a2a2789da89208f88fd5`. Record the real system demonstration as `System_Demo.mp4` and verify its measured duration is **at most 4:00**.
+- [ ] Run the two-process demonstration in `media/demo/demo-script.md` and `demo-commands.txt` against the current candidate source identified by `submission/manifest.md`. Record the real system demonstration as `System_Demo.mp4` and verify its measured duration is **at most 4:00**.
 - [ ] Record the presentation using `artifacts/presentation/Presentation.pdf` and `media/presentation/presentation-script.md` as a starting plan. Export the real `Presentation_Recording.mp4` and verify its measured duration is **at most 5:00**.
 - [ ] Time each person's actual speaking interval in the final presentation MP4. Each member must speak for **at least 1:00**. Check each real student ID card and face at the beginning of that person's presentation, and keep the current speaker's face visible throughout their speech. Record the measured intervals and review result in `media/presentation/presentation-script.md` or a signed group record.
 - [ ] Play back both exported MP4s for audio, readable screen/slides, correct commands, identities, and transitions. Planned script windows are not proof of compliance.
@@ -21,7 +23,7 @@
 From the repository root in PowerShell, copy the **actual reviewed** files. The prompts request paths to the files supplied by the group; nothing is generated or filled in for them:
 
 ```powershell
-$releaseDir = (Resolve-Path 'output/COMP3211_Group_Project').Path
+$releaseDir = (Resolve-Path 'output/COMP3211_Group_Project-independent-review-2026-10-23-v2').Path
 $demoSource = Read-Host 'Path to the reviewed System_Demo.mp4'
 $presentationSource = Read-Host 'Path to the reviewed Presentation_Recording.mp4'
 $declarationSource = Read-Host 'Path to the official signed declaration PDF'
@@ -33,9 +35,9 @@ Copy-Item -LiteralPath $declarationSource -Destination (Join-Path $releaseDir 'H
 The required destinations are:
 
 ```text
-output/COMP3211_Group_Project/04_Demo/System_Demo.mp4
-output/COMP3211_Group_Project/05_Presentation/Presentation_Recording.mp4
-output/COMP3211_Group_Project/Honour_Declaration_for_Group_Project.pdf
+output/COMP3211_Group_Project-independent-review-2026-10-23-v2/04_Demo/System_Demo.mp4
+output/COMP3211_Group_Project-independent-review-2026-10-23-v2/05_Presentation/Presentation_Recording.mp4
+output/COMP3211_Group_Project-independent-review-2026-10-23-v2/Honour_Declaration_for_Group_Project.pdf
 ```
 
 Do not put empty placeholders there. Use a media inspector such as `ffprobe` (if installed) to measure each actual MP4, for example:
@@ -61,14 +63,14 @@ Also inspect the files as videos, since metadata alone cannot establish the spea
 
 ## 4. Reverify, hash, ZIP, and upload
 
-- [ ] Re-run the Developer Manual's launch, 33-test command, and model coverage from a **freshly extracted or copied** `03_Implementation`. Keep Python 3.11 labelled unverified unless a real 3.11 run is recorded.
+- [ ] Re-run the Developer Manual's launch, 51-test command, and model coverage from a **freshly extracted or copied** `03_Implementation`. Python 3.11.9, 3.12.3 and 3.13.5 passed the revised 51-test suite on 2026-10-23; repeat on the final extracted files after changes.
 - [ ] Open every PDF and check that `Requirements_Coverage.pdf` and `Test_Coverage.pdf` are directly in `03_Implementation`, and the signed Honour Declaration is directly in the ZIP root.
 - [ ] Update `submission/manifest.md` with the real MP4/PDF SHA-256 hashes, measured durations, identities/face review, declaration review, and exact verification evidence. `Get-FileHash -Algorithm SHA256 <path>` prints each hash. Remove the three pending-artifact entries only after their checks pass.
 - [ ] Search the release tree for `__pycache__`, `.pyc`, virtual environments, secret files, personal absolute paths, and stale placeholders. Keep the two human MP4s and declaration; do not include working `.pim` data or temporary files.
 - [ ] Create the **final** ZIP from the *contents* of the release directory so `01_SRS/`, `02_Design/`, `03_Implementation/`, `04_Demo/`, `05_Presentation/`, and `Honour_Declaration_for_Group_Project.pdf` are at the archive root:
 
 ```powershell
-$releaseDir = (Resolve-Path 'output/COMP3211_Group_Project').Path
+$releaseDir = (Resolve-Path 'output/COMP3211_Group_Project-independent-review-2026-10-23-v2').Path
 $zipPath = Join-Path (Resolve-Path 'output').Path 'COMP3211_Group_Project.zip'
 foreach ($required in @('04_Demo/System_Demo.mp4', '05_Presentation/Presentation_Recording.mp4', 'Honour_Declaration_for_Group_Project.pdf')) {
     if (-not (Test-Path -LiteralPath (Join-Path $releaseDir $required))) { throw "Missing real human artifact: $required" }

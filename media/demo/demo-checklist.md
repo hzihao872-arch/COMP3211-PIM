@@ -2,7 +2,7 @@
 
 ## Before recording
 
-- [ ] Use the frozen implementation commit `4d3508db0447a3ac6346a2a2789da89208f88fd5`; check `git diff 4d3508db0447a3ac6346a2a2789da89208f88fd5 -- src tests tools` is empty.
+- [ ] Use the current independent review candidate identified by `submission/manifest.md` (or the accompanying manifest in an extracted ZIP). Verify the delivered file hashes and run the delivered tests. Source, tests and the coverage tool include reviewed changes; an old commit and an empty diff are not release criteria. An extracted ZIP needs no Git metadata.
 - [ ] Create a new empty demo directory, start the CLI from it, and keep that directory for both Python processes.
 - [ ] Rehearse the exact two sessions in `demo-commands.txt`; compare the visible results with `demo-expected-output.txt`. The printed absolute snapshot path will reflect the chosen directory.
 - [ ] Arrange a readable terminal view and confirm the microphone and screen capture include the whole prompt and outputs.

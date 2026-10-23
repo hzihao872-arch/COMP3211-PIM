@@ -4,6 +4,10 @@ Group repository for the Fall 2026 COMP3211 Software Engineering course project.
 
 The project is a command-line Personal Information Management (PIM) system. It manages notes, tasks, events, and contacts; supports modification, deletion, printing, compound search conditions, and `.pim` file persistence.
 
+## Current independent review candidate
+
+The latest reviewed package is `output/COMP3211_Group_Project-independent-review-2026-10-23-v2.zip`. Its file hashes are in [the current manifest](submission/manifest.md); findings and verification are in [the independent review](docs/reports/independent-review-2026-10-23.md). Earlier ZIPs and dated reports are historical. The candidate still requires the two real recordings, the official declaration, and human group review before submission.
+
 ## Important dates
 
 - Group registration: **2026-09-28 09:00**
@@ -26,6 +30,10 @@ The project is a command-line Personal Information Management (PIM) system. It m
 
 ## First-time setup
 
+For a supplied candidate ZIP, extract it and open PowerShell in `03_Implementation`, the folder containing `src`, `tests` and `tools`. No Git clone is required. Use Python 3.11.9, 3.12.3 or 3.13.5; see the supplied Developer Manual and Test Coverage report for the verified environments.
+
+For a fresh repository checkout only:
+
 ```powershell
 git clone https://github.com/hzihao872-arch/COMP3211-PIM.git
 cd COMP3211-PIM
@@ -36,12 +44,13 @@ The implementation must use only the Python standard library.
 
 ## Run commands
 
-Run the local CLI from the repository root:
+Run the local CLI from the repository root, or from `03_Implementation` in an extracted candidate:
 
 ```powershell
 python src/main.py
 $env:PYTHONPATH = "$PWD\src"
 python -m unittest discover -s tests -t . -v
+python tools/model_coverage.py
 ```
 
 Type `help` for every command form, field order, quoting rule, and search syntax. For example:
@@ -54,6 +63,10 @@ exit
 ```
 
 The program starts with an empty collection. Use `load "records.pim"` in a later session to restore a saved snapshot. The `.pim` suffix must be lowercase. Dates use local `YYYY-MM-DD HH:mm` format. A failed command reports an error and returns to the prompt.
+
+## Candidate status
+
+The current manifest in `submission/manifest.md` identifies the candidate files. Source, tests and reports may include reviewed changes after the earlier source baseline; use the manifest and current test results instead of an old commit label. The two real MP4 recordings, verified member details, contribution consensus and signed official Honour Declaration remain human closeout work. This repository does not establish that the project has been submitted.
 
 ## Start a task
 

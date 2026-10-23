@@ -1,0 +1,18 @@
+.............................................
+----------------------------------------------------------------------
+Ran 45 tests in 1.040s
+
+OK
+Model line coverage (Python standard-library trace)
+Python: 3.11.9
+OS: Windows 10
+Command: python tools/model_coverage.py
+Tests: 45; failures: 0; errors: 0
+Scope: src/model/*.py; subprocess CLI execution is outside trace scope
+model/__init__.py: 0/1 (0.00%)
+model/errors.py: 4/5 (80.00%)
+model/manager.py: 95/96 (98.96%)
+model/records.py: 57/58 (98.28%)
+model/search.py: 226/232 (97.41%)
+model/validation.py: 34/35 (97.14%)
+TOTAL model: 416/427 (97.42%)

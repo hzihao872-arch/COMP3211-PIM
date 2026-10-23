@@ -1,12 +1,12 @@
 # System demo recording script
 
-**Product baseline:** `4d3508db0447a3ac6346a2a2789da89208f88fd5`<br>
+**Product version:** Current independent review candidate, identified by its accompanying manifest<br>
 **Group:** 89. Member names and student IDs await group input.<br>
 **Deliverable:** `System_Demo.mp4`, maximum **4:00** under the official Project Description. The sections below are a recording plan, not observed video timings.
 
 ## Prepare the two-process demonstration
 
-From the repository root in PowerShell, create a new empty working directory so record IDs and the snapshot path are predictable:
+From the repository root, or from `03_Implementation` in an extracted candidate, in PowerShell, create a new empty working directory so record IDs and the snapshot path are predictable:
 
 ```powershell
 $repo = (Resolve-Path .).Path
@@ -17,7 +17,7 @@ python (Join-Path $repo 'src/main.py')
 
 Enter **SESSION 1** from [demo-commands.txt](demo-commands.txt), excluding the `# SESSION` comment. After `exit`, start a **new** process with the same `python (Join-Path $repo 'src/main.py')` command and enter **SESSION 2**. Keep the same working directory. `snapshot.pim` is relative to it. Do not paste both sessions into one process: lines after the first `exit` would not run.
 
-The complete commands are in [demo-commands.txt](demo-commands.txt). [demo-expected-output.txt](demo-expected-output.txt) records the frozen-program output from a clean two-process run on 2026-09-30, with invisible trailing prompt spaces removed: both processes exited 0 and the snapshot existed. Its absolute `D:\comp3211\tmp\wp06-demo` path identifies that verification run; a recording from another directory will print that directory instead. No command produced `Error:`.
+The complete commands are in [demo-commands.txt](demo-commands.txt). [demo-expected-output.txt](demo-expected-output.txt) records the current-program output from a clean two-process run on 2026-10-23, with invisible trailing prompt spaces removed: both processes exited 0 and the snapshot existed. `<DEMO_DIR>` replaces only the absolute temporary directory in this transcript; it is not text to type. A recording will print its actual working directory. No command produced `Error:`.
 
 ## Narration and screen plan
 
@@ -36,4 +36,4 @@ Keep typing and narration concise enough to finish the **actual MP4** by 4:00. O
 
 - If a command is mistyped, read the `Error:` category, correct it, and continue only if the output and remaining IDs still match the script. For the final take, restart in a **new empty directory** for the deterministic sequence.
 - If `snapshot.pim` is not found in session 2, return to the directory used by session 1 and restart the second process. `load` resolves relative paths against the process working directory.
-- If the result differs from the captured output, stop and compare the typed command and program commit. Do not present an improvised result as the frozen demonstration.
+- If the result differs from the captured output, stop and compare the typed command and candidate manifest. Rehearse again against the exact files intended for recording.

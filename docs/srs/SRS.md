@@ -4,20 +4,22 @@
 **Project:** Command-line Personal Information Management (PIM) system<br>
 **Group number:** 89<br>
 **Members and student IDs:** [Human input pending: member names and student IDs]<br>
-**Version:** WP05 final source 1.1<br>
-**Date:** 2026-09-30
-**Implementation baseline:** `4d3508db0447a3ac6346a2a2789da89208f88fd5`
+**Version:** Independent-review candidate 1.3<br>
+**Date:** 2026-10-23<br>
+**Implementation basis:** Current candidate source and tests, including local review changes; historical starting commit `4d3508db0447a3ac6346a2a2789da89208f88fd5` does not identify the complete delivery. See the candidate manifest for packaged file hashes.
 
 ## 1. Preface
 
-This specification is for the project group, course assessors, designers, implementers, and testers. It states the externally observable PIM behavior used to assess the frozen implementation. The official 2026 Course Project Description, especially Appendix B (p. 4), supplies the required stories. Lecture 04, PDF pp. 26–27 and 31–32, supplies the writing guidance and document structure. The concrete interaction and data rules in `decisions.md` are WP00 group choices, subject to human group review; they are not additional course mandates.
+This specification is for the project group, course assessors, designers, implementers, and testers. It states the externally observable PIM behavior used to assess the current candidate implementation. The official 2026 Course Project Description, especially Appendix B (p. 4), supplies the required stories. Lecture 04, PDF pp. 26–27 and 31–32, supplies the writing guidance and document structure. The concrete interaction and data rules in `decisions.md` are WP00 group choices, subject to human group review; they are not additional course mandates.
 
 | Version | Date | Reason and change |
 |---|---|---|
 | WP01 draft 1.0 | 2026-09-30 | First SRS baseline derived from the official stories, Lecture 04, and WP00 decisions. |
-| WP05 final source 1.1 | 2026-09-30 | Recorded group 89 and frozen implementation SHA; retained all US, FR, and NFR IDs and their behavior. Python 3.11 verification remains pending. |
+| WP05 final source 1.1 | 2026-09-30 | Recorded group 89 and the historical implementation SHA; retained requirement IDs. Python 3.11 verification was pending at that stage. |
+| Group-review candidate 1.2 | 2026-10-23 | Rechecked Lecture 04 structure; added rationale and compatibility evidence. |
+| Independent-review candidate 1.3 | 2026-10-23 | Independently checked official stories and actual code; clarified text/time normalization, ID scope, observable save atomicity and file-error recovery; retained all requirement IDs. |
 
-Every numbered requirement below is mandatory and uses **shall**. A verification idea describes how to check a requirement; it is not itself evidence of a passing test. The companion `requirements-catalog.csv` contains the same IDs, statements, source links, and verification ideas for coverage tracking. WP04 verified Python 3.12.3 and 3.13.5; Python 3.11 remains unverified against NFR-02.
+Every numbered requirement below is mandatory within this working specification and uses **shall**; a group-selected rule is not thereby a new course requirement. A verification idea describes how to check a requirement; it is not itself evidence of a passing test. The companion `requirements-catalog.csv` contains the same IDs, statements, source links, and verification ideas for coverage tracking. The current Requirements Coverage and Test Coverage reports record the independently rerun test results and their interpreter versions; this specification does not treat a verification idea or an earlier pass as current evidence.
 
 ## 2. Introduction
 
@@ -48,7 +50,7 @@ The official Project Description governs the stories and course constraints. Lec
 | Applicable field | A field present in the schema of the PIR being evaluated. |
 | `.pim` | The exact lowercase file extension for saved PIM data. |
 | Local time | A calendar date and clock time without a timezone or UTC offset. |
-| Failed operation | A command rejected for invalid input or unable to complete because of a file or I/O error. |
+| Failed operation | A command rejected for invalid input or unable to complete because of a file or file I/O error. |
 
 ## 4. User requirements definition
 
@@ -106,8 +108,8 @@ The public commands are `help`, `add TYPE "FIELD"...`, `list [TYPE]`, `show ID`,
 **FR-05** [US5] The system shall create a `contact` PIR containing its required `name`, `address`, and `mobile_number` fields.<br>
 *Verify:* Add a contact and show all three fields, including a number with `+` or a leading zero.
 
-**FR-06** [US2–US5] The system shall reject any missing, multiline, or whitespace-only required data field and store each accepted field after trimming its leading and trailing whitespace.<br>
-*Verify:* Try missing, blank, multiline, and padded values for every schema; inspect accepted values and rejected operations.
+**FR-06** [US2–US5] The system shall reject any missing, multiline, or whitespace-only required data field and store each accepted text field after trimming its leading and trailing whitespace; time fields shall follow FR-07 without whitespace normalization.<br>
+*Verify:* Try missing, blank, and multiline values for every schema; verify padded text is trimmed and padded time is rejected without a state change.
 
 **FR-07** [US3, US4] The system shall accept time-field values only in valid local `YYYY-MM-DD HH:mm` 24-hour format at minute precision, including valid past times.<br>
 *Verify:* Try valid, impossible-date, wrong-format, and timezone-bearing values; confirm past values are accepted.
@@ -115,8 +117,8 @@ The public commands are `help`, `add TYPE "FIELD"...`, `list [TYPE]`, `show ID`,
 **FR-08** [US5] The system shall preserve a mobile number as text, including `+` and leading zeros, without region-specific validation.<br>
 *Verify:* Save and show such a number; try a nonempty mobile string without a region-specific pattern.
 
-**FR-09** [US1] The system shall assign each successfully created PIR a unique positive integer ID, starting at 1 and increasing for later creations without reassigning an ID after deletion or loading a file.<br>
-*Verify:* Create, delete, and create records; load an older snapshot and create again; compare assigned IDs.
+**FR-09** [US1] The system shall initialize an empty session with next ID 1 and assign each successfully created PIR the current next ID, advancing the counter without reusing an ID issued in that session; loading shall preserve the greater counter specified in FR-46.<br>
+*Verify:* Create, delete, and create records in one session; load older and higher-counter snapshots and create again; compare IDs against FR-46.
 
 **FR-10** [US1] The system shall leave the next ID unchanged when creation fails.<br>
 *Verify:* Make an invalid `add` between two valid adds and compare assigned IDs.
@@ -243,7 +245,7 @@ search (type = "task" && deadline < "2026-10-01 09:00") || !name contains "Lee"
 
 ### 6.3 Persistence and recovery
 
-Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, `version`, `next_id`, and `records`. `format` is `COMP3211-PIM`; `version` is the integer `1`. `records` is an ascending-ID array; every entry has `id`, `type`, and exactly the data fields of its type. `next_id` is a positive integer greater than every stored ID. A file is a snapshot: loading it replaces the current collection but retains the higher of the current and file ID counters. This prevents a later creation from reassigning an ID already issued in the current session after an older snapshot is loaded.
+Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, `version`, `next_id`, and `records`. `format` is `COMP3211-PIM`; `version` is the integer `1`. `records` is an ascending-ID array; every entry has `id`, `type`, and exactly the data fields of its type. `next_id` is a positive integer greater than every stored ID. A file is a snapshot: loading it replaces the current collection but retains the higher of the current and file ID counters. This prevents a later creation from reassigning an ID already issued in the current session after an older snapshot is loaded. Across separate sessions, only the counter in a loaded file is retained; no external history of IDs is promised.
 
 **FR-41** [US10] The `save "PATH.pim"` command shall store the complete current PIR collection in a file whose extension is exactly `.pim`.<br>
 *Verify:* Save four PIR types, inspect the file path and contents, and reject other extensions.
@@ -251,8 +253,8 @@ Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, 
 **FR-42** [US10] A saved file shall use the version 1 UTF-8 JSON structure and exact record schemas stated in §6.3.<br>
 *Verify:* Parse a saved file and check encoding, top-level keys/values, IDs, order, and each record's fields.
 
-**FR-43** [US10] Saving shall write to a temporary sibling file and replace the destination only after successful serialization, leaving the previous destination intact if saving fails.<br>
-*Verify:* Inspect the save procedure's temporary path; induce a write/serialization failure and compare the destination's previous bytes.
+**FR-43** [US10] Saving shall replace the destination with the complete serialized snapshot only after a successful write; if saving fails, the previous destination contents shall remain unchanged.<br>
+*Verify:* Save successfully and compare the complete snapshot; induce serialization, write, and replacement failures and compare the destination's previous bytes.
 
 **FR-44** [US11] The `load "PATH.pim"` command shall read a `.pim` file and validate its complete contents before changing current state.<br>
 *Verify:* Load a valid file and separately attempt truncated, wrong-extension, and unreadable files.
@@ -269,15 +271,17 @@ Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, 
 **FR-48** [US10, US11] The system shall resolve a relative `save` or `load` path against the process working directory.<br>
 *Verify:* Run from a chosen directory and use relative paths for save and load.
 
-**FR-49** [US1–US11] An unknown command, invalid argument, invalid path or file, or I/O failure shall produce an error message identifying the rejected input or failure category and return to the command prompt.<br>
+**FR-49** [US1–US11] An unknown command, invalid argument, invalid path or file, or file I/O failure shall produce an error message identifying the rejected input or failure category and return to the command prompt.<br>
 *Verify:* Exercise each error category, inspect the message for the input or category, and issue a subsequent valid command.
 
 **FR-50** [US1–US11] A failed command shall not partially change the in-memory collection.<br>
 *Verify:* Compare the collection before and after failed create, update, delete, search, save, and load operations.
 
+The recovery requirement concerns command processing with usable input/output streams. Terminal disconnection or failure of the supplied streams can prevent a prompt from being displayed; it is not classified as a recoverable file operation.
+
 ### 6.4 Non-functional requirements
 
-These are checkable product or implementation constraints, not claims of measured performance. Each has a verification idea. NFR-02 is not yet fully verified because Python 3.11 was unavailable for WP04.
+These are checkable product or implementation constraints, not claims of measured performance. Each has a verification idea. Interpreter versions, environment checks and remaining limits are stated in the current Requirements Coverage report. In particular, an import audit alone does not constitute the disconnected, non-graphical execution check in NFR-01.
 
 **NFR-01** [Official p. 1; group scope] The delivered PIM shall operate through a local command-line interface without requiring a GUI or network connection.<br>
 *Verify:* Run the documented commands with network unavailable and no graphical session.
@@ -311,3 +315,24 @@ These are checkable product or implementation constraints, not claims of measure
 | US11 | FR-44–FR-48 |
 
 The ranges above are inclusive. FR-12, FR-13, FR-15, FR-24, FR-25, FR-49, and FR-50 apply to **every** story in addition to its row. FR-14 applies to US2–US5. Each story has a direct behavior requirement independent of those cross-cutting rules.
+
+
+### 6.6 Rationale for the requirements
+
+Lecture 04 (p. 27) asks for reasons as well as consistent mandatory language. These rationales explain the requirement groups above; they introduce no additional functionality or acceptance criteria. Rules beyond Appendix B remain group decisions for review.
+
+| Requirement IDs | Why the requirement is needed |
+|---|---|
+| FR-01–FR-05 | Users need a single collection while retaining the different information required for notes, tasks, events and contacts. |
+| FR-06–FR-08 | Consistent nonempty fields and explicit dates prevent ambiguous records; treating mobile numbers as text preserves leading zeros and international prefixes. Historical events remain useful records. |
+| FR-09–FR-11 | Stable identifiers let users select a record reliably after other records are added or removed; rejected creation must not consume an ID. |
+| FR-12–FR-15 | Predictable commands, case rules and quoting let users enter spaces and literal characters without guessing how input will be interpreted. |
+| FR-16–FR-17 | Editing one field lets users correct information while preserving record identity and unrelated values. |
+| FR-18–FR-25 | Summaries support selection; full details support inspection. Explicit empty/not-found messages and help let users distinguish a valid empty result from a failed operation. |
+| FR-26–FR-32 | Users need to express type, text and chronological conditions precisely and obtain results over the current collection. |
+| FR-33–FR-40 | Boolean composition supports useful combined searches. Explicit precedence, missing-field rules and whole-expression validation prevent surprising matches. |
+| FR-41–FR-43 | A saved snapshot must be usable in a later session; a failed save must not destroy the existing saved copy. |
+| FR-44–FR-48 | Full-file validation avoids importing partial or inconsistent data. Preserving the ID counter avoids reusing a previously allocated identifier after a load. |
+| FR-49–FR-50 | Recoverable errors allow users to correct input without restarting or losing valid records. |
+| NFR-01–NFR-03 | A local CLI and standard-library implementation keep setup appropriate to the course scope. The explicit Python support list makes compatibility verifiable. |
+| NFR-04–NFR-05 | Keeping the model separate enables direct unit tests, while identifiable command and file components make responsibilities reviewable. |

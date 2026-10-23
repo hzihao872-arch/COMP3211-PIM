@@ -19,10 +19,10 @@ type: task
 description: revised
 deadline: 2026-10-01 09:00
 pim> Deleted 1
-pim> Saved 3 PIR(s) to D:\comp3211\tmp\wp06-demo\snapshot.pim
+pim> Saved 3 PIR(s) to <DEMO_DIR>\snapshot.pim
 pim>
 SESSION 2 exit=0
-pim> Loaded 3 PIR(s) from D:\comp3211\tmp\wp06-demo\snapshot.pim
+pim> Loaded 3 PIR(s) from <DEMO_DIR>\snapshot.pim
 pim> id: 2
 type: task
 description: revised

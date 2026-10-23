@@ -1,0 +1,37 @@
+[
+  {
+    "file": "Design_Document.pdf",
+    "pages": 9,
+    "outside_page_text": []
+  },
+  {
+    "file": "Developer_Manual.pdf",
+    "pages": 2,
+    "outside_page_text": []
+  },
+  {
+    "file": "Requirements_Coverage.pdf",
+    "pages": 8,
+    "outside_page_text": []
+  },
+  {
+    "file": "SRS.pdf",
+    "pages": 8,
+    "outside_page_text": []
+  },
+  {
+    "file": "Test_Coverage.pdf",
+    "pages": 2,
+    "outside_page_text": []
+  },
+  {
+    "file": "User_Manual.pdf",
+    "pages": 4,
+    "outside_page_text": []
+  },
+  {
+    "file": "Presentation.pdf",
+    "pages": 6,
+    "outside_page_text": []
+  }
+]

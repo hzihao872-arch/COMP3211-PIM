@@ -7,44 +7,31 @@ import re
 from typing import TextIO
 
 from controller.output import TerminalOutput
-from controller.help import COMMAND_HELP, command_help
-from model.errors import RecordNotFoundError, SearchSyntaxError, ValidationError
+from controller.help import COMMAND_HELP, HELP_OVERVIEW, command_help
+from model.errors import PIMError, ValidationError
+from model.diagnostics import MAX_ERROR_DETAIL, bounded_detail, preview
+from model.schema import FIELDS as _FIELDS, MAX_RECORD_ID
 from model.manager import PIMManager
 from model.search import parse_criterion
 from model.validation import format_local_time
-from storage.pim_file import PersistenceError, load_pim, save_pim
-
-_FIELDS = {
-    "note": ("text",),
-    "task": ("description", "deadline"),
-    "event": ("description", "start_time", "alarm_time"),
-    "contact": ("name", "address", "mobile_number"),
-}
-_HELP = '''Commands:
-  help [COMMAND]
-  add TYPE "FIELD"...  (note: text; task: description deadline; event: description start_time alarm_time; contact: name address mobile_number)
-  list [TYPE]
-  show ID | show all
-  update ID FIELD "VALUE"
-  delete ID
-  search EXPR
-  save "PATH.pim" | load "PATH.pim" [force=true|force=false]
-  exit
-Types/fields/commands ignore case. Values with spaces need double quotes; inside quotes use \\" and \\\\.
-Time: YYYY-MM-DD HH:mm (local, 24-hour).
-Search atoms: type = "TYPE"; FIELD contains "TEXT"; deadline/start_time/alarm_time <, >, or = "TIME".
-Combine with !, &&, ||, and parentheses; precedence: parentheses, !, &&, ||.
-Use help COMMAND for details and examples. Unsaved changes block load unless force=true.
-Exit/EOF warn about unsaved changes; they do not save automatically.
-'''
+from storage.pim_file import load_pim, save_pim
 
 
-class CommandSyntaxError(Exception):
+class InputReadError(PIMError):
+    """An unusable command-input stream; this must terminate the session."""
+
+    category = "IO"
+
+
+class CommandSyntaxError(PIMError):
     """An invalid command form or argument token."""
+
+    category = "COMMAND"
 
     def __init__(self, detail: str, position: int | None = None) -> None:
         self.position = position
-        super().__init__(detail + (f" at character {position}" if position is not None else ""))
+        suffix = f" at character {position}" if position is not None else ""
+        super().__init__(bounded_detail(detail, MAX_ERROR_DETAIL - len(suffix)) + suffix)
 
 
 def _arguments(line: str) -> list[str]:
@@ -87,13 +74,13 @@ def _arguments(line: str) -> list[str]:
 
 def _id(token: str) -> int:
     if not re.fullmatch(r"[0-9]+", token):
-        raise CommandSyntaxError(f"invalid positive decimal ID: {token!r}")
-    try:
-        value = int(token)
-    except ValueError as error:
-        raise CommandSyntaxError("decimal ID is too long") from error
+        raise CommandSyntaxError(f"invalid positive decimal ID: {preview(token)}")
+    significant = token.lstrip("0") or "0"
+    if len(significant) > len(str(MAX_RECORD_ID)):
+        raise CommandSyntaxError(f"decimal ID exceeds {MAX_RECORD_ID}")
+    value = int(significant)
     if value == 0:
-        raise CommandSyntaxError(f"invalid positive decimal ID: {token!r}")
+        raise CommandSyntaxError(f"invalid positive decimal ID: {preview(token)}")
     return value
 
 
@@ -128,6 +115,13 @@ class CommandController:
         if self._dirty:
             output_stream.write('Warning: unsaved changes will be lost; use save "PATH.pim" before exiting.\n')
 
+    def _try_warn_unsaved(self, output_stream: TextIO) -> None:
+        try:
+            self._warn_unsaved(output_stream)
+            output_stream.flush()
+        except (OSError, UnicodeError, KeyboardInterrupt):
+            pass  # A termination warning must not mask the original failure.
+
     def _path(self, value: str) -> Path:
         path = Path(value)
         return path if path.is_absolute() else self._working_directory / path
@@ -157,14 +151,14 @@ class CommandController:
             _count(args, 0, 1, command)
             topic = args[0].casefold() if args else None
             if topic is not None and topic not in COMMAND_HELP:
-                raise CommandSyntaxError(f"unknown help topic: {topic!r}; type help for command names")
-            output_stream.write(command_help(topic) if topic is not None else _HELP)
+                raise CommandSyntaxError(f"unknown help topic: {preview(topic)}; type help for command names")
+            output_stream.write(command_help(topic) if topic is not None else HELP_OVERVIEW)
         elif command == "add":
             if not args:
                 raise CommandSyntaxError("add requires a type")
             record_type = args.pop(0).casefold()
             if record_type not in _FIELDS:
-                raise ValidationError(f"unknown record type: {record_type!r}")
+                raise ValidationError(f"unknown record type: {preview(record_type)}")
             _count(args, len(_FIELDS[record_type]), len(_FIELDS[record_type]), command)
             record = getattr(self._manager, f"create_{record_type}")(*args)
             self._dirty = True
@@ -212,28 +206,31 @@ class CommandController:
             self._warn_unsaved(output_stream)
             return True
         else:
-            raise CommandSyntaxError(f"unknown command: {command!r}; type help for command names")
+            raise CommandSyntaxError(f"unknown command: {preview(command)}; type help for command names")
         return False
 
     def run(self, input_stream: TextIO, output_stream: TextIO) -> None:
         output_stream = TerminalOutput(output_stream)
+        try:
+            self._run(input_stream, output_stream)
+        except KeyboardInterrupt:
+            self._try_warn_unsaved(output_stream)
+            raise
+
+    def _run(self, input_stream: TextIO, output_stream: TerminalOutput) -> None:
         while True:
             output_stream.write("pim> ")
             output_stream.flush()
-            line = input_stream.readline()
+            try:
+                line = input_stream.readline()
+            except (OSError, UnicodeError) as error:
+                self._try_warn_unsaved(output_stream)
+                raise InputReadError(f"cannot read input: {bounded_detail(str(error))}") from error
             if line == "":
                 self._warn_unsaved(output_stream)
                 return
             try:
                 if self._dispatch(line, output_stream):
                     return
-            except SearchSyntaxError as error:
-                output_stream.write(f"Error: SEARCH: {error}\n")
-            except RecordNotFoundError as error:
-                output_stream.write(f"Error: NOT_FOUND: {error}\n")
-            except ValidationError as error:
-                output_stream.write(f"Error: VALIDATION: {error}\n")
-            except PersistenceError as error:
+            except PIMError as error:
                 output_stream.write(f"Error: {error.category}: {error}\n")
-            except CommandSyntaxError as error:
-                output_stream.write(f"Error: COMMAND: {error}\n")

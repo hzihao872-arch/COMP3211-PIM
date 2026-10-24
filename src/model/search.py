@@ -6,17 +6,14 @@ from datetime import datetime
 from typing import Literal
 
 from model.errors import SearchSyntaxError, ValidationError
+from model.diagnostics import preview
+from model.schema import TYPES as _TYPES, TEXT_FIELDS as _TEXT, TIME_FIELDS as _TIME
 from model.records import Record, RecordType, TextField, TimeField
 from model.validation import parse_local_time, validate_datetime
 
-_TYPES = frozenset(("note", "task", "event", "contact"))
-_TEXT = frozenset(("text", "description", "name", "address", "mobile_number"))
-_TIME = frozenset(("deadline", "start_time", "alarm_time"))
-
-
 def _canonical(value: object, choices: frozenset[str], label: str) -> str:
     if not isinstance(value, str) or value.casefold() not in choices:
-        raise ValidationError(f"invalid {label}: {value!r}")
+        raise ValidationError(f"invalid {label}: {preview(value)}")
     return value.casefold()
 
 
@@ -61,7 +58,7 @@ class TimeCriterion(Criterion):
     def __post_init__(self) -> None:
         object.__setattr__(self, "field", _canonical(self.field, _TIME, "time field"))
         if self.operator not in ("<", ">", "="):
-            raise ValidationError(f"invalid time operator: {self.operator!r}")
+            raise ValidationError(f"invalid time operator: {preview(self.operator)}")
         validate_datetime(self.field, self.value)
 
     def matches(self, record: Record) -> bool:
@@ -184,7 +181,7 @@ def _tokenize(expression: str) -> list[tuple[str, str, int]]:
             tokens.append(("symbol", char, index + 1))
             index += 1
         else:
-            raise SearchSyntaxError(f"invalid search token: {char!r}", index + 1)
+            raise SearchSyntaxError(f"invalid search token: {preview(char)}", index + 1)
     return tokens
 
 
@@ -200,17 +197,10 @@ class _Parser:
     def _take(self, kind: str | None = None, value: str | None = None) -> str:
         token = self._peek()
         if token is None or (kind is not None and token[0] != kind) or (value is not None and token[1].casefold() != value):
-            raise SearchSyntaxError(f"expected {value or kind or 'search token'}; found {token[1] if token else 'end of expression'!r}",
+            raise SearchSyntaxError(f"expected {value or kind or 'search token'}; found {preview(token[1] if token else 'end of expression')}",
                                     token[2] if token else self.end_position)
         self.position += 1
         return token[1]
-
-    def _accept(self, value: str) -> bool:
-        token = self._peek()
-        if token is not None and token[1] == value:
-            self.position += 1
-            return True
-        return False
 
     def parse(self) -> Criterion:
         operators: list[tuple[str, int]] = []
@@ -257,7 +247,7 @@ class _Parser:
                 while operators and operators[-1][0] == "!":
                     apply_operator()
             else:
-                raise SearchSyntaxError(f"unexpected search token: {token[1]!r}", token[2])
+                raise SearchSyntaxError(f"unexpected search token: {preview(token[1])}", token[2])
 
         if expect_operand:
             raise SearchSyntaxError("incomplete search expression", self.end_position)
@@ -279,9 +269,9 @@ class _Parser:
             token = self._peek()
             operator = self._take("symbol")
             if operator not in ("<", ">", "="):
-                raise SearchSyntaxError(f"invalid time operator: {operator!r}", token[2])
+                raise SearchSyntaxError(f"invalid time operator: {preview(operator)}", token[2])
         else:
-            raise SearchSyntaxError(f"unknown search field: {field!r}", field_position)
+            raise SearchSyntaxError(f"unknown search field: {preview(field)}", field_position)
         token = self._peek()
         literal_position = token[2] if token else self.end_position
         literal = self._take("quoted")

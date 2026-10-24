@@ -13,6 +13,41 @@ MAIN = Path(__file__).resolve().parents[1] / "src" / "main.py"
 
 
 class ProcessBoundaryTests(unittest.TestCase):
+    def test_dirty_interrupt_with_closed_pipe_keeps_130_without_shutdown_error(self):
+        """Ctrl+C warning may hit EPIPE; shutdown must not emit another traceback."""
+        script = (
+            "import runpy, sys\n"
+            "class InterruptedInput:\n"
+            "    first = True\n"
+            "    def readline(self):\n"
+            "        if self.first:\n"
+            "            self.first = False\n"
+            "            return 'add note unsaved\\n'\n"
+            "        sys.stderr.write('ready\\n'); sys.stderr.flush()\n"
+            "        sys.__stdin__.readline()\n"
+            "        raise KeyboardInterrupt\n"
+            "sys.stdin = InterruptedInput()\n"
+            f"sys.path.insert(0, {str(MAIN.parent)!r})\n"
+            f"runpy.run_path({str(MAIN)!r}, run_name='__main__')\n"
+        )
+        process = subprocess.Popen([sys.executable, "-c", script], stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        try:
+            self.assertEqual(process.stderr.readline().rstrip(b"\r\n"), b"ready")
+            process.stdout.close()
+            process.stdin.write(b"interrupt\n")
+            process.stdin.flush()
+            status = process.wait(timeout=15)
+            errors = process.stderr.read()
+            self.assertEqual(status, 130, errors)
+            self.assertEqual(errors, b"")
+        finally:
+            if process.poll() is None:
+                process.kill()
+                process.wait()
+            for stream in (process.stdin, process.stdout, process.stderr):
+                stream.close()
+
     def test_loaded_unicode_can_be_displayed_on_ascii_stdout(self):
         with tempfile.TemporaryDirectory() as directory:
             data = {"format": "COMP3211-PIM", "version": 1, "next_id": 2,
@@ -84,5 +119,7 @@ class ProcessBoundaryTests(unittest.TestCase):
             f"runpy.run_path({str(MAIN)!r}, run_name='__main__')\n"
         )
         result = subprocess.run([sys.executable, "-c", script], capture_output=True, timeout=15)
-        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(result.returncode, 1, result.stderr)
         self.assertIn(b"unrelated input device failure", result.stderr)
+        self.assertIn(b"Error: IO: cannot read input:", result.stderr)
+        self.assertNotIn(b"Traceback", result.stderr)

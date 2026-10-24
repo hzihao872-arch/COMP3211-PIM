@@ -5,29 +5,31 @@ import os
 import tempfile
 from pathlib import Path
 
-from model.errors import ValidationError
+from model.errors import PIMError, ValidationError
+from model.diagnostics import bounded_detail, preview
 from model.manager import PIMManager
-from model.validation import format_local_time, validate_id
+from model.schema import FIELDS as _FIELDS, TIME_FIELDS as _TIME_FIELDS
+from model.validation import format_local_time, validate_next_id
 
 _FORMAT = "COMP3211-PIM"
-_FIELDS = {
-    "note": ("text",),
-    "task": ("description", "deadline"),
-    "event": ("description", "start_time", "alarm_time"),
-    "contact": ("name", "address", "mobile_number"),
-}
-_TIME_FIELDS = frozenset(("deadline", "start_time", "alarm_time"))
 
 
-class PersistenceError(Exception):
+class PersistenceError(PIMError):
     def __init__(self, category: str, detail: str) -> None:
         self.category = category
         super().__init__(detail)
 
 
+def _label(path: Path) -> str:
+    # Keep the filename useful when a long directory prefix must be abbreviated.
+    text = str(path)
+    return preview(text) if len(text) <= 60 else f"{preview(path.name)} in {preview(str(path.parent))}"
+
+
 def _path(path: Path) -> Path:
     if not isinstance(path, Path) or path.suffix != ".pim" or "\x00" in str(path):
-        raise PersistenceError("PATH", f"path must have lowercase .pim suffix: {path!r}")
+        value = str(path) if isinstance(path, Path) else path
+        raise PersistenceError("PATH", f"path must have lowercase .pim suffix: {preview(value)}")
     return path
 
 
@@ -45,6 +47,7 @@ def save_pim(manager: PIMManager, path: Path) -> None:
         raise PersistenceError("FORMAT", "save requires a PIMManager")
     temporary: Path | None = None
     try:
+        validate_next_id(manager.next_id)
         snapshot = {
             "format": _FORMAT, "version": 1, "next_id": manager.next_id,
             "records": [_row(record) for record in manager.list_all()],
@@ -53,9 +56,11 @@ def save_pim(manager: PIMManager, path: Path) -> None:
             temporary = Path(stream.name)
             json.dump(snapshot, stream, ensure_ascii=False, allow_nan=False, separators=(",", ":"))
             stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
         os.replace(temporary, destination)
     except (OSError, UnicodeError) as error:
-        raise PersistenceError("IO", f"cannot save {destination}: {error}") from error
+        raise PersistenceError("IO", f"cannot save {_label(destination)}: {bounded_detail(str(error))}") from error
     except (TypeError, ValueError, ValidationError) as error:
         raise PersistenceError("FORMAT", f"invalid snapshot: {error}") from error
     finally:
@@ -70,7 +75,7 @@ def _unique_object(pairs: list[tuple[str, object]]) -> dict[str, object]:
     result: dict[str, object] = {}
     for key, value in pairs:
         if key in result:
-            raise ValueError(f"duplicate JSON key: {key}")
+            raise ValueError(f"duplicate JSON key: {preview(key)}")
         result[key] = value
     return result
 
@@ -82,15 +87,15 @@ def _reject_constant(value: str) -> object:
 def load_pim(path: Path, current_next_id: int) -> PIMManager:
     source = _path(path)
     try:
-        validate_id(current_next_id)
+        validate_next_id(current_next_id)
     except ValidationError as error:
         raise PersistenceError("FORMAT", f"invalid current next ID: {error}") from error
     try:
-        content = source.read_text(encoding="utf-8")
+        content = source.read_text(encoding="utf-8-sig")
     except OSError as error:
-        raise PersistenceError("IO", f"cannot load {source}: {error}") from error
+        raise PersistenceError("IO", f"cannot load {_label(source)}: {bounded_detail(str(error))}") from error
     except UnicodeError as error:
-        raise PersistenceError("FORMAT", f"invalid UTF-8 in {source}: {error}") from error
+        raise PersistenceError("FORMAT", f"invalid UTF-8 in {_label(source)}: {error}") from error
     try:
         root = json.loads(content, object_pairs_hook=_unique_object, parse_constant=_reject_constant)
         if not isinstance(root, dict) or set(root) != {"format", "version", "next_id", "records"}:
@@ -101,4 +106,4 @@ def load_pim(path: Path, current_next_id: int) -> PIMManager:
             raise ValueError("records must be an array")
         return PIMManager.from_rows(root["records"], root["next_id"], current_next_id)
     except (ValueError, TypeError, ValidationError, RecursionError) as error:
-        raise PersistenceError("FORMAT", f"invalid .pim file: {error}") from error
+        raise PersistenceError("FORMAT", f"invalid .pim file {_label(source)}: {error}") from error

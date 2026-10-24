@@ -33,7 +33,7 @@ def measure(records: int, runs: int) -> list[str]:
              f"Python: {platform.python_version()}", f"Platform: {platform.platform()}",
              f"Records: {records} ({records // 4} of each type); runs: {runs}",
              "Milliseconds: median / min / max; validation excluded from timed interval.",
-             "Search excludes parsing; file writes include atomic replacement, not an fsync durability guarantee."]
+             "Search excludes parsing; file writes include flush, fsync and atomic replacement; no full power-loss guarantee."]
     with tempfile.TemporaryDirectory(prefix="pim-benchmark-") as directory:
         path = Path(directory) / "benchmark.pim"
         for name, operation in (("search", lambda: manager.search(criterion)),

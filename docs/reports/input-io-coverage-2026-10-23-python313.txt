@@ -1,0 +1,43 @@
+Python: 3.13.0
+Executable: E:\Python\Python\python.exe
+Arguments: ['E:\\Python\\Python\\python.exe', '-B', 'tools/model_coverage.py']
+
+................................................................................................................
+----------------------------------------------------------------------
+Ran 112 tests in 28.164s
+
+OK
+Model line coverage (Python standard-library trace)
+Python: 3.13.0
+OS: Windows 11
+Command: python tools/model_coverage.py
+Tests: 112; failures: 0; errors: 0
+Scope: src/model/*.py; subprocess CLI execution is outside trace scope
+Method: trace executable source lines; non-source 0/None entries excluded
+model/__init__.py: 0/0 (n/a)
+  Missing source lines: none
+  Excluded non-source entries: 1
+model/diagnostics.py: 32/32 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 1
+model/errors.py: 15/15 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 2
+model/manager.py: 97/97 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 2
+model/records.py: 57/57 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 1
+model/schema.py: 11/11 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 2
+model/search.py: 236/236 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 2
+model/validation.py: 40/40 (100.00%)
+  Missing source lines: none
+  Excluded non-source entries: 2
+TOTAL model: 488/488 (100.00%)
+
+Exit: 0

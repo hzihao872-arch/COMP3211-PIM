@@ -54,7 +54,7 @@ Each dataclass also supplies generated `__init__`, equality, and representation 
 
 ### 3.2 Model manager and exceptions
 
-`PIMManager` has `_records: dict[int, Record]` and `_next_id: int`. Both are private; `next_id` is a read-only property. The manager commits a new or replacement record only after all validation succeeds, and returns ID-ascending immutable tuples for list/search. All ID arguments are positive integers; Boolean IDs are invalid. Its public signatures are:
+`PIMManager` has `_records: dict[int, Record]` and `_next_id: int`. Both are private; `next_id` is a read-only property. The manager commits a new or replacement record only after all validation succeeds, and returns ID-ascending immutable tuples for list/search. Record IDs are integers in 1..9999999999999999999; Boolean IDs are invalid. The next counter additionally accepts 10000000000000000000 as a persisted exhaustion marker. Creation checks exhaustion before mutation. Its public signatures are:
 
 | Method signature | Return | Possible exception |
 |---|---|---|
@@ -71,7 +71,7 @@ Each dataclass also supplies generated `__init__`, equality, and representation 
 | `search(criterion: Criterion) -> tuple[Record, ...]` | Matches, ID ascending | `ValidationError` for a non-criterion argument |
 | `from_rows(rows: Sequence[Mapping[str, object]], file_next_id: int, previous_next_id: int) -> PIMManager` | Fully validated replacement manager | `ValidationError` |
 
-`PIMError` is the common model exception. `ValidationError` covers invalid schema, field, time, or ID input; `RecordNotFoundError` covers an absent valid ID; `SearchSyntaxError` is a `ValidationError` for a malformed criterion. They identify the rejected input or failure category. `CommandSyntaxError(Exception)` is the controller-specific syntax exception; both syntax exceptions accept `(detail: str, position: int | None = None)`, retain `.position`, and append `at character N` when a position is available. No manager method performs terminal or file I/O. `from_rows` validates a complete snapshot without mutating the active manager, rejects duplicate/out-of-order IDs or invalid counters, and sets the new counter to `max(previous_next_id, file_next_id)`.
+`PIMError` is the common expected-application exception, defined in the pure model support layer. `ValidationError` covers invalid schema, field, time, or ID input; `RecordNotFoundError` covers an absent valid ID; `SearchSyntaxError` is a `ValidationError` for a malformed criterion. They identify the rejected input or failure category. `CommandSyntaxError(PIMError)` is the controller-specific syntax exception; both syntax exceptions accept `(detail: str, position: int | None = None)`, retain `.position`, and append `at character N` when a position is available. No manager method performs terminal or file I/O. `from_rows` validates a complete snapshot without mutating the active manager, rejects duplicate/out-of-order IDs or invalid counters, and sets the new counter to `max(previous_next_id, file_next_id)`.
 
 ### 3.3 Time validation and search
 
@@ -108,7 +108,7 @@ The tokenizer recognizes quoted literals and only `\"` and `\\` escapes, field/t
 | `save_pim(manager: PIMManager, path: Path) -> None` | None | `PersistenceError` |
 | `load_pim(path: Path, current_next_id: int) -> PIMManager` | New fully validated manager | `PersistenceError` |
 | `CommandController.__init__(self, manager: PIMManager, working_directory: Path) -> None` | Initialized controller holding the active manager and working directory | `ValidationError` for invalid constructor inputs |
-| `CommandController.run(input_stream: TextIO, output_stream: TextIO) -> None` | None at `exit` or EOF | I/O exceptions from the supplied streams may propagate; handled command errors are printed and do not escape |
+| `CommandController.run(input_stream: TextIO, output_stream: TextIO) -> None` | None at `exit` or EOF | Fatal input raises `InputReadError`; other supplied-stream I/O errors may propagate; recoverable command errors are printed |
 | `main() -> None` | None | Unexpected setup/stream errors may propagate |
 | `TerminalOutput.__init__(self, stream: TextIO) -> None` | Adapter retaining `_stream: TextIO` | None for usable text streams |
 | `TerminalOutput.write(self, text: str) -> int` | Number of input characters consumed | `ClosedOutputPipe` for closed output pipes; other stream I/O errors propagate; unencodable characters are visibly escaped |
@@ -136,7 +136,6 @@ Python's leading underscore marks the following implementation methods as non-pu
 | `_Parser.__init__(tokens: list[tuple[str, str, int]], length: int) -> None` | Parser state with `tokens`, `position` and `end_position = length + 1` | None for token lists from `_tokenize`. |
 | `_Parser._peek() -> tuple[str, str, int] \| None` | Current token, if present | None. |
 | `_Parser._take(kind: str \| None = None, value: str \| None = None) -> str` | Consumed token text | `SearchSyntaxError` when the expected token is absent. |
-| `_Parser._accept(value: str) -> bool` | Whether matching token was consumed | None. |
 | `_Parser.parse() -> Criterion` | Validated criterion tree | `SearchSyntaxError`; `_atom` translates node `ValidationError` to this category at the relevant literal. |
 | `_Parser._atom() -> Criterion` | Type, text, or time criterion | `SearchSyntaxError`, including node validation failures annotated at their literal. |
 
@@ -169,3 +168,17 @@ An unmatched search parenthesis raises `SearchSyntaxError` before `PIMManager.se
 | NFR-01–NFR-05 | Local CLI, Python version, standard-library imports, separate model and identifiable other packages |
 
 The ranges are inclusive and allocate every FR-01–FR-54 and NFR-01–NFR-05. Tests in `tests/model/`, `tests/storage/`, `tests/controller/`, and `tests/test_acceptance.py` exercise the implemented paths. The current coverage reports contain the rerun counts, interpreter versions and requirement-level evidence for this candidate; earlier frozen-commit results do not identify the delivered working tree. The independent review added recovery for excessive JSON nesting without changing the public signatures.
+
+## Source hardening refinement (2026-10-23)
+
+`model/schema.py` centralizes read-only type/field metadata and ID limits. `model/diagnostics.py` provides pure bounded previews and printable diagnostics; `model/errors.py::PIMError` now supplies categories and bounded details to model, command and persistence failures. `CommandSyntaxError(PIMError)` and `PersistenceError(PIMError)` retain their public constructor signatures. The controller catches the shared base rather than enumerating subclasses. New categories default to `APPLICATION`; existing categories are unchanged.
+
+`validate_next_id(value: object) -> int` validates counters separately from record IDs and raises `ValidationError` on invalid values. `from_rows` includes record indices, and storage adds filename/path context. The unused `_accept` helper has been removed. `controller/help.py` owns both overview and detailed help and derives field lists from schema.
+
+Storage accepts a UTF-8 BOM, writes without a BOM and flushes/fsyncs its temporary file before replacement. The controller retains ownership of dirty state: its private `_run(input_stream: TextIO, output_stream: TerminalOutput) -> None` contains the loop; `run` attempts a dirty warning on interruption, then re-raises. `main.cli` preserves exit code 130 and prevents a second shutdown flush error on a closed output pipe. `main._silence_closed_stream(stream: TextIO) -> None` performs the same descriptor cleanup for normal pipe closure. These helpers may propagate genuine stream/device errors outside the handled interruption/output-closure paths.
+
+The existing architecture diagrams still describe the main component boundaries; schema and diagnostics are pure model support modules. See the technical contract and source hardening report for current API details and verification. PDF exports describe the earlier candidate until a release is rebuilt.
+
+### Fatal command input (2026-10-23)
+
+The controller translates only OSError/UnicodeError from `readline` into `InputReadError(PIMError)` and propagates it outside the recoverable command catch. It attempts the unsaved warning once while it still owns dirty state. The entry point emits bounded stderr and returns 1; failed stdout/stderr diagnostics cannot turn the input failure into success or a traceback. Shared best-effort warning logic preserves Ctrl+C status 130. The detailed signatures and failure rules are in the technical contract.

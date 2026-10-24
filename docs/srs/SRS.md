@@ -84,7 +84,7 @@ At a high level, a **command interface** reads commands and presents results; a 
 
 ### 6.1 Shared record and command conventions
 
-Display convention for this source revision: complete stored text is represented on output, with C0/C1 terminal controls other than newline/tab shown as visible hexadecimal escapes. Characters unsupported by the output encoding use visible backslash escapes. These representations do not alter stored/searchable values or extend input escape syntax. Ctrl+C terminates with exit code 130 and no traceback; closing a downstream output pipe ends the process quietly. Neither operation saves implicitly. These are group-selected robustness refinements, not additional Appendix B features.
+Display convention for this source revision: complete stored text is represented on output, with C0/C1 terminal controls other than newline/tab shown as visible hexadecimal escapes. Characters unsupported by the output encoding use visible backslash escapes. These representations do not alter stored/searchable values or extend input escape syntax. Ctrl+C attempts one unsaved warning when dirty and terminates with exit code 130 and no traceback, including when the warning encounters a closed output pipe; closing a downstream output pipe ends the process quietly. Neither operation saves implicitly. These are group-selected robustness refinements, not additional Appendix B features.
 
 The four schemas and creation argument order are:
 
@@ -121,11 +121,11 @@ The public commands are `help [COMMAND]`, `add TYPE "FIELD"...`, `list [TYPE]`, 
 **FR-08** [US5] The system shall preserve a mobile number as text, including `+` and leading zeros, without region-specific validation.<br>
 *Verify:* Save and show such a number; try a nonempty mobile string without a region-specific pattern.
 
-**FR-09** [US1] The system shall initialize an empty session with next ID 1 and assign each successfully created PIR the current next ID, advancing the counter without reusing an ID issued in that session; loading shall preserve the greater counter specified in FR-46.<br>
+**FR-09** [US1] The system shall initialize an empty session with next ID 1 and assign each successfully created PIR the current next ID, advancing the counter without reusing an ID issued in that session; loading shall preserve the greater counter specified in FR-46. Record IDs shall range from 1 to 9999999999999999999; next_id shall range from 1 to 10000000000000000000, where the latter value marks exhaustion and remains saveable/loadable. Creation at exhaustion shall fail before changing records or the counter.<br>
 *Verify:* Create, delete, and create records in one session; load older and higher-counter snapshots and create again; compare IDs against FR-46.
 
 **FR-10** [US1] The system shall leave the next ID unchanged when creation fails.<br>
-*Verify:* Make an invalid `add` between two valid adds and compare assigned IDs.
+*Verify:* Make an invalid `add` between two valid adds and compare assigned IDs; create the final assignable ID, round-trip the exhaustion counter, and verify later creation leaves records and the counter unchanged.
 
 **FR-11** [US1] The system shall allow different PIRs to have equal data-field values.<br>
 *Verify:* Create two records with identical data and observe distinct IDs.
@@ -249,7 +249,7 @@ search (type = "task" && deadline < "2026-10-01 09:00") || !name contains "Lee"
 
 ### 6.3 Persistence and recovery
 
-Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, `version`, `next_id`, and `records`. `format` is `COMP3211-PIM`; `version` is the integer `1`. `records` is an ascending-ID array; every entry has `id`, `type`, and exactly the data fields of its type. `next_id` is a positive integer greater than every stored ID. A file is a snapshot: loading it replaces the current collection but retains the higher of the current and file ID counters. This prevents a later creation from reassigning an ID already issued in the current session after an older snapshot is loaded. Across separate sessions, only the counter in a loaded file is retained; no external history of IDs is promised.
+Version 1 `.pim` files are written as UTF-8 JSON without a BOM; loading accepts UTF-8 with or without a BOM. The structure has exactly the top-level keys `format`, `version`, `next_id`, and `records`. `format` is `COMP3211-PIM`; `version` is the integer `1`. `records` is an ascending-ID array; every entry has `id`, `type`, and exactly the data fields of its type. `next_id` is a positive integer greater than every stored ID, within the range and exhaustion convention of FR-09. Version 1 snapshots with IDs or counters outside those ranges are rejected, including previously accepted oversized values. A file is a snapshot: loading it replaces the current collection but retains the higher of the current and file ID counters. This prevents a later creation from reassigning an ID already issued in the current session after an older snapshot is loaded. Across separate sessions, only the counter in a loaded file is retained; no external history of IDs is promised.
 
 **FR-41** [US10] The `save "PATH.pim"` command shall store the complete current PIR collection in a file whose extension is exactly `.pim`.<br>
 *Verify:* Save four PIR types, inspect the file path and contents, and reject other extensions.
@@ -257,13 +257,13 @@ Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, 
 **FR-42** [US10] A saved file shall use the version 1 UTF-8 JSON structure and exact record schemas stated in §6.3.<br>
 *Verify:* Parse a saved file and check encoding, top-level keys/values, IDs, order, and each record's fields.
 
-**FR-43** [US10] Saving shall replace the destination with the complete serialized snapshot only after a successful write; if saving fails, the previous destination contents shall remain unchanged.<br>
+**FR-43** [US10] Saving shall flush and fsync a same-directory temporary snapshot before closing it and replacing the destination with the complete serialized snapshot; if saving fails, the previous destination contents shall remain unchanged.<br>
 *Verify:* Save successfully and compare the complete snapshot; induce serialization, write, and replacement failures and compare the destination's previous bytes.
 
 **FR-44** [US11] A permitted `load "PATH.pim" [force=true|force=false]` command shall read a `.pim` file and validate its complete contents before changing current state, subject to FR-52.<br>
 *Verify:* Load a valid file and separately attempt truncated, wrong-extension, and unreadable files.
 
-**FR-45** [US11] Load validation shall reject an incorrect format or version, missing or extra keys or fields, invalid field values, nonpositive or duplicate IDs, or a `next_id` no greater than the maximum stored ID.<br>
+**FR-45** [US11] Load validation shall reject an incorrect format or version, missing or extra keys or fields, invalid field values, nonpositive, duplicate or out-of-range IDs, an out-of-range `next_id`, or a `next_id` no greater than the maximum stored ID.<br>
 *Verify:* Mutate one aspect of an otherwise valid file for each listed category and attempt load.
 
 **FR-46** [US11] Successful loading permitted by FR-52 shall replace, rather than merge with, the current collection and shall use the greater of the pre-load and file `next_id` values for later creation.<br>
@@ -275,13 +275,13 @@ Version 1 `.pim` files use UTF-8 JSON with exactly the top-level keys `format`, 
 **FR-48** [US10, US11] The system shall resolve a relative `save` or `load` path against the process working directory.<br>
 *Verify:* Run from a chosen directory and use relative paths for save and load.
 
-**FR-49** [US1–US11] An unknown command, invalid argument, invalid path or file, or file I/O failure shall produce an error message identifying the rejected input or failure category and return to the command prompt; malformed search and quoted-command syntax shall include the position specified in FR-54.<br>
-*Verify:* Exercise each error category, inspect the message for the input or category, and issue a subsequent valid command.
+**FR-49** [US1–US11] An unknown command, invalid argument, invalid path or file, or file I/O failure shall produce an error message identifying the rejected input or failure category and return to the command prompt; malformed search and quoted-command syntax shall include the position specified in FR-54. Diagnostic input fragments shall be limited to 80 visible ASCII characters and error detail to 1024, using visible escapes and an ellipsis when abbreviated; search positions shall be retained. Loaded-record validation errors shall identify the source file and one-based record index; file-level errors shall identify the file without a record index. An OSError or UnicodeError while reading command input shall instead terminate the process with exit code 1, attempt one unsaved warning when dirty, and attempt a bounded IO diagnostic on stderr without a traceback; it shall not retry input or save implicitly. Unavailable diagnostic streams shall not change the failure status.<br>
+*Verify:* Exercise each recoverable error category and issue a subsequent command; inject read OSError/UnicodeError and actual invalid input bytes, then check exit 1, safe stderr, dirty warning, unchanged state and no retries, including unavailable output streams.
 
 **FR-50** [US1–US11] A failed command shall not partially change the in-memory collection.<br>
 *Verify:* Compare the collection before and after failed create, update, delete, search, save, and load operations.
 
-The recovery requirement concerns command processing with usable input/output streams. Terminal disconnection or failure of the supplied streams can prevent a prompt from being displayed; it is not classified as a recoverable file operation.
+The return-to-prompt guarantee concerns command processing with usable input/output streams. Command-input OSError/UnicodeError follows the fatal-read rule in FR-49, not file-command recovery. Output failures may prevent diagnostics from being displayed. Unrelated programming errors and genuine output/device failures outside handled termination paths are not silently converted into successful exits.
 
 ### 6.3.1 Usability safeguards (group-selected refinement)
 

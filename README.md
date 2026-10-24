@@ -4,11 +4,15 @@ Group repository for the Fall 2026 COMP3211 Software Engineering course project.
 
 The project is a command-line Personal Information Management (PIM) system. It manages notes, tasks, events, and contacts; supports modification, deletion, printing, compound search conditions, and `.pim` file persistence.
 
-## Current source revision
+## Current source hardening
 
-The usability release preserves this PIM mainline and adds unsaved-load protection, `help COMMAND`, and positioned search/quoting diagnostics. It also includes terminal escaping, limited-encoding output, Ctrl+C/closed-pipe handling and reproducible demo/performance tools. All 86 tests pass on Python 3.11.9, 3.12.3 and 3.13.5. The six document PDFs and presentation match this revision; see [current verification](docs/reports/usability-release-2026-10-23.md).
+The working tree implements `suggestion_v2.md`: bounded ID allocation with a persisted exhaustion counter, bounded diagnostics and file/record context, shared schema/help metadata, BOM-compatible loading, fsync before replacement, and dirty Ctrl+C warnings. Normal quoting and complete record output are retained. The subsequent [input failure fix](docs/reports/input-io-fix-2026-10-23.md) adds controlled exit 1 for command-input device/decoding errors, bounded stderr and best-effort dirty warnings. See [the source hardening report](docs/reports/source-hardening-2026-10-23.md) for the preceding hardening snapshot; the input failure report gives the latest 112-test results on Python 3.11.9/3.12.14/3.13.0. Existing PDFs, presentation and ZIP archives remain the earlier usability release; their manifests do not describe this modified working tree.
 
-## Latest packaged usability candidate
+## Earlier usability baseline
+
+The usability release preserves this PIM mainline and adds unsaved-load protection, `help COMMAND`, and positioned search/quoting diagnostics. It also includes terminal escaping, limited-encoding output, Ctrl+C/closed-pipe handling and reproducible demo/performance tools. All 86 tests pass on Python 3.11.9, 3.12.3 and 3.13.5. The six document PDFs and presentation match that earlier revision; see [current verification](docs/reports/usability-release-2026-10-23.md).
+
+## Historical packaged usability candidate
 
 The latest reviewed package is `output/COMP3211_Group_Project-usability-2026-10-23.zip`. Its file hashes are in [the current manifest](submission/manifest.md); findings and verification are in [the usability release report](docs/reports/usability-release-2026-10-23.md). Earlier ZIPs and dated reports are historical. The candidate still requires the two real recordings, the official declaration, and human group review before submission.
 
